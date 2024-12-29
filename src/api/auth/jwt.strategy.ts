@@ -16,17 +16,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ) {
         super({
             secretOrKey:jwtConfig.secret,
-            jwtFromRequest: ExtractJwt.fromExtractors([(request) => {
-                // 쿠키에서 JWT 추출
-                return request?.cookies?.accessToken || null;
-            }]),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         });
     }
 
     async validate(payload: any) {
-        const { userId } = payload;
-        const user: User = await this.userRepository.findOne({ where: {userId} });
-
+        const { uuid } = payload;
+        const user: User = await this.userRepository.findOne({ where: { uuid } });
+        console.log(user);
         if(!user) {
             throw new UnauthorizedException();
         }
