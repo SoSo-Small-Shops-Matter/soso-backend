@@ -1,5 +1,4 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { User } from "src/database/entity/user.entity";
 import * as config from 'config';
 
 const dbConfig = config.get('db');
@@ -11,6 +10,6 @@ export const typeORMConfig: TypeOrmModuleOptions = {
     username: dbConfig.username,
     password: dbConfig.password,
     database: dbConfig.database,
-    entities: [User],
+    entities: [__dirname + '/../entity/*.entity.{js,ts}'], // 엔터티 경로 지정
     synchronize: true,
 }
