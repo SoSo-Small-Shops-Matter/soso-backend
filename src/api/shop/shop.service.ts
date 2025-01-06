@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
 
 @Injectable()
@@ -7,5 +7,12 @@ export class ShopService {
 
     async findAllShop(){
         return await this.shopRepository.findAllShop();
+    }
+
+    async findShopByShopId(shopId: number){
+        const result = await this.shopRepository.findShopByShopId(shopId);
+        if(!result){
+            throw new NotFoundException('NOT_FOUND_SHOP');
+        }
     }
 }

@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Shop } from './shop.entity';
+import { SubmitShop } from './submit-shop.entity';
 
-@Entity('operating_hours')
-export class OperatingHours {
+@Entity('submit_operating_hours')
+export class SubmitOperatingHours {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -30,7 +30,7 @@ export class OperatingHours {
     @Column({ nullable: true })
     sundayHours: string;  
     
-    @ManyToOne(() => Shop, (shop) => shop.operatingHours, { onDelete: 'CASCADE' })
-    shop: Shop;
+    @ManyToOne(() => SubmitShop, (submitShop) => submitShop.submitOperatingHours, { onDelete: 'CASCADE' })
+    submitShop: SubmitShop;
 
 }
