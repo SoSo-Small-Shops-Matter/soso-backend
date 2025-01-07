@@ -64,4 +64,22 @@ export class ShopRepository extends Repository<Shop> {
             throw new InternalServerErrorException();
         }
     }
+
+    async updateShopProduct(productData:any,shopId:number){
+        try{
+            const shop = await this.findOne({ where: { id: shopId }, relations: ['products'] });
+
+            const productMappings = productData.map((product) => ({
+                id: product.id ,
+            }));
+            
+            shop.products = productMappings;
+
+            await this.save(shop);
+            return shop;
+        }catch(err){
+            console.error("Shop/updateShopProduct Error",err);
+            throw new InternalServerErrorException();
+        }
+    }
 }

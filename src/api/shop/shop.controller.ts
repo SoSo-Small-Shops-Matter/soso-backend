@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 
@@ -9,6 +9,14 @@ export class ShopController {
     @Get('/')
     async getAllShop(){
         return new SuccessResponseDTO(await this.shopService.findAllShop());
+    }
+
+    @Patch('/')
+    async updateShopProduct(
+        @Body() body:any,
+    ){
+        const { productData, shopId } = body;
+        return new SuccessResponseDTO(await this.shopService.updateShopProduct(productData,shopId));
     }
 
     @Get('/:shopId')

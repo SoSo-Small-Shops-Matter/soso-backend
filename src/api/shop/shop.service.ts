@@ -15,4 +15,8 @@ export class ShopService {
             throw new NotFoundException('NOT_FOUND_SHOP');
         }
     }
+
+    async updateShopProduct(productData,shopId){
+        return await this.shopRepository.updateShopProduct(productData,shopId);
+    }
 }
