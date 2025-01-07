@@ -16,7 +16,18 @@ export class SubmitController {
     async submitNewShop(
         @Body() body:any
     ){
-        await this.submitService.createNewShop(body);
-        return new SuccessResponseDTO();
+        return new SuccessResponseDTO( await this.submitService.createNewShop(body));
+    }
+    @Post('/operating')
+    async submitShopOperatingHours(
+        @Body() body:any
+    ){
+        const { operatingData, shopId } = body;
+        return new SuccessResponseDTO( await this.submitService.validateAndUpdateOperatingHours(operatingData,shopId)); 
+    }
+
+    @Get('/operating')
+    async getWaitForAllowShopOperatingHours(){
+        return new SuccessResponseDTO( await this.submitService.findValidateOperatingHours()); 
     }
 }

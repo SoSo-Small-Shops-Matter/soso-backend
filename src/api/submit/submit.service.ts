@@ -13,4 +13,12 @@ export class SubmitService {
         const { shop, operatingHours, products } = newShop;
         return await this.submitRepository.createNewShop(shop, operatingHours, products);
     }
+
+    async validateAndUpdateOperatingHours(operatingData,shopId){
+        return await this.submitRepository.validateAndUpdateOperatingHours(operatingData,shopId);
+    }
+
+    async findValidateOperatingHours(){
+        return await this.submitRepository.findValidateOperatingHours();
+    }
 }

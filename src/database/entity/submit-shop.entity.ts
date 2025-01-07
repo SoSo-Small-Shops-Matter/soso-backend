@@ -7,16 +7,16 @@ export class SubmitShop {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255 , nullable: true })
   name: string;
 
   @Column({ type: 'int', default: false })
   reportStatus: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable: true  })
   lat: number;
 
-  @Column({ type: 'float' }) 
+  @Column({ type: 'float', nullable: true  }) 
   lng: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })

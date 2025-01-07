@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SubmitOperatingHours } from 'src/database/entity/submit-operating-hours.entity';
 import { SubmitProductMapping } from 'src/database/entity/submit-product_mapping.entity';
 import { SubmitShop } from 'src/database/entity/submit-shop.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, MoreThan, Repository } from 'typeorm';
 
 @Injectable()
 export class SubmitRepository extends Repository<SubmitShop> {
@@ -69,6 +69,35 @@ export class SubmitRepository extends Repository<SubmitShop> {
         
         }catch(err){
             console.error("SubmitShop/createNewShop Error", err); // 에러 로그 추가
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async validateAndUpdateOperatingHours(operatingData,shopId){
+        try{
+            // 이건 이미 올려져 있는 소품샵의 운영 정보시간이 확인 후 업데이트 될 예정이라 shopId에 이미 올려져 있는 소품샵 ID가 들어가있음 하지만 이걸 그대로 쓰면 submitShop의 id와 충돌이 날 수 있음
+            // 따라서 기존 shopId 에 + 10,000을 해줌  -> util에 상수로 만들기 
+            return await this.submitOperatingRepository.save({
+                submitShop: { id: shopId + 10000},
+                ...operatingData,
+            });
+        }catch(err){
+            console.error("SubmitShop/validateAndUpdateOperatingHours Error", err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async findValidateOperatingHours(){
+        try{
+            const shops = await this.find({
+                where: {
+                    id: MoreThan(10000),
+                },
+                relations: ['submitOperatingHours'],
+            });
+            return shops;
+        }catch(err){
+            console.error("SubmitShop/findValidateOperatingHours Error", err);
             throw new InternalServerErrorException();
         }
     }
