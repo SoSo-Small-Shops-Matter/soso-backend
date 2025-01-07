@@ -29,7 +29,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       // 사용자가 없을 경우 회원가입 진행
       user = await this.userService.googleUserSignup(id);
     }
-    console.log(user);
     // JWT 생성 및 반환
     const payload = { uuid: user.uuid };
     const token = this.jwtService.sign(payload);

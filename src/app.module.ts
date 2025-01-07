@@ -5,6 +5,7 @@ import { typeORMConfig } from './database/configs/typeorm.config';
 import { UserModule } from './api/user/user.module';
 import { ShopModule } from './api/shop/shop.module';
 import { SubmitModule } from './api/submit/submit.module';
+import { WishlistModule } from './api/wishlist/wishlist.module';
 
 
 @Module({
@@ -14,6 +15,7 @@ import { SubmitModule } from './api/submit/submit.module';
     UserModule,
     ShopModule,
     SubmitModule,
+    WishlistModule,
   ],
 })
 export class AppModule {}

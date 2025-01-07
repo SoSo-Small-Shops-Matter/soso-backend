@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { SubmitService } from './submit.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('submit')
+@UseGuards(AuthGuard('jwt'))
 export class SubmitController {
     constructor(private submitService: SubmitService){}
 
