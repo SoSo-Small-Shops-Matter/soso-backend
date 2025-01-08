@@ -12,11 +12,24 @@ export class WishlistRepository{
 
     async addWishlistByShopIdAndUUID(shopId:number, uuid:string){
         try{
-            const wishlistItem = await this.whishlistRepository.save({
+            const wishlist = await this.whishlistRepository.findOne({
+                where:{
+                    user: { uuid }, 
+                    shop: { id: shopId }, 
+                },
+                relations: ['user', 'shop'],
+            });
+            // 이미 존재하는 경우 
+            if (wishlist){
+                return  await this.whishlistRepository.delete({
+                    id:wishlist.id,
+                });
+            }
+            
+            return  await this.whishlistRepository.save({
                 user: { uuid }, // User 엔티티와 연결
                 shop: { id: shopId }, // Shop 엔티티와 연결
             });
-            return wishlistItem;
         }catch(err){
             console.error(err);
             if(err.code == 'ER_DUP_ENTRY'){
@@ -40,6 +53,27 @@ export class WishlistRepository{
     }
 
     async deleteWishlistByShopIdAndUUID(shopId:number,uuid:string){
-        return await this.whishlistRepository.delete({ user: {uuid}, shop: {id:shopId} });
+        try{
+            return await this.whishlistRepository.delete({ user: {uuid}, shop: {id:shopId} });   
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async isShopInUserWishlist(shopId:number,uuid:string){
+        try{
+            const wishlist = await this.whishlistRepository.findOne({
+                where:{
+                    user: { uuid }, 
+                    shop: { id: shopId }, 
+                },
+                relations: ['user', 'shop'],
+            });
+            return wishlist;
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException();
+        }
     }
 }

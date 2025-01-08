@@ -16,4 +16,9 @@ export class WishlistService {
     async addWishlistByShopIdAndUUID(shopId:number,uuid:string){
         return await this.wishlistRepository.addWishlistByShopIdAndUUID(shopId,uuid);
     }
+
+    async isShopInUserWishlist(shopId:number,uuid:string){
+        const result = await this.wishlistRepository.isShopInUserWishlist(shopId,uuid);
+        return result ? true : false;
+    }
 }
