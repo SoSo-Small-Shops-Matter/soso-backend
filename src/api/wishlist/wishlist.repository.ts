@@ -1,19 +1,18 @@
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from 'src/database/entity/wishlist.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
-export class WishlistRepository extends Repository<Wishlist> {
+export class WishlistRepository{
     constructor(
-        private dataSource: DataSource,
-    
-    ) {
-        super(Wishlist, dataSource.createEntityManager());
-    }
+        @InjectRepository(Wishlist)
+        private whishlistRepository:Repository<Wishlist>
+    ) {}
 
     async addWishlistByShopIdAndUUID(shopId:number, uuid:string){
         try{
-            const wishlistItem = await this.save({
+            const wishlistItem = await this.whishlistRepository.save({
                 user: { uuid }, // User 엔티티와 연결
                 shop: { id: shopId }, // Shop 엔티티와 연결
             });
@@ -29,7 +28,7 @@ export class WishlistRepository extends Repository<Wishlist> {
 
     async findWishlistByUUID(uuid:string){
         try{
-            const userWishlists = await this.find({
+            const userWishlists = await this.whishlistRepository.find({
                 where: { user: { uuid} },
                 relations: ['user', 'shop'],
             });
@@ -41,6 +40,6 @@ export class WishlistRepository extends Repository<Wishlist> {
     }
 
     async deleteWishlistByShopIdAndUUID(shopId:number,uuid:string){
-        return await this.delete({ user: {uuid}, shop: {id:shopId} });
+        return await this.whishlistRepository.delete({ user: {uuid}, shop: {id:shopId} });
     }
 }

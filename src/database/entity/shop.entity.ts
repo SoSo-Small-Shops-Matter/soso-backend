@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, Double } from 'typeorm';
 import { Product } from './product.entity';
 import { OperatingHours } from './operating-hours.entity';
+import { Review } from './review.entity';
 
 @Entity('shop')
 export class Shop {
@@ -27,4 +28,7 @@ export class Shop {
 
   @OneToMany(() => OperatingHours, (operatingHours) => operatingHours.shop, { lazy: true })
   operatingHours: Promise<OperatingHours[]>;
+
+  @OneToMany(() => Review, (review) => review.shop, { lazy: true })
+  reviews: Promise<[Review]>;
 }
