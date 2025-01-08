@@ -6,22 +6,21 @@ import { SubmitShop } from 'src/database/entity/submit-shop.entity';
 import { DataSource, MoreThan, Repository } from 'typeorm';
 
 @Injectable()
-export class SubmitRepository extends Repository<SubmitShop> {
+export class SubmitRepository{
     constructor(
-        private dataSource: DataSource,
+        @InjectRepository(SubmitShop)
+        private submitShopRepository: Repository<SubmitShop>, // ProductRepository 주입
         @InjectRepository(SubmitProductMapping)
         private submitProductMappingRepository: Repository<SubmitProductMapping>, // ProductRepository 주입
         @InjectRepository(SubmitOperatingHours)
         private submitOperatingRepository: Repository<SubmitOperatingHours>, // OperatingHoursRepository 주입
     
-    ) {
-        super(SubmitShop, dataSource.createEntityManager());
-    }
+    ) {}
 
     async findAllShop() {
         try{
             // 모든 Shop 엔터티를 가져옵니다.
-            const shops = await this.find();
+            const shops = await this.submitShopRepository.find();
             // 각 Shop의 관계 데이터를 비동기로 로드합니다.
             const enrichedShops = await Promise.all(
                 shops.map(async (shop) => {
@@ -48,7 +47,7 @@ export class SubmitRepository extends Repository<SubmitShop> {
 
     async createNewShop(shopData,operatingData,productData){
         try{
-            const shop = await this.save(shopData);
+            const shop = await this.submitShopRepository.save(shopData);
             const shopId = shop.id;
             
             if(operatingData){
@@ -89,7 +88,7 @@ export class SubmitRepository extends Repository<SubmitShop> {
 
     async findValidateOperatingHours(){
         try{
-            const shops = await this.find({
+            const shops = await this.submitShopRepository.find({
                 where: {
                     id: MoreThan(10000),
                 },

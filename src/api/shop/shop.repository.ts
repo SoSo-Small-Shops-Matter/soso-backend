@@ -1,20 +1,19 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Shop } from 'src/database/entity/shop.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
-export class ShopRepository extends Repository<Shop> {
+export class ShopRepository {
     constructor(
-        private dataSource: DataSource,
-    
-    ) {
-        super(Shop, dataSource.createEntityManager());
-    }
+        @InjectRepository(Shop)
+        private shopRepository:Repository<Shop>
+    ) {}
 
     async findAllShop() {
         try{
             // 모든 Shop 엔터티를 가져옵니다.
-            const shops = await this.find();
+            const shops = await this.shopRepository.find();
             // 각 Shop의 관계 데이터를 비동기로 로드합니다.
             const enrichedShops = await Promise.all(
                 shops.map(async (shop) => {
@@ -42,7 +41,7 @@ export class ShopRepository extends Repository<Shop> {
     async findShopByShopId(shopId:number){
         try{
             // 모든 Shop 엔터티를 가져옵니다. 
-            let shop = await this.findOne({where:{id:shopId}});
+            let shop = await this.shopRepository.findOne({where:{id:shopId}});
             if(!shop){
                 return null;
             }
@@ -67,7 +66,7 @@ export class ShopRepository extends Repository<Shop> {
 
     async updateShopProduct(productData:any,shopId:number){
         try{
-            const shop = await this.findOne({ where: { id: shopId }, relations: ['products'] });
+            const shop = await this.shopRepository.findOne({ where: { id: shopId }, relations: ['products'] });
 
             const productMappings = productData.map((product) => ({
                 id: product.id ,
@@ -75,7 +74,7 @@ export class ShopRepository extends Repository<Shop> {
             
             shop.products = productMappings;
 
-            await this.save(shop);
+            await this.shopRepository.save(shop);
             return shop;
         }catch(err){
             console.error("Shop/updateShopProduct Error",err);
