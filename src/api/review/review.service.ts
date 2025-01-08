@@ -8,4 +8,9 @@ export class ReviewService {
     async createReview(uuid,shopId,content){
         return await this.reviewRepository.createReview(uuid,shopId,content);
     }
+
+    async findUserReviewByUUID(uuid:string){
+        return await this.reviewRepository.findUserReviewByUUID(uuid);
+    }
+
 }
