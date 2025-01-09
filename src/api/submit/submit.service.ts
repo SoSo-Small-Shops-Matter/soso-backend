@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { SubmitRepository } from './submit.repository';
 
 @Injectable()
@@ -11,7 +11,21 @@ export class SubmitService {
 
     async createNewShop(newShop){
         const { shop, operatingHours, products } = newShop;
-        return await this.submitRepository.createNewShop(shop, operatingHours, products);
+        const createShop =  await this.submitRepository.createNewShop(shop);
+        if(createShop){
+            throw new ConflictException();
+        }
+        if(operatingHours){
+            await this.submitRepository.saveOperatingByShopId(operatingHours,createShop.id);
+        }
+        if(products){
+            const productMappings = products.map((product) => ({
+                submitShop: { id: createShop.id },
+                submitProduct: { id: product.id },
+            }));
+            await this.submitRepository.saveProductsByShopId(productMappings);
+        }
+        return;
     }
 
     async validateAndUpdateOperatingHours(operatingData,shopId){

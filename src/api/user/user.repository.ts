@@ -21,8 +21,7 @@ export class UserRepository {
     }
     async findUserByNickName(nickName: string){
         try{
-            const existNickName = await this.userReposiotry.findOne({ where: { nickName } });
-            return !!existNickName; // 닉네임 존재 여부를 boolean으로 반환
+            return await this.userReposiotry.findOne({ where: { nickName } });
         }catch(err){
             console.error("Error findUserNickname :", err); // 에러 로그 추가
             throw new InternalServerErrorException();
@@ -30,10 +29,9 @@ export class UserRepository {
     }
     async createUser(uuid:string){
         try {
-            const user = await this.userReposiotry.create({
+            return await this.userReposiotry.save({
                 uuid,
-            });
-            return await this.userReposiotry.save(user); 
+            }); 
         } catch (err) {
             console.error("Error saving user:", err); // 에러 로그 추가
             throw new InternalServerErrorException('User signup failed');
@@ -41,8 +39,7 @@ export class UserRepository {
     }
     async updateNickName(uuid:string, nickName:string){
         try{
-            const newNickName = await this.userReposiotry.update({uuid},{nickName});
-            return newNickName.affected > 0;
+            return await this.userReposiotry.update({uuid},{nickName});
         }catch(err){
             console.error("Error setNickName :", err); // 에러 로그 추가
             throw new InternalServerErrorException();

@@ -13,11 +13,12 @@ export class UserService {
         if (existNickName) {
             throw new ConflictException('Nickname already exists.');
         }
+        return !!existNickName;
     }
 
     async setNickName(nickName: string, uuid: string){
         const newNickName = await this.userRepository.updateNickName(uuid,nickName);
-        if(!newNickName){
+        if(newNickName.affected == 0){
             throw new NotFoundException('Update NickName Error');
         }
     }

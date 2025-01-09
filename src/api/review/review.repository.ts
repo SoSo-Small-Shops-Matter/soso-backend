@@ -28,13 +28,12 @@ export class ReviewRepository {
 
     async findUserReviewByUUID(uuid:string){
         try{
-            const result = await this.reviewRepository.find({
+            return await this.reviewRepository.find({
                 where:{
                     user: {uuid} 
                 },
                 relations:['shop']
             });
-            return result;
         }catch(err){
             console.error(err);
             throw new InternalServerErrorException()

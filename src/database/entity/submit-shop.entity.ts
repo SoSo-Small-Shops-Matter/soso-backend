@@ -22,9 +22,9 @@ export class SubmitShop {
   @Column({ type: 'varchar', length: 255, nullable: true })
   location: string;
 
-  @ManyToMany(() => SubmitProduct, (submitProduct) => submitProduct.submitShops, { lazy: true })
+  @ManyToMany(() => SubmitProduct, (submitProduct) => submitProduct.submitShops)
   submitProducts: Promise<SubmitProduct[]>;
 
-  @OneToMany(() => SubmitOperatingHours, (submitOperatingHours) => submitOperatingHours.submitShop, { lazy: true })
+  @OneToMany(() => SubmitOperatingHours, (submitOperatingHours) => submitOperatingHours.submitShop)
   submitOperatingHours: Promise<SubmitOperatingHours[]>;
 }

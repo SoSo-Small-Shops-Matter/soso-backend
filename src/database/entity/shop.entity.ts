@@ -23,12 +23,12 @@ export class Shop {
   @Column({ type: 'varchar', length: 255, nullable: true })
   location: string;
 
-  @ManyToMany(() => Product, (product) => product.shops, { lazy: true })
+  @ManyToMany(() => Product, (product) => product.shops)
   products: Promise<Product[]>;
 
-  @OneToMany(() => OperatingHours, (operatingHours) => operatingHours.shop, { lazy: true })
+  @OneToMany(() => OperatingHours, (operatingHours) => operatingHours.shop)
   operatingHours: Promise<OperatingHours[]>;
 
-  @OneToMany(() => Review, (review) => review.shop, { lazy: true })
+  @OneToMany(() => Review, (review) => review.shop)
   reviews: Promise<[Review]>;
 }

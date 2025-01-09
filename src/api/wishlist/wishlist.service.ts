@@ -14,6 +14,10 @@ export class WishlistService {
     }
 
     async addWishlistByShopIdAndUUID(shopId:number,uuid:string){
+        const wishlist = await this.wishlistRepository.findWishlistByShopIdAndUUID(shopId,uuid);
+        if(wishlist){
+            return await this.wishlistRepository.deleteWishlistByWishlistId(wishlist.id);
+        }
         return await this.wishlistRepository.addWishlistByShopIdAndUUID(shopId,uuid);
     }
 
