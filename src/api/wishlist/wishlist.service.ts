@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { WishlistRepository } from './wishlist.repository';
+import { ShopIdDto } from './dto/wishlist.dto';
 
 @Injectable()
 export class WishlistService {
@@ -13,7 +14,9 @@ export class WishlistService {
         return result;
     }
 
-    async addWishlistByShopIdAndUUID(shopId:number,uuid:string){
+    async addWishlistByShopIdAndUUID(shopIdDto:ShopIdDto,uuid:string){
+        const { shopId } = shopIdDto;
+         
         const wishlist = await this.wishlistRepository.findWishlistByShopIdAndUUID(shopId,uuid);
         if(wishlist){
             return await this.wishlistRepository.deleteWishlistByWishlistId(wishlist.id);

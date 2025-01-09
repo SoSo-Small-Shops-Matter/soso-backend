@@ -4,6 +4,7 @@ import { SubmitOperatingHours } from 'src/database/entity/submit-operating-hours
 import { SubmitProductMapping } from 'src/database/entity/submit-product_mapping.entity';
 import { SubmitShop } from 'src/database/entity/submit-shop.entity';
 import { MoreThan, Repository } from 'typeorm';
+import { OperatingHours } from './dto/submit.dto';
 
 @Injectable()
 export class SubmitRepository{
@@ -44,21 +45,32 @@ export class SubmitRepository{
             throw new InternalServerErrorException();
         }
     }
-    async createNewShop(shopData){
+    async createNewShop(shop){
         try{
-            return await this.submitShopRepository.save(shopData);  
+            return await this.submitShopRepository.save(shop);  
         }catch(err){
             console.error("SubmitShop/createNewShop Error", err); // 에러 로그 추가
             throw new InternalServerErrorException();
         }
     }
 
-    async validateAndUpdateOperatingHours(operatingData,shopId){
+    async createNewShopForUpdateOperatingHours(shopId:number){
+        try{
+            return await this.submitShopRepository.save({
+                id:shopId + 10000,
+            });  
+        }catch(err){
+            console.error("SubmitShop/createNewShop Error", err); // 에러 로그 추가
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async validateAndUpdateOperatingHours(shopId:number,operatingData:OperatingHours){
         try{
             // 이건 이미 올려져 있는 소품샵의 운영 정보시간이 확인 후 업데이트 될 예정이라 shopId에 이미 올려져 있는 소품샵 ID가 들어가있음 하지만 이걸 그대로 쓰면 submitShop의 id와 충돌이 날 수 있음
             // 따라서 기존 shopId 에 + 10,000을 해줌  -> util에 상수로 만들기 
             return await this.submitOperatingRepository.save({
-                submitShop: { id: shopId + 10000},
+                submitShop: { id: shopId },
                 ...operatingData,
             });
         }catch(err){

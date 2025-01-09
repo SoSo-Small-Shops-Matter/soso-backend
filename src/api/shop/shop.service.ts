@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
+import { UpdateShopProductsDto } from './dto/submit.dto';
+import { Product } from 'src/database/entity/product.entity';
 
 @Injectable()
 export class ShopService {
@@ -16,17 +18,21 @@ export class ShopService {
         }
     }
 
-    async updateShopProduct(productData,shopId){
+    async updateShopProduct(updateShopProductsDto:UpdateShopProductsDto){
+        const { shopId, products } = updateShopProductsDto;
         const shop =  await this.shopRepository.findShopByShopId(shopId);
         if(!shop){
             throw new NotFoundException('NOT_FOUND_SHOP');
         }
 
-        const productMappings = productData.map((product) => ({
-            id: product.id ,
-        }));
-        shop.products = productMappings;
+        const productMappings = products.map((mapping) => {
+            const product = new Product(); 
+            product.id = mapping.id;
+            return product;
+        });
         
+        shop.products = productMappings;
+
         return await this.shopRepository.saveShopProduct(shop);
     }
 }

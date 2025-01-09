@@ -24,11 +24,11 @@ export class Shop {
   location: string;
 
   @ManyToMany(() => Product, (product) => product.shops)
-  products: Promise<Product[]>;
+  products: Product[];
 
   @OneToMany(() => OperatingHours, (operatingHours) => operatingHours.shop)
-  operatingHours: Promise<OperatingHours[]>;
+  operatingHours: OperatingHours[];
 
   @OneToMany(() => Review, (review) => review.shop)
-  reviews: Promise<[Review]>;
+  reviews: [Review];
 }

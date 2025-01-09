@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { WishlistService } from './wishlist.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ShopIdDto, ShopIdParamDto } from './dto/wishlist.dto';
 
 @Controller('wishlist')
 @UseGuards(AuthGuard('jwt'))
@@ -19,19 +20,20 @@ export class WishlistController {
     @Post('/')
     async addWishlist(
         @Req() req: any,
-        @Body() body: any
+        @Body() shopIdDto:ShopIdDto
     ){
         const uuid = req.user.uuid;
-        const shopId = body.shopId;
-        return new SuccessResponseDTO(await this.wishlistService.addWishlistByShopIdAndUUID(shopId,uuid));
+        return new SuccessResponseDTO(await this.wishlistService.addWishlistByShopIdAndUUID(shopIdDto,uuid));
     }
 
     @Get('/:shopId')
     async checkShopInUserWishlist(
         @Req() req: any,
-        @Param('shopId') shopId: string,
+        // 파라미터로 들어오는 shopId는 String 타입인데, 이를 Number로 사용하기 위해 강제 형변환을 시킴
+        @Param(new ValidationPipe({ transform: true })) params: ShopIdParamDto,
     ){
         const { uuid } = req.user;
-        return new SuccessResponseDTO(await this.wishlistService.isShopInUserWishlist(Number(shopId),uuid));
+        const { shopId } = params;
+        return new SuccessResponseDTO(await this.wishlistService.isShopInUserWishlist(shopId,uuid));
     }
 }

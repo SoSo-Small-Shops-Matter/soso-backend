@@ -1,5 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { SubmitRepository } from './submit.repository';
+import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 
 @Injectable()
 export class SubmitService {
@@ -9,15 +10,17 @@ export class SubmitService {
         return await this.submitRepository.findAllShop();
     }
 
-    async createNewShop(newShop){
-        const { shop, operatingHours, products } = newShop;
+    async createNewShop(newShopData:SubmitNewShopDto){
+        const { shop, operatingHours, products } = newShopData;
         const createShop =  await this.submitRepository.createNewShop(shop);
-        if(createShop){
+        if(!createShop){
             throw new ConflictException();
         }
+
         if(operatingHours){
             await this.submitRepository.saveOperatingByShopId(operatingHours,createShop.id);
         }
+        
         if(products){
             const productMappings = products.map((product) => ({
                 submitShop: { id: createShop.id },
@@ -28,8 +31,13 @@ export class SubmitService {
         return;
     }
 
-    async validateAndUpdateOperatingHours(operatingData,shopId){
-        return await this.submitRepository.validateAndUpdateOperatingHours(operatingData,shopId);
+    async validateAndUpdateOperatingHours(operatingData:SubmitShopOperatingHoursDto){
+        const { shopId, operatingHours } = operatingData;
+        const createShop =  await this.submitRepository.createNewShopForUpdateOperatingHours(shopId);
+        if(!createShop){
+            throw new ConflictException();
+        }
+        return await this.submitRepository.validateAndUpdateOperatingHours(createShop.id,operatingHours);
     }
 
     async findValidateOperatingHours(){

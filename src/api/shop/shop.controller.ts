@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
+import { ShopIdParamDto, UpdateShopProductsDto } from './dto/submit.dto';
 
 @Controller('shop')
 export class ShopController {
@@ -13,17 +14,17 @@ export class ShopController {
 
     @Patch('/')
     async updateShopProduct(
-        @Body() body:any,
+        @Body() updateShopProductsDto:UpdateShopProductsDto,
     ){
-        const { productData, shopId } = body;
-        return new SuccessResponseDTO(await this.shopService.updateShopProduct(productData,shopId));
+        return new SuccessResponseDTO(await this.shopService.updateShopProduct(updateShopProductsDto));
     }
 
     @Get('/:shopId')
     async getShopByShopId(
-        @Param('shopId') shopId: string,
+        // 파라미터로 들어오는 shopId는 String 타입인데, 이를 Number로 사용하기 위해 강제 형변환을 시킴
+        @Param(new ValidationPipe({ transform: true })) params: ShopIdParamDto,
     ){
-        const shopIdAsNumber = Number(shopId); // 숫자로 변환
-        return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopIdAsNumber));
+        const { shopId } = params;
+        return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId));
     }
 }

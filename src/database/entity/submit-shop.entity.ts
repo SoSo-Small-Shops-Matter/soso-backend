@@ -23,8 +23,8 @@ export class SubmitShop {
   location: string;
 
   @ManyToMany(() => SubmitProduct, (submitProduct) => submitProduct.submitShops)
-  submitProducts: Promise<SubmitProduct[]>;
+  submitProducts: SubmitProduct[];
 
   @OneToMany(() => SubmitOperatingHours, (submitOperatingHours) => submitOperatingHours.submitShop)
-  submitOperatingHours: Promise<SubmitOperatingHours[]>;
+  submitOperatingHours: SubmitOperatingHours[];
 }
