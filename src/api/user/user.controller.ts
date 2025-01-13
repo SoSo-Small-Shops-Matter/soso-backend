@@ -5,19 +5,21 @@ import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
+@UseGuards(AuthGuard('jwt'))
 export class UserController {
     constructor(private userService:UserService){}
 
     @Post('/nickname')
     async checkNickName(
-        @Body() nickNameDto:NickNameDto 
+        @Body() nickNameDto:NickNameDto,
+        @Req() req,
     ){
         const { nickName } = nickNameDto;
-        return new SuccessResponseDTO(await this.userService.findUserNickname(nickName));
+        const { uuid } = req.user;
+        return new SuccessResponseDTO(await this.userService.findUserNickname(nickName,uuid));
     }
 
     @Put('/nickname')
-    @UseGuards(AuthGuard('jwt'))
     async updateNickName(
         @Body() nickNameDto:NickNameDto,
         @Req() req,

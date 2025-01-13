@@ -8,18 +8,23 @@ export class UserService {
         private userRepository:UserRepository
     ) {}
     
-    async findUserNickname(nickName: string){
+    async findUserNickname(nickName: string, uuid: string){
         const existNickName = await this.userRepository.findUserByNickName(nickName);
         if (existNickName) {
             throw new ConflictException('Nickname already exists.');
         }
-        return !!existNickName;
+        await this.userRepository.updateNickName(uuid,nickName);
     }
 
     async setNickName(nickName: string, uuid: string){
+        const existNickName = await this.userRepository.findUserByNickName(nickName);
+        if (existNickName) {
+            throw new ConflictException('Nickname already exists.');
+        }
+        
         const newNickName = await this.userRepository.updateNickName(uuid,nickName);
         if(newNickName.affected == 0){
-            throw new NotFoundException('Update NickName Error');
+            throw new InternalServerErrorException();
         }
     }
 }
