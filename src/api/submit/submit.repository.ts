@@ -54,10 +54,14 @@ export class SubmitRepository{
         }
     }
 
-    async createNewShopForUpdateOperatingHours(shopId:number){
+    async createNewShopForUpdateOperatingHours(name,lat,lng,location){
         try{
             return await this.submitShopRepository.save({
-                id:shopId + 10000,
+                name,
+                lat,
+                lng,
+                location,
+                existShop: true,
             });  
         }catch(err){
             console.error("SubmitShop/createNewShop Error", err); // 에러 로그 추가

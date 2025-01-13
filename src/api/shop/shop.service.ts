@@ -16,6 +16,7 @@ export class ShopService {
         if(!shop){
             throw new NotFoundException('NOT_FOUND_SHOP');
         }
+        return shop;
     }
 
     async updateShopProduct(updateShopProductsDto:UpdateShopProductsDto){

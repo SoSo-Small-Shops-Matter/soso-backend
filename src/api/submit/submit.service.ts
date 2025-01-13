@@ -1,10 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { SubmitRepository } from './submit.repository';
 import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
+import { ShopRepository } from '../shop/shop.repository';
 
 @Injectable()
 export class SubmitService {
-    constructor(private submitRepository:SubmitRepository){}
+    constructor(
+        private submitRepository:SubmitRepository,
+        private shopRepository:ShopRepository,
+    ){}
     
     async findAllShop(){
         return await this.submitRepository.findAllShop();
@@ -33,9 +37,14 @@ export class SubmitService {
 
     async validateAndUpdateOperatingHours(operatingData:SubmitShopOperatingHoursDto){
         const { shopId, operatingHours } = operatingData;
-        const createShop =  await this.submitRepository.createNewShopForUpdateOperatingHours(shopId);
+        const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+        if(!shop){
+            throw new ConflictException('없는 소풉샵입니다.');
+        }
+        
+        const createShop =  await this.submitRepository.createNewShopForUpdateOperatingHours(shop.name,shop.lat,shop.lng,shop.location);
         if(!createShop){
-            throw new ConflictException();
+            throw new ConflictException('소풉샵을 제포하는 도중 오류가 발생했습니다.');
         }
         return await this.submitRepository.validateAndUpdateOperatingHours(createShop.id,operatingHours);
     }

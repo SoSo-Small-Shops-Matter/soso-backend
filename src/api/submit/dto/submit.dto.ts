@@ -6,18 +6,16 @@ export class SubmitShopOperatingHoursDto {
     shopId:number;
 
     @IsNotEmpty()
-    operatingHours:OperatingHours
+    operatingHours:OperatingHours;
 }
 
 export class SubmitNewShopDto {
     @IsNotEmpty()
     shop:SubmitShop;
 
-    @IsNotEmpty()
-    operatingHours:OperatingHours;
+    operatingHours?:OperatingHours;
 
-    @IsNotEmpty()
-    products: Products[];
+    products?: Products[];
 }
 
 export interface OperatingHours {

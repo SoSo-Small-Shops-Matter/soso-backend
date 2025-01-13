@@ -8,9 +8,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubmitRepository } from './submit.repository';
 import { SubmitProductMapping } from 'src/database/entity/submit-product_mapping.entity';
 import { AuthModule } from '../auth/auth.module';
+import { ShopModule } from '../shop/shop.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([SubmitShop,SubmitOperatingHours,SubmitProduct,SubmitProductMapping]),AuthModule],
+  imports:[TypeOrmModule.forFeature([SubmitShop,SubmitOperatingHours,SubmitProduct,SubmitProductMapping]),AuthModule,ShopModule],
   controllers: [SubmitController],
   providers: [SubmitService,SubmitRepository],
 })

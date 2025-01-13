@@ -7,11 +7,11 @@ export class SubmitShop {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'boolean' ,default: false })
+  existShop: boolean;
+
   @Column({ type: 'varchar', length: 255 , nullable: true })
   name: string;
-
-  @Column({ type: 'int', default: false })
-  reportStatus: number;
 
   @Column({ type: 'float', nullable: true  })
   lat: number;

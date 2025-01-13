@@ -19,6 +19,17 @@ export class ShopRepository {
         }
     }
     
+    async findOnlyShopByShopId(shopId:number){
+        try{
+            return await this.shopRepository.findOne({
+                where:{id:shopId},
+            });
+        }catch(err){
+            console.error("Shop/findOnlyShopByShopId Error", err); // 에러 로그 추가
+            throw new InternalServerErrorException();
+        }
+    }
+    
     async findShopByShopId(shopId:number){
         try{
             return await this.shopRepository.findOne({
