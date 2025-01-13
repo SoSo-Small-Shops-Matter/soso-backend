@@ -1,10 +1,25 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthModule } from './api/auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeORMConfig } from './database/configs/typeorm.config';
+import { UserModule } from './api/user/user.module';
+import { ShopModule } from './api/shop/shop.module';
+import { SubmitModule } from './api/submit/submit.module';
+import { WishlistModule } from './api/wishlist/wishlist.module';
+import { ReviewModule } from './api/review/review.module';
+import { AwsModule } from './api/aws/aws.module';
+
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRoot(typeORMConfig),
+    AuthModule,
+    UserModule,
+    ShopModule,
+    SubmitModule,
+    WishlistModule,
+    ReviewModule,
+    AwsModule,
+  ],
 })
 export class AppModule {}
