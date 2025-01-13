@@ -7,6 +7,7 @@ import { ShopModule } from './api/shop/shop.module';
 import { SubmitModule } from './api/submit/submit.module';
 import { WishlistModule } from './api/wishlist/wishlist.module';
 import { ReviewModule } from './api/review/review.module';
+import { AwsModule } from './api/aws/aws.module';
 
 
 @Module({
@@ -18,6 +19,7 @@ import { ReviewModule } from './api/review/review.module';
     SubmitModule,
     WishlistModule,
     ReviewModule,
+    AwsModule,
   ],
 })
 export class AppModule {}
