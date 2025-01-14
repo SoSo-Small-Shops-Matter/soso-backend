@@ -2,6 +2,7 @@ import { authSwaggerDocs } from './auth.swagger';
 import { shopSwaggerDocs } from './shop.swagger';
 import { userSwaggerDocs } from './user.swagger';
 import { submitSwaggerDocs } from './submit.swagger';
+import { wishlistSwaggerDocs } from './wishlist.swagger';
 
 export const swaggerDocs = {
   paths: {
@@ -70,6 +71,27 @@ export const swaggerDocs = {
         tags: ['Submit'],
         security: [{ 'JWT-auth': [] }],
       },
+    },
+    
+    // 찜하기 
+    '/wishlist': {
+      get: {
+        ...wishlistSwaggerDocs.getUserWishlist,
+        tags: ['Wishlist'],
+        security: [{ 'JWT-auth': [] }],
+      },
+      post: {
+        ...wishlistSwaggerDocs.saveUserWishlist,
+        tags: ['Wishlist'],
+        security: [{ 'JWT-auth': [] }],
+      }
+    },
+    '/wishlist/{shopId}': {
+      get: {
+        ...wishlistSwaggerDocs.checkUserWishlistByShopId,
+        tags: ['Wishlist'],
+        security: [{ 'JWT-auth': [] }],
+      },
     }
   },
   tags: [
@@ -84,6 +106,10 @@ export const swaggerDocs = {
     },
     {
       name: 'Submit',
-    }
+    },
+    {
+      name: 'Wishlist',
+    },
+    
   ],
 };

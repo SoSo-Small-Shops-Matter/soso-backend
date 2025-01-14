@@ -23,7 +23,8 @@ export class WishlistController {
         @Body() shopIdDto:ShopIdDto
     ){
         const uuid = req.user.uuid;
-        return new SuccessResponseDTO(await this.wishlistService.addWishlistByShopIdAndUUID(shopIdDto,uuid));
+        await this.wishlistService.addWishlistByShopIdAndUUID(shopIdDto,uuid)
+        return new SuccessResponseDTO();
     }
 
     @Get('/:shopId')
