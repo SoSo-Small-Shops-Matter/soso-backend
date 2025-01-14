@@ -6,7 +6,7 @@ export class SuccessResponseDTO {
     constructor(result: any = null) {
         this.message = "Success"; // 기본 메시지 "Success"를 제공
         this.statusCode = 200;
-        this.result = result
+        if(result) this.result = result;
     } 
 }
 

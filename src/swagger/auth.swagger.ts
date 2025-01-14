@@ -9,7 +9,7 @@ export const authSwaggerDocs = {
           'application/json': {
             example: {
               message: 'Success',
-              statusCode: 201,
+              statusCode: 200,
               result: "token",
             },
           },
