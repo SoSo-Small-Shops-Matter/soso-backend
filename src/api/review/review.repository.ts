@@ -45,7 +45,7 @@ export class ReviewRepository {
                 where:{
                     user: {uuid} 
                 },
-                relations:['shop']
+                relations:['shop','images']
             });
         }catch(err){
             console.error(err);

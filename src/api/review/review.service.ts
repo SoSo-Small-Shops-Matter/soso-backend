@@ -39,7 +39,6 @@ export class ReviewService {
         }
 
         await this.reviewRepository.saveReview(review);
-        return review;
     }
     
 

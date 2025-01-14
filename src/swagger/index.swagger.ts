@@ -3,6 +3,7 @@ import { shopSwaggerDocs } from './shop.swagger';
 import { userSwaggerDocs } from './user.swagger';
 import { submitSwaggerDocs } from './submit.swagger';
 import { wishlistSwaggerDocs } from './wishlist.swagger';
+import { reviewSwaggerDocs } from './review.swagger';
 
 export const swaggerDocs = {
   paths: {
@@ -92,6 +93,19 @@ export const swaggerDocs = {
         tags: ['Wishlist'],
         security: [{ 'JWT-auth': [] }],
       },
+    },
+
+    // 리뷰
+    '/review': {
+      get: {
+        ...reviewSwaggerDocs.getUserReview,
+        tags: ['Review'],
+      },
+      post: {
+        ...reviewSwaggerDocs.createReview,
+        tags: ['Review'],
+        security: [{ 'JWT-auth': [] }],
+      },
     }
   },
   tags: [
@@ -110,6 +124,8 @@ export const swaggerDocs = {
     {
       name: 'Wishlist',
     },
-    
+    {
+      name: 'Review',
+    },
   ],
 };

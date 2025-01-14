@@ -244,7 +244,34 @@ export const shopSwaggerDocs = {
                     name: "Free Range Eggs"
                   }
                 ],
-                // Review 추가
+                reviews: [
+                  {
+                      id: 1,
+                      content: "good",
+                      createdAt: "2025-01-14T11:06:15.098Z",
+                      images: [
+                          {
+                              id: 1,
+                              url: "url"
+                          }
+                      ]
+                  },
+                  {
+                      id: 4,
+                      content: "Great shop with amazing coffee!",
+                      createdAt: "2025-01-14T11:29:53.636Z",
+                      images: [
+                          {
+                              id: 4,
+                              url: "url"
+                          },
+                          {
+                              id: 5,
+                              url: "url"
+                          }
+                      ]
+                  }
+                ],              
               },
             },
           },
