@@ -10,22 +10,40 @@ export class ReviewService {
         private awsService:AwsService,
     ){}
 
-    async createReview(uuid,postReviewDto:PostReviewDto,images){
+    async createReview(
+        uuid: string,
+        postReviewDto: PostReviewDto,
+        files?: Express.Multer.File[] | Express.Multer.File
+    ) {
         const { shopId, content } = postReviewDto;
-        return await this.reviewRepository.createReview(uuid,shopId,content);
+    
+        // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
+        const imageUrls = files ? await this.awsService.uploadImagesToS3(files, 'jpg') : [];
+    
+        // Review 생성
+        const review = await this.reviewRepository.createReview(uuid,Number(shopId),content);
+        
+        // 이미지가 존재할 경우에만 처리
+        if (imageUrls.length > 0) {
+            // Image 엔티티 생성 및 저장
+            const images = await Promise.all(
+                imageUrls.map(async (url) => {
+                    const image = await this.reviewRepository.createImage(url);
+                    await this.reviewRepository.saveImage(image);
+                    return image;
+                })
+            );
+    
+            // Review와 Image 연결
+            review.images = images;
+        }
+
+        await this.reviewRepository.saveReview(review);
+        return review;
     }
+    
 
     async findUserReviewByUUID(uuid:string){
         return await this.reviewRepository.findUserReviewByUUID(uuid);
-    }
-    
-    async imageUpload(file: Express.Multer.File[] | Express.Multer.File) {
-
-        const imageUrl = await this.awsService.uploadImagesToS3(
-            file,
-            'reviews',
-        );
-      
-        return { imageUrl };
     }
 }
