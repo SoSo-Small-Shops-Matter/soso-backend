@@ -1,6 +1,6 @@
 export const userSwaggerDocs = {
   saveUserNickName: {
-    summary: '사용자 닉네임 저장',
+    summary: '사용자 닉네임 저장 API',
     description: '회원가입 후 사용자의 닉네임을 저장합니다.',
     requestBody: {
       description: '사용자 닉네임',
@@ -76,8 +76,19 @@ export const userSwaggerDocs = {
     },
   },
   updateUserNickName: {
-    summary: '사용자 닉네임 업데이트',
+    summary: '사용자 닉네임 업데이트 API',
     description: '사용자 닉네임 업데이트',
+    requestBody: {
+      description: '사용자 닉네임',
+      required: true,
+      content: {
+        'application/json': {
+          example: {
+            nickName: "nickname",
+          },
+        },
+      },
+    },
     responses: {
       200: {
         description: '닉네임 업데이트 성공',
@@ -119,8 +130,8 @@ export const userSwaggerDocs = {
         content: {
           'application/json': {
             example: {
-              message: 'Not Found',
-              error: 'Not Found',
+              message: 'Conflict',
+              error: 'Conflict',
               statusCode: 404,
             },
           },

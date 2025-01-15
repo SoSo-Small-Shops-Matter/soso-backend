@@ -118,7 +118,7 @@ export const shopSwaggerDocs = {
     },
   },
   updateShopProducts: {
-    summary: '소품샵 판매목록 업데이트',
+    summary: '소품샵 판매목록 업데이트 API',
     description: '소품샵의 판매목록을 사용자가 제안하는 목록으로 업데이트',
     requestBody: {
       description: '기존 소품샵 ID와 사용자가 제안하는 목록 데이터',
@@ -244,7 +244,34 @@ export const shopSwaggerDocs = {
                     name: "Free Range Eggs"
                   }
                 ],
-                // Review 추가
+                reviews: [
+                  {
+                      id: 1,
+                      content: "good",
+                      createdAt: "2025-01-14T11:06:15.098Z",
+                      images: [
+                          {
+                              id: 1,
+                              url: "url"
+                          }
+                      ]
+                  },
+                  {
+                      id: 4,
+                      content: "Great shop with amazing coffee!",
+                      createdAt: "2025-01-14T11:29:53.636Z",
+                      images: [
+                          {
+                              id: 4,
+                              url: "url"
+                          },
+                          {
+                              id: 5,
+                              url: "url"
+                          }
+                      ]
+                  }
+                ],              
               },
             },
           },

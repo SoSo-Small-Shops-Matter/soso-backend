@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { WishlistRepository } from './wishlist.repository';
 import { ShopIdDto } from './dto/wishlist.dto';
 
@@ -8,6 +8,10 @@ export class WishlistService {
 
     async getWishlistByUUID(uuid:string){
         const userWishlists = await this.wishlistRepository.findWishlistByUUID(uuid);
+        if(!userWishlists){
+            throw new NotFoundException();
+        }
+
         const result = userWishlists.map((data)=>{
             return data.shop;
         });

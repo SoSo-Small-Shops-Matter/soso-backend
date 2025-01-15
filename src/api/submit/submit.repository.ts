@@ -20,7 +20,12 @@ export class SubmitRepository{
 
     async findAllShop() {
         try{
-            return await this.submitShopRepository.find({relations:['submitOperatingHours','submitProducts']});
+            return await this.submitShopRepository.find({
+                where: {
+                    existShop:false,
+                },
+                relations:['submitOperatingHours','submitProducts']
+            });
         }catch(err){
             console.error("Shop/findAllShop Error", err); // 에러 로그 추가
             throw new InternalServerErrorException();
@@ -71,8 +76,6 @@ export class SubmitRepository{
 
     async validateAndUpdateOperatingHours(shopId:number,operatingData:OperatingHours){
         try{
-            // 이건 이미 올려져 있는 소품샵의 운영 정보시간이 확인 후 업데이트 될 예정이라 shopId에 이미 올려져 있는 소품샵 ID가 들어가있음 하지만 이걸 그대로 쓰면 submitShop의 id와 충돌이 날 수 있음
-            // 따라서 기존 shopId 에 + 10,000을 해줌  -> util에 상수로 만들기 
             return await this.submitOperatingRepository.save({
                 submitShop: { id: shopId },
                 ...operatingData,
@@ -87,7 +90,7 @@ export class SubmitRepository{
         try{
             return await this.submitShopRepository.find({
                 where: {
-                    id: MoreThan(10000),
+                    existShop:true,
                 },
                 relations: ['submitOperatingHours'],
             });

@@ -4,9 +4,12 @@ import {
     ManyToOne,
     CreateDateColumn,
     Column,
+    ManyToMany,
+    JoinTable
 } from 'typeorm';
 import { User } from './user.entity';
 import { Shop } from './shop.entity';
+import { Image } from './image.entity';
 
 @Entity('review')
 export class Review {
@@ -17,11 +20,17 @@ export class Review {
     content: string;
 
     @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
-    user: User; // 위시리스트를 소유한 사용자
+    user: User; 
 
     @ManyToOne(() => Shop, (shop) => shop.reviews, { onDelete: 'CASCADE' })
     shop: Shop; 
 
+    @ManyToMany(() => Image, (image) => image.reviews, { onDelete: 'CASCADE' })
+    @JoinTable({
+        name: 'image_mapping'
+    })
+    images: Image[];
+
     @CreateDateColumn()
-    createdAt: Date; // 위시리스트 추가 시간
+    createdAt: Date; 
 }
