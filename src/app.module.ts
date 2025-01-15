@@ -8,6 +8,7 @@ import { SubmitModule } from './api/submit/submit.module';
 import { WishlistModule } from './api/wishlist/wishlist.module';
 import { ReviewModule } from './api/review/review.module';
 import { AwsModule } from './api/aws/aws.module';
+import { AppController } from './app.controller';
 
 
 @Module({
@@ -21,5 +22,6 @@ import { AwsModule } from './api/aws/aws.module';
     ReviewModule,
     AwsModule,
   ],
+  controllers:[AppController],
 })
 export class AppModule {}
