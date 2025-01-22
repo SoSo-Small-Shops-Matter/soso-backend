@@ -1,7 +1,29 @@
 export const shopSwaggerDocs = {
   getAllShop: {
-    summary: '소품샵 전체 데이터 불러오기 API',
-    description: '소품샵의 전체 데이터',
+    summary: '1KM 내 소품샵 데이터 불러오기 API',
+    description: '사용자 위치 기준 1KM 내 소품샵의 데이터',
+    parameters: [
+      {
+        name: 'lat',
+        in: 'query',
+        required: true,
+        description: '사용자의 위도 (latitude)',
+        schema: {
+          type: 'number',
+          example: 37.5665,
+        },
+      },
+      {
+        name: 'lng',
+        in: 'query',
+        required: true,
+        description: '사용자의 경도 (longitude)',
+        schema: {
+          type: 'number',
+          example: 126.978,
+        },
+      },
+    ],
     responses: {
       200: {
         content: {
@@ -11,69 +33,21 @@ export const shopSwaggerDocs = {
               statusCode: 200,
               result: [
                 {
-                  id: 1,
-                  name: "Green Valley Market",
-                  reportStatus: 0,
-                  lat: 37.7749,
-                  lng: -122.419,
-                  location: "123 Main St, San Francisco, CA",
-                  operatingHours: [
-                    {
-                      id: 1,
-                      phoneNumber: "123-456-7890",
-                      mondayHours: "08:00-20:00",
-                      tuesdayHours: "08:00-20:00",
-                      wednesdayHours: "08:00-20:00",
-                      thursdayHours: "08:00-20:00",
-                      fridayHours: "08:00-20:00",
-                      saturdayHours: "09:00-18:00",
-                      sundayHours: "Closed"
-                    }
-                  ],
-                  products: [
-                    {
-                      id: 1,
-                      name: "Organic Apple"
-                    },
-                    {
-                      id: 2,
-                      name: "Whole Wheat Bread"
-                    }
-                  ],
-                  // Review 추가
+                    "id": 2,
+                    "name": "더넛",
+                    "reportStatus": 0,
+                    "lat": 37.5666,
+                    "lng": 126.978,
+                    "location": "서울 성동구 상원6나길 6 B동 302호"
                 },
                 {
-                  id: 2,
-                  name: "Blue Ocean Mart",
-                  reportStatus: 0,
-                  lat: 34.0522,
-                  lng: -118.244,
-                  location: "456 Elm St, Los Angeles, CA",
-                  operatingHours: [
-                    {
-                      id: 2,
-                      phoneNumber: "234-567-8901",
-                      mondayHours: "09:00-21:00",
-                      tuesdayHours: "09:00-21:00",
-                      wednesdayHours: "09:00-21:00",
-                      thursdayHours: "09:00-21:00",
-                      fridayHours: "09:00-21:00",
-                      saturdayHours: "10:00-19:00",
-                      sundayHours: "Closed"
-                    }
-                  ],
-                  products: [
-                    {
-                      id: 3,
-                      name: "Almond Milk"
-                    },
-                    {
-                      id: 4,
-                      name: "Free Range Eggs"
-                    }
-                  ],
-                  // Review 추가
-                }
+                    "id": 3,
+                    "name": "봄을상자 숲길점",
+                    "reportStatus": 0,
+                    "lat": 37.5664,
+                    "lng": 126.978,
+                    "location": "서울 마포구 성미산로23길 30 지1층"
+                },
               ]
             }            
           },

@@ -7,8 +7,11 @@ import { Product } from 'src/database/entity/product.entity';
 export class ShopService {
     constructor(private shopRepository:ShopRepository){}
 
-    async findAllShop(){
-        return await this.shopRepository.findAllShop();
+    async findShopsWithin1Km(lat: number, lng: number){
+        const radius = 6371; // 지구 반경 (km)
+        const distanceLimit = 1; // 거리 제한 (1km)
+
+        return await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius);
     }
 
     async findShopByShopId(shopId: number){
@@ -17,6 +20,13 @@ export class ShopService {
             throw new NotFoundException('NOT_FOUND_SHOP');
         }
         return shop;
+    }
+
+    async findShopsWithin1KmAndSortByReviewCount(lat: number, lng: number) {
+        const radius = 6371; // 지구 반경 (km)
+        const distanceLimit = 1; // 거리 제한 (1km)
+
+        return await this.shopRepository.findShopsWithin1KmAndSortByReviewCount(lat, lng, distanceLimit, radius);
     }
 
     async updateShopProduct(updateShopProductsDto:UpdateShopProductsDto){
