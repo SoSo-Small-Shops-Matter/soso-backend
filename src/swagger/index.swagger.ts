@@ -9,7 +9,7 @@ export const swaggerDocs = {
   paths: {
     // 인증 
     '/auth/google': {
-      get: {
+      post: {
         ...authSwaggerDocs.google,
         tags: ['Auth'],
       },
