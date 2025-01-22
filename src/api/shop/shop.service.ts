@@ -25,8 +25,8 @@ export class ShopService {
     async findShopsWithin1KmAndSortByReviewCount(lat: number, lng: number) {
         const radius = 6371; // 지구 반경 (km)
         const distanceLimit = 1; // 거리 제한 (1km)
-
-        return await this.shopRepository.findShopsWithin1KmAndSortByReviewCount(lat, lng, distanceLimit, radius);
+        const { raw } = await this.shopRepository.findShopsWithin1KmAndSortByReviewCount(lat, lng, distanceLimit, radius);
+        return raw;
     }
 
     async updateShopProduct(updateShopProductsDto:UpdateShopProductsDto){

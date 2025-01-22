@@ -41,13 +41,19 @@ export const swaggerDocs = {
     // 소풉샵 
     '/shop': {
       get: {
-        ...shopSwaggerDocs.getAllShop,
+        ...shopSwaggerDocs.getShopWithin1Km,
         tags: ['Shop'],
       },
       put: {
         ...shopSwaggerDocs.updateShopProducts,
         tags: ['Shop'],
         security: [{ 'JWT-auth': [] }],
+      },
+    },
+    '/shop/search': {
+      get: {
+        ...shopSwaggerDocs.getSearchPageShop,
+        tags: ['Shop'],
       },
     },
     '/shop/{shopId}': {

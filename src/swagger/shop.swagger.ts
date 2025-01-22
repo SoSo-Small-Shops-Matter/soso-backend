@@ -1,5 +1,5 @@
 export const shopSwaggerDocs = {
-  getAllShop: {
+  getShopWithin1Km: {
     summary: '1KM 내 소품샵 데이터 불러오기 API',
     description: '사용자 위치 기준 1KM 내 소품샵의 데이터',
     parameters: [
@@ -283,6 +283,102 @@ export const shopSwaggerDocs = {
               message: "NOT_FOUND_SHOP",
               error: "Not Found",
               statusCode: 404
+            },
+          },
+        },
+      },
+      500: {
+        description: '내부 서버 오류',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Internal Server Error',
+              error: 'Internal Server Error',
+              statusCode: 500,
+            },
+          },
+        },
+      },
+    },
+  },
+  getSearchPageShop: {
+    summary: '1KM 내 소품샵 데이터 리뷰 순서로 불러오기 API',
+    description: '사용자 위치 기준 1KM 내 소품샵의 데이터 리뷰 순서로 불러오기 - 검색 페이지에서 사용',
+    parameters: [
+      {
+        name: 'lat',
+        in: 'query',
+        required: true,
+        description: '사용자의 위도 (latitude)',
+        schema: {
+          type: 'number',
+          example: 37.5665,
+        },
+      },
+      {
+        name: 'lng',
+        in: 'query',
+        required: true,
+        description: '사용자의 경도 (longitude)',
+        schema: {
+          type: 'number',
+          example: 126.978,
+        },
+      },
+    ],
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            example: {
+              message: "Success",
+              statusCode: 200,
+              result: [
+                {
+                  "shop_id": 3,
+                  "shop_name": "봄을상자 숲길점",
+                  "shop_reportStatus": 0,
+                  "shop_lat": 37.5664,
+                  "shop_lng": 126.978,
+                  "shop_location": "서울 마포구 성미산로23길 30 지1층",
+                  "distance": 0.014438282474090677,
+                  "reviewCount": "5"
+                },
+                {
+                  "shop_id": 2,
+                  "shop_name": "더넛",
+                  "shop_reportStatus": 0,
+                  "shop_lat": 37.5666,
+                  "shop_lng": 126.978,
+                  "shop_location": "서울 성동구 상원6나길 6 B동 302호",
+                  "distance": 0.014459178829561084,
+                  "reviewCount": "3"
+                },
+              ]
+            }            
+          },
+        },
+      },
+      400: {
+        description: '유효하지 않은 요청 데이터',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Bad Request',
+              error: 'Bad Request',
+              statusCode: 400,
+            },
+          },
+        },
+      },
+      401: {
+        description: '인증 실패',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Unauthorized',
+              error: 'Unauthorized',
+              statusCode: 401,
             },
           },
         },
