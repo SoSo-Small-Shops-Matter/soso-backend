@@ -25,7 +25,7 @@ export class ShopRepository {
         try{
             return await this.shopRepository.findOne({
                 where:{id:shopId},
-                relations:['operatingHours','products','reviews','reviews.images'],
+                relations:['operatingHours','products','reviews','reviews.images','reviews.user'],
             });
         }catch(err){
             console.error("Shop/findShopByShopId Error", err); // 에러 로그 추가

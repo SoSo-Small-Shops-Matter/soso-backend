@@ -9,3 +9,15 @@ export class PostReviewDto {
     @IsNotEmpty()
     content:string;
 }
+
+export class UpdateReviewDto {
+    @IsNotEmpty()
+    reviewId:number;
+
+    content?:string;
+}
+
+export class DeleteReviewDto {
+    @IsNotEmpty()
+    reviewId:number;
+}

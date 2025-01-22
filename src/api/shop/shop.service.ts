@@ -19,6 +19,7 @@ export class ShopService {
         if(!shop){
             throw new NotFoundException('NOT_FOUND_SHOP');
         }
+        // shop.reviews createdAt순으로 sorting 필요 및 필요하면 userReview와 otherReivew 구분 
         return shop;
     }
 

@@ -52,6 +52,14 @@ export class ReviewRepository {
             throw new InternalServerErrorException()
         }
     }
+    async deleteImage(imageId) {
+        try{
+            return await this.imageRepository.delete({ id: imageId });
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException()
+        }
+    }
 
     async createImage(url) {
         try{    
@@ -67,6 +75,30 @@ export class ReviewRepository {
     async saveImage(image){
         try{    
             return await this.imageRepository.save(image);
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async findReviewByReviewId(uuid,reviewId){
+        try{
+            return await this.reviewRepository.findOne({
+                where:{
+                    id:reviewId,
+                    user: {uuid},
+                },
+                relations: ['images']
+            });
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async removeReview(review:Review){
+        try{
+            return await this.reviewRepository.remove(review);
         }catch(err){
             console.error(err);
             throw new InternalServerErrorException()

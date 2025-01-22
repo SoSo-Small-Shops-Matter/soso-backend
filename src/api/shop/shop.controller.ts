@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Put, Query, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { ShopIdParamDto, UpdateShopProductsDto } from './dto/submit.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('shop')
 export class ShopController {
@@ -16,6 +17,7 @@ export class ShopController {
     }
 
     @Put('/')
+    @UseGuards(AuthGuard('jwt'))
     async updateShopProduct(
         @Body() updateShopProductsDto:UpdateShopProductsDto,
     ){
