@@ -11,7 +11,7 @@ export class ReviewController {
     constructor(private reviewService:ReviewService){}
 
     @Post('/')
-    @UseInterceptors(FilesInterceptor('files', 10)) // 최대 10개의 파일 허용
+    @UseInterceptors(FilesInterceptor('files', 3)) // 최대 3개의 파일 허용
     async postReview(
         @Body() postReviewDto:PostReviewDto,
         @Req() req:any,

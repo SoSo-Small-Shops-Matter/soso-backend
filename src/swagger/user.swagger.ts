@@ -1,4 +1,70 @@
 export const userSwaggerDocs = {
+  getUserNickName: {
+    summary: '닉네임 중복 체크 API',
+    description: '사용자의 닉네임 중복 여부를 체크합니다. true면 중복된 닉네임, false면 중복되지 않은 닉네임',
+    parameters: [
+      {
+        name: 'nickName',
+        in: 'path',
+        description: '닉네임',
+        required: true,
+        schema: {
+          type: 'string',
+          example: 'nickName'
+        },
+      },
+    ],
+    responses: {
+      200: {
+        description: '성공',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Success',
+              statusCode: 200,
+              result: true,
+            },
+          },
+        },
+      },
+      400: {
+        description: '유효하지 않은 요청 데이터',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Bad Request',
+              error: 'Bad Request',
+              statusCode: 400,
+            },
+          },
+        },
+      },
+      401: {
+        description: '인증 실패',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Unauthorized',
+              error: 'Unauthorized',
+              statusCode: 401,
+            },
+          },
+        },
+      },
+      500: {
+        description: '내부 서버 오류',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Failed to save user case',
+              error: 'Internal Server Error',
+              statusCode: 500,
+            },
+          },
+        },
+      },
+    },
+  },
   saveUserNickName: {
     summary: '사용자 닉네임 저장 API',
     description: '회원가입 후 사용자의 닉네임을 저장합니다.',
@@ -75,23 +141,36 @@ export const userSwaggerDocs = {
       },
     },
   },
-  updateUserNickName: {
-    summary: '사용자 닉네임 업데이트 API',
-    description: '사용자 닉네임 업데이트',
+  updateUserProfile: {
+    summary: '사용자 프로필 업데이트 API',
+    description: '사용자 프로필 업데이트',
     requestBody: {
-      description: '사용자 닉네임',
+      description: '사용자 프로필 및 닉네임',
       required: true,
       content: {
-        'application/json': {
-          example: {
-            nickName: "nickname",
-          },
-        },
-      },
+          'multipart/form-data': { 
+              schema: {
+                  type: 'object',
+                  properties: {
+                      nickName: {
+                          type: 'string',
+                          example: 'nickName'
+                      },
+                      file: { 
+                          type: 'file', 
+                          items: {
+                              type: 'string',
+                              format: 'binary'
+                          }
+                      }
+                  }
+              }
+          }
+      }
     },
     responses: {
       200: {
-        description: '닉네임 업데이트 성공',
+        description: '사용자 프로필 업데이트 성공',
         content: {
           'application/json': {
             example: {

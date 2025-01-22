@@ -8,6 +8,9 @@ export class User extends BaseEntity {
     @PrimaryColumn()
     uuid: string;
     
+    @Column({ default: ""})
+    photoUrl: string;
+    
     @Column({
         unique:true,
         nullable:true,

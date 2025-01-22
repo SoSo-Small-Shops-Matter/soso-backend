@@ -27,19 +27,29 @@ export class UserRepository {
             throw new InternalServerErrorException();
         }
     }
-    async createUser(uuid:string){
+    async createUser(uuid: string, photoUrl: string, nickName: string){
         try {
             return await this.userReposiotry.save({
                 uuid,
+                photoUrl,
+                nickName,
             }); 
         } catch (err) {
-            console.error("Error saving user:", err); // 에러 로그 추가
+            console.error("Error create user:", err); // 에러 로그 추가
             throw new InternalServerErrorException('User signup failed');
         }
     }
     async updateNickName(uuid:string, nickName:string){
         try{
             return await this.userReposiotry.update({uuid},{nickName});
+        }catch(err){
+            console.error("Error updateNickName :", err); // 에러 로그 추가
+            throw new InternalServerErrorException();
+        }
+    }
+    async updateUserPhotoUrl(uuid: string, photoUrl:string){
+        try{
+            return await this.userReposiotry.update({uuid},{photoUrl});
         }catch(err){
             console.error("Error setNickName :", err); // 에러 로그 추가
             throw new InternalServerErrorException();

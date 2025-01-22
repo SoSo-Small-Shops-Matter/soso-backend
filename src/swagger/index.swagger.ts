@@ -16,14 +16,23 @@ export const swaggerDocs = {
     },
 
     // 유저 
+    '/user/exist-nickname/{nickName}': {
+      get: {
+        ...userSwaggerDocs.getUserNickName,
+        tags: ['User'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
     '/user/nickname': {
       post: {
         ...userSwaggerDocs.saveUserNickName,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
-      },
+      }
+    },
+    '/user/profile' : {
       put: {
-        ...userSwaggerDocs.updateUserNickName,
+        ...userSwaggerDocs.updateUserProfile,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
       }

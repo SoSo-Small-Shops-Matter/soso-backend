@@ -22,12 +22,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
-    const { id } = profile;
+    const { id, photos, displayName} = profile;
+    const photoUrl = photos[0]?.value;
 
     let user = await this.userService.findUserById(id);
     if (!user) {
       // 사용자가 없을 경우 회원가입 진행
-      user = await this.userService.googleUserSignup(id);
+      user = await this.userService.googleUserSignup(id,photoUrl,displayName);
     }
     // JWT 생성 및 반환
     const payload = { uuid: user.uuid };
