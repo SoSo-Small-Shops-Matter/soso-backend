@@ -115,9 +115,20 @@ export const swaggerDocs = {
       get: {
         ...reviewSwaggerDocs.getUserReview,
         tags: ['Review'],
+        security: [{ 'JWT-auth': [] }],
       },
       post: {
         ...reviewSwaggerDocs.createReview,
+        tags: ['Review'],
+        security: [{ 'JWT-auth': [] }],
+      },
+      put: {
+        ...reviewSwaggerDocs.updateReview,
+        tags: ['Review'],
+        security: [{ 'JWT-auth': [] }],
+      },
+      delete: {
+        ...reviewSwaggerDocs.deleteReview,
         tags: ['Review'],
         security: [{ 'JWT-auth': [] }],
       },
