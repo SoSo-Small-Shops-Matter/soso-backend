@@ -162,14 +162,22 @@ export const submitSwaggerDocs = {
           example: {
             shopId:3,
             operatingHours: {
+              id: 1,
               phoneNumber: "123-456-7890",
-              mondayHours: "08:00-20:00",
-              tuesdayHours: "08:00-20:00",
-              wednesdayHours: "08:00-20:00",
-              thursdayHours: "08:00-20:00",
-              fridayHours: "08:00-20:00",
-              saturdayHours: "09:00-18:00",
-              sundayHours: "Closed"
+              mondayStartHours: "09:00:00",
+              mondayEndHours: "18:00:00",
+              tuesdayStartHours: "09:00:00",
+              tuesdayEndHours: "18:00:00",
+              wednesdayStartHours: "09:00:00",
+              wednesdayEndHours: "18:00:00",
+              thursdayStartHours: "09:00:00",
+              thursdayEndHours: "18:00:00",
+              fridayStartHours: "09:00:00",
+              fridayEndHours: "18:00:00",
+              saturdayStartHours: "10:00:00",
+              saturdayEndHours: "16:00:00",
+              sundayStartHours: null,
+              sundayEndHours: null
             }
           }
         },
@@ -233,17 +241,24 @@ export const submitSwaggerDocs = {
                   lng: -122.419,
                   location: "123 Main St, San Francisco, CA",
                   submitOperatingHours: [
-                      {
-                          id: 1,
-                          phoneNumber: "123-456-7890",
-                          mondayHours: "08:00-20:00",
-                          tuesdayHours: "08:00-20:00",
-                          wednesdayHours: "08:00-20:00",
-                          thursdayHours: "08:00-20:00",
-                          fridayHours: "08:00-20:00",
-                          saturdayHours: "09:00-18:00",
-                          sundayHours: "Closed"
-                      }
+                    {
+                      id: 1,
+                      phoneNumber: "123-456-7890",
+                      mondayStartHours: "09:00:00",
+                      mondayEndHours: "18:00:00",
+                      tuesdayStartHours: "09:00:00",
+                      tuesdayEndHours: "18:00:00",
+                      wednesdayStartHours: "09:00:00",
+                      wednesdayEndHours: "18:00:00",
+                      thursdayStartHours: "09:00:00",
+                      thursdayEndHours: "18:00:00",
+                      fridayStartHours: "09:00:00",
+                      fridayEndHours: "18:00:00",
+                      saturdayStartHours: "10:00:00",
+                      saturdayEndHours: "16:00:00",
+                      sundayStartHours: null,
+                      sundayEndHours: null
+                    }
                   ]
                 },
                 {
@@ -254,17 +269,24 @@ export const submitSwaggerDocs = {
                   lng: -74.006,
                   location: "789 Oak St, New York, NY",
                   submitOperatingHours: [
-                      {
-                          id: 2,
-                          phoneNumber: "123-456-7890",
-                          mondayHours: "08:00-20:00",
-                          tuesdayHours: "08:00-20:00",
-                          wednesdayHours: "08:00-20:00",
-                          thursdayHours: "08:00-20:00",
-                          fridayHours: "08:00-20:00",
-                          saturdayHours: "09:00-18:00",
-                          sundayHours: "Closed"
-                      }
+                    {
+                      id: 1,
+                      phoneNumber: "123-456-7890",
+                      mondayStartHours: "09:00:00",
+                      mondayEndHours: "18:00:00",
+                      tuesdayStartHours: "09:00:00",
+                      tuesdayEndHours: "18:00:00",
+                      wednesdayStartHours: "09:00:00",
+                      wednesdayEndHours: "18:00:00",
+                      thursdayStartHours: "09:00:00",
+                      thursdayEndHours: "18:00:00",
+                      fridayStartHours: "09:00:00",
+                      fridayEndHours: "18:00:00",
+                      saturdayStartHours: "10:00:00",
+                      saturdayEndHours: "16:00:00",
+                      sundayStartHours: null,
+                      sundayEndHours: null
+                    }
                   ]
                 },
               ],

@@ -189,64 +189,96 @@ export const shopSwaggerDocs = {
               message: 'Success',
               statusCode: 200,
               result: {
-                id: 2,
-                name: "Blue Ocean Mart",
+                id: 3,
+                name: "봄을상자 숲길점",
                 reportStatus: 0,
-                lat: 34.0522,
-                lng: -118.244,
-                location: "456 Elm St, Los Angeles, CA",
+                lat: 37.5664,
+                lng: 126.978,
+                location: "서울 마포구 성미산로23길 30 지1층",
                 operatingHours: [
                   {
-                    id: 2,
-                    phoneNumber: "234-567-8901",
-                    mondayHours: "09:00-21:00",
-                    tuesdayHours: "09:00-21:00",
-                    wednesdayHours: "09:00-21:00",
-                    thursdayHours: "09:00-21:00",
-                    fridayHours: "09:00-21:00",
-                    saturdayHours: "10:00-19:00",
-                    sundayHours: "Closed"
+                    id: 1,
+                    phoneNumber: "123-456-7890",
+                    mondayStartHours: "09:00:00",
+                    mondayEndHours: "18:00:00",
+                    tuesdayStartHours: "09:00:00",
+                    tuesdayEndHours: "18:00:00",
+                    wednesdayStartHours: "09:00:00",
+                    wednesdayEndHours: "18:00:00",
+                    thursdayStartHours: "09:00:00",
+                    thursdayEndHours: "18:00:00",
+                    fridayStartHours: "09:00:00",
+                    fridayEndHours: "18:00:00",
+                    saturdayStartHours: "10:00:00",
+                    saturdayEndHours: "16:00:00",
+                    sundayStartHours: null,
+                    sundayEndHours: null
                   }
                 ],
                 products: [
-                  {
-                    id: 3,
-                    name: "Almond Milk"
-                  },
-                  {
-                    id: 4,
-                    name: "Free Range Eggs"
-                  }
+                  { id: 1, name: "스티커" },
+                  { id: 2, name: "인형" },
+                  { id: 5, name: "키링" },
+                  { id: 7, name: "악세서리" }
                 ],
                 reviews: [
                   {
-                      id: 1,
-                      content: "good",
-                      createdAt: "2025-01-14T11:06:15.098Z",
-                      images: [
-                          {
-                              id: 1,
-                              url: "url"
-                          }
-                      ]
+                    id: 7,
+                    content: "Amazing place!",
+                    createdAt: "2025-01-01T01:00:00.000Z",
+                    images: [],
+                    user: {
+                      uuid: "100696381122086866149",
+                      photoUrl: "",
+                      nickName: "nickNam"
+                    }
                   },
                   {
-                      id: 4,
-                      content: "Great shop with amazing coffee!",
-                      createdAt: "2025-01-14T11:29:53.636Z",
-                      images: [
-                          {
-                              id: 4,
-                              url: "url"
-                          },
-                          {
-                              id: 5,
-                              url: "url"
-                          }
-                      ]
+                    id: 8,
+                    content: "Friendly staff!",
+                    createdAt: "2025-01-02T02:00:00.000Z",
+                    images: [],
+                    user: {
+                      uuid: "100696381122086866149",
+                      photoUrl: "",
+                      nickName: "nickNam"
+                    }
+                  },
+                  {
+                    id: 9,
+                    content: "Highly recommend!",
+                    createdAt: "2025-01-03T03:00:00.000Z",
+                    images: [],
+                    user: {
+                      uuid: "100696381122086866149",
+                      photoUrl: "",
+                      nickName: "nickNam"
+                    }
+                  },
+                  {
+                    id: 10,
+                    content: "Great selection!",
+                    createdAt: "2025-01-04T04:00:00.000Z",
+                    images: [],
+                    user: {
+                      uuid: "100696381122086866149",
+                      photoUrl: "",
+                      nickName: "nickNam"
+                    }
+                  },
+                  {
+                    id: 11,
+                    content: "Affordable prices!",
+                    createdAt: "2025-01-05T05:00:00.000Z",
+                    images: [],
+                    user: {
+                      uuid: "100696381122086866149",
+                      photoUrl: "",
+                      nickName: "nickNam"
+                    }
                   }
-                ],              
-              },
+                ]
+              },              
             },
           },
         },
