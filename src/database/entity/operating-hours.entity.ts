@@ -9,47 +9,29 @@ export class OperatingHours {
     @Column({ nullable: true })
     phoneNumber: string;
 
-    @Column({ type: 'time', nullable: true })
-    mondayStartHours: string;
+    @Column({ type: 'boolean', nullable: true, default: false })
+    monday: boolean;
+
+    @Column({ type: 'boolean', nullable: true, default: false })
+    tuesday: boolean;
+
+    @Column({ type: 'boolean', nullable: true, default: false })
+    wednesday: boolean;
+
+    @Column({ type: 'boolean', nullable: true, default: false })
+    thursday: boolean;
+
+    @Column({ type: 'boolean', nullable: true, default: false })
+    friday: boolean;
+
+    @Column({ type: 'boolean', nullable: true, default: false })
+    saturday: boolean;
+
+    @Column({ type: 'boolean', nullable: true, default: false })
+    sunday: boolean;
 
     @Column({ type: 'time', nullable: true })
-    mondayEndHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    tuesdayStartHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    tuesdayEndHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    wednesdayStartHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    wednesdayEndHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    thursdayStartHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    thursdayEndHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    fridayStartHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    fridayEndHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    saturdayStartHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    saturdayEndHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    sundayStartHours: string;
-
-    @Column({ type: 'time', nullable: true })
-    sundayEndHours: string;
+    time: string;
 
     @ManyToOne(() => Shop, (shop) => shop.operatingHours, { onDelete: 'CASCADE' })
     shop: Shop;

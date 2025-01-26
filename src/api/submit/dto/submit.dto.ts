@@ -21,26 +21,15 @@ export class SubmitNewShopDto {
 export interface OperatingHours {
     phoneNumber?: string;
 
-    mondayStartHours?: string;
-    mondayEndHours?: string;
+    time: string;
 
-    tuesdayStartHours?: string;
-    tuesdayEndHours?: string;
-
-    wednesdayStartHours?: string;
-    wednesdayEndHours?: string;
-
-    thursdayStartHours?: string;
-    thursdayEndHours?: string;
-
-    fridayStartHours?: string;
-    fridayEndHours?: string;
-
-    saturdayStartHours?: string;
-    saturdayEndHours?: string;
-
-    sundayStartHours?: string;
-    sundayEndHours?: string;
+    monday?: boolean;
+    tuesday?: boolean;
+    wednesday?: boolean;
+    thursday?: boolean;
+    friday?: boolean;
+    saturday?: boolean;
+    sunday?: boolean;
 }
 
 export interface SubmitShop {

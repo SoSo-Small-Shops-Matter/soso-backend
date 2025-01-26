@@ -10,6 +10,15 @@ export class ShopRepository {
         private shopRepository:Repository<Shop>
     ) {}
 
+    async findAllShop(){
+        try{
+            return await this.shopRepository.find();
+        }catch(err){
+            console.error("Shop/findAllShop Error", err); // 에러 로그 추가
+            throw new InternalServerErrorException();
+        }
+    }
+
     async findOnlyShopByShopId(shopId:number){
         try{
             return await this.shopRepository.findOne({

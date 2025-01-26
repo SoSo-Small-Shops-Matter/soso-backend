@@ -3,7 +3,7 @@ import { ReviewService } from './review.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('review')
 @UseGuards(AuthGuard('jwt'))

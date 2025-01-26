@@ -197,22 +197,16 @@ export const shopSwaggerDocs = {
                 location: "서울 마포구 성미산로23길 30 지1층",
                 operatingHours: [
                   {
-                    id: 1,
-                    phoneNumber: "123-456-7890",
-                    mondayStartHours: "09:00:00",
-                    mondayEndHours: "18:00:00",
-                    tuesdayStartHours: "09:00:00",
-                    tuesdayEndHours: "18:00:00",
-                    wednesdayStartHours: "09:00:00",
-                    wednesdayEndHours: "18:00:00",
-                    thursdayStartHours: "09:00:00",
-                    thursdayEndHours: "18:00:00",
-                    fridayStartHours: "09:00:00",
-                    fridayEndHours: "18:00:00",
-                    saturdayStartHours: "10:00:00",
-                    saturdayEndHours: "16:00:00",
-                    sundayStartHours: null,
-                    sundayEndHours: null
+                    "id": 1,
+                    "phoneNumber": "987-654-3210",
+                    "monday": false,
+                    "tuesday": true,
+                    "wednesday": false,
+                    "thursday": true,
+                    "friday": true,
+                    "saturday": false,
+                    "sunday": true,
+                    "time": "10:00:00"
                   }
                 ],
                 products: [
@@ -365,28 +359,120 @@ export const shopSwaggerDocs = {
             example: {
               message: "Success",
               statusCode: 200,
-              result: [
-                {
-                  "shop_id": 3,
-                  "shop_name": "봄을상자 숲길점",
-                  "shop_reportStatus": 0,
-                  "shop_lat": 37.5664,
-                  "shop_lng": 126.978,
-                  "shop_location": "서울 마포구 성미산로23길 30 지1층",
-                  "distance": 0.014438282474090677,
-                  "reviewCount": "5"
-                },
-                {
-                  "shop_id": 2,
-                  "shop_name": "더넛",
-                  "shop_reportStatus": 0,
-                  "shop_lat": 37.5666,
-                  "shop_lng": 126.978,
-                  "shop_location": "서울 성동구 상원6나길 6 B동 302호",
-                  "distance": 0.014459178829561084,
-                  "reviewCount": "3"
-                },
-              ]
+              result: {
+                default: [
+                  {
+                    "shop_id": 3,
+                    "shop_name": "봄을상자 숲길점",
+                    "shop_reportStatus": 0,
+                    "shop_lat": 37.5664,
+                    "shop_lng": 126.978,
+                    "shop_location": "서울 마포구 성미산로23길 30 지1층",
+                    "distance": 0.014438282474090677,
+                    "reviewCount": "5"
+                  },
+                  {
+                    "shop_id": 2,
+                    "shop_name": "더넛",
+                    "shop_reportStatus": 0,
+                    "shop_lat": 37.5666,
+                    "shop_lng": 126.978,
+                    "shop_location": "서울 성동구 상원6나길 6 B동 302호",
+                    "distance": 0.014459178829561084,
+                    "reviewCount": "3"
+                  },
+                ],
+                all: [
+                  {
+                    "id": 2,
+                    "name": "더넛",
+                    "reportStatus": 0,
+                    "lat": 37.5666,
+                    "lng": 126.978,
+                    "location": "서울 성동구 상원6나길 6 B동 302호"
+                  },
+                  {
+                    "id": 3,
+                    "name": "봄을상자 숲길점",
+                    "reportStatus": 0,
+                    "lat": 37.5664,
+                    "lng": 126.978,
+                    "location": "서울 마포구 성미산로23길 30 지1층"
+                  },
+                  {
+                    "id": 4,
+                    "name": "벤자민",
+                    "reportStatus": 0,
+                    "lat": 37.5667,
+                    "lng": 126.978,
+                    "location": "서울 마포구 동교로51길 77-11 1층 102호, 2층 201호"
+                  },
+                  {
+                    "id": 5,
+                    "name": "틴",
+                    "reportStatus": 0,
+                    "lat": 37.5663,
+                    "lng": 126.978,
+                    "location": "서울 마포구 연남로11길 29 1층"
+                  },
+                  {
+                    "id": 6,
+                    "name": "쩜이삼오",
+                    "reportStatus": 0,
+                    "lat": 37.5668,
+                    "lng": 126.978,
+                    "location": "서울 마포구 성미산로17길 112 1층 쩜이삼오"
+                  },
+                  {
+                    "id": 7,
+                    "name": "클로비",
+                    "reportStatus": 0,
+                    "lat": 37.5662,
+                    "lng": 126.978,
+                    "location": "서울 서대문구 거북골로 148 . 지하 1층"
+                  },
+                  {
+                    "id": 8,
+                    "name": "카페포 옹",
+                    "reportStatus": 0,
+                    "lat": 37.5669,
+                    "lng": 126.978,
+                    "location": "서울 마포구 연남로 88 1층"
+                  },
+                  {
+                    "id": 9,
+                    "name": "젤시스쇼룸",
+                    "reportStatus": 0,
+                    "lat": 37.5665,
+                    "lng": 126.978,
+                    "location": "서울 강남구 강남대로94길 27 101호 젤시스쇼룸"
+                  },
+                  {
+                    "id": 10,
+                    "name": "뉴뉴 강남점",
+                    "reportStatus": 0,
+                    "lat": 37.5661,
+                    "lng": 126.978,
+                    "location": "서울 서초구 강남대로65길 1 B1F"
+                  },
+                  {
+                    "id": 11,
+                    "name": "더나인몰 건대점",
+                    "reportStatus": 0,
+                    "lat": 37.566,
+                    "lng": 126.979,
+                    "location": "서울 광진구 동일로20길 44 덕유빌딩 1층"
+                  },
+                  {
+                    "id": 12,
+                    "name": "위모먼트",
+                    "reportStatus": 0,
+                    "lat": 37.5665,
+                    "lng": 126.978,
+                    "location": "서울 광진구 능동로 143 1층 위모먼트 (소품샵)"
+                  }
+                ],
+              }
             }            
           },
         },

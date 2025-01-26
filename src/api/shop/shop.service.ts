@@ -23,11 +23,15 @@ export class ShopService {
         return shop;
     }
 
-    async findShopsWithin1KmAndSortByReviewCount(lat: number, lng: number) {
+    async findShopsWithin1KmAndSortByReviewCountAndAllShop(lat: number, lng: number) {
         const radius = 6371; // 지구 반경 (km)
         const distanceLimit = 1; // 거리 제한 (1km)
         const { raw } = await this.shopRepository.findShopsWithin1KmAndSortByReviewCount(lat, lng, distanceLimit, radius);
-        return raw;
+        const allShop = await this.shopRepository.findAllShop();
+        return {
+            default: raw,
+            all: allShop,
+        }
     }
 
     async updateShopProduct(updateShopProductsDto:UpdateShopProductsDto){

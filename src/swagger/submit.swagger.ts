@@ -270,22 +270,16 @@ export const submitSwaggerDocs = {
                   location: "789 Oak St, New York, NY",
                   submitOperatingHours: [
                     {
-                      id: 1,
-                      phoneNumber: "123-456-7890",
-                      mondayStartHours: "09:00:00",
-                      mondayEndHours: "18:00:00",
-                      tuesdayStartHours: "09:00:00",
-                      tuesdayEndHours: "18:00:00",
-                      wednesdayStartHours: "09:00:00",
-                      wednesdayEndHours: "18:00:00",
-                      thursdayStartHours: "09:00:00",
-                      thursdayEndHours: "18:00:00",
-                      fridayStartHours: "09:00:00",
-                      fridayEndHours: "18:00:00",
-                      saturdayStartHours: "10:00:00",
-                      saturdayEndHours: "16:00:00",
-                      sundayStartHours: null,
-                      sundayEndHours: null
+                      "id": 1,
+                      "phoneNumber": "987-654-3210",
+                      "monday": false,
+                      "tuesday": true,
+                      "wednesday": false,
+                      "thursday": true,
+                      "friday": true,
+                      "saturday": false,
+                      "sunday": true,
+                      "time": "10:00:00"
                     }
                   ]
                 },

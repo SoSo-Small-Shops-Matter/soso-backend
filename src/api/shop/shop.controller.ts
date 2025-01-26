@@ -29,7 +29,7 @@ export class ShopController {
         @Query('lat') lat: number,
         @Query('lng') lng: number,
     ){
-        return new SuccessResponseDTO(await this.shopService.findShopsWithin1KmAndSortByReviewCount(lat,lng));
+        return new SuccessResponseDTO(await this.shopService.findShopsWithin1KmAndSortByReviewCountAndAllShop(lat,lng));
     }
 
     @Get('/:shopId')
