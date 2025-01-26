@@ -52,21 +52,27 @@ export class ShopRepository {
         }
     }
     async findShopsWithin1Km(lat: number, lng: number, distanceLimit: number, radius: number ): Promise<Shop[]> {
-        return this.shopRepository
-          .createQueryBuilder('shop')
-          .addSelect(`
-            (${radius} * acos(
-              cos(radians(:lat)) * cos(radians(shop.lat)) *
-              cos(radians(shop.lng) - radians(:lng)) +
-              sin(radians(:lat)) * sin(radians(shop.lat))
-            ))`, 'distance')
-          .having('distance < :distanceLimit', { distanceLimit })
-          .setParameters({ lat, lng })
-          .getMany();
+        try{
+            return this.shopRepository
+            .createQueryBuilder('shop')
+            .addSelect(`
+              (${radius} * acos(
+                cos(radians(:lat)) * cos(radians(shop.lat)) *
+                cos(radians(shop.lng) - radians(:lng)) +
+                sin(radians(:lat)) * sin(radians(shop.lat))
+              ))`, 'distance')
+            .having('distance < :distanceLimit', { distanceLimit })
+            .setParameters({ lat, lng })
+            .getMany();
+        }catch(err){
+            console.error("Shop/findShopsWithin1Km Error",err);
+            throw new InternalServerErrorException();
+        }
     }
 
     async findShopsWithin1KmAndSortByReviewCount(lat: number, lng: number, distanceLimit: number, radius: number){
-        return this.shopRepository
+        try{
+            return this.shopRepository
             .createQueryBuilder('shop')
             .leftJoin('review', 'review', 'review.shopId = shop.id') // reviews 테이블과 조인
             .addSelect(`
@@ -87,5 +93,33 @@ export class ShopRepository {
             .groupBy('shop.id') // shop 별로 그룹화
             .orderBy('reviewCount', 'DESC') // 리뷰 갯수로 정렬
             .getRawAndEntities();
+        }catch(err){
+            console.error("Shop/findShopsWithin1KmAndSortByReviewCount Error",err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async findReportedShops(report:number){
+        try{
+            return await this.shopRepository.find({
+                where: { reportStatus: report },
+            });
+        }catch(err){
+            console.error("Shop/findReportedShops Error",err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+
+    async updateShopReportStatusByShopId(report: number, shopId: number){
+        try{
+            return await this.shopRepository.update(
+                { id: shopId },            // 조건
+                { reportStatus: report }  
+            );
+        }catch(err){
+            console.error("Shop/updateShopReportStatusByShopId Error",err);
+            throw new InternalServerErrorException();
+        }
     }
 }

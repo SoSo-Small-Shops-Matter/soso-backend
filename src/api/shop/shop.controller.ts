@@ -32,6 +32,14 @@ export class ShopController {
         return new SuccessResponseDTO(await this.shopService.findShopsWithin1KmAndSortByReviewCountAndAllShop(lat,lng));
     }
 
+    @Put('/report')
+    async reportShop(
+        @Body() body:any
+    ){
+        const { report, shopId } = body;
+        return new SuccessResponseDTO(await this.shopService.updateShopReportStatus(report,shopId));
+    }
+
     @Get('/:shopId')
     async getShopByShopId(
         // 파라미터로 들어오는 shopId는 String 타입인데, 이를 Number로 사용하기 위해 강제 형변환을 시킴

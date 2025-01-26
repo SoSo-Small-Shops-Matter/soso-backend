@@ -11,7 +11,7 @@ export class Shop {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'int', default: false })
+  @Column({ type: 'int', default: 0 }) // 0: 정상 1: 더이상 운영하지 않는 가게 2: 위치가 잘못됨
   reportStatus: number;
 
   @Column({ type: 'float' })

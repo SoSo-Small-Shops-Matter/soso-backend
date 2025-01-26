@@ -51,4 +51,8 @@ export class ShopService {
 
         return await this.shopRepository.saveShopProduct(shop);
     }
+
+    async updateShopReportStatus(report: number, shopId: number){
+        return await this.shopRepository.updateShopReportStatusByShopId(report,shopId);
+    }
 }

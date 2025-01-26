@@ -56,6 +56,12 @@ export const swaggerDocs = {
         tags: ['Shop'],
       },
     },
+    '/shop/report' : {
+      put: {
+        ...shopSwaggerDocs.reportShop,
+        tags: ['Shop'],
+      },
+    },
     '/shop/{shopId}': {
       get: {
         ...shopSwaggerDocs.getShopByShopId,
@@ -65,11 +71,6 @@ export const swaggerDocs = {
 
     // 새로운 소풉샵 제안
     '/submit': {
-      get: {
-        ...submitSwaggerDocs.getAllSubmitShop,
-        tags: ['Submit'],
-        security: [{ 'JWT-auth': [] }],
-      },
       post: {
         ...submitSwaggerDocs.submitNewShop,
         tags: ['Submit'],
@@ -77,11 +78,6 @@ export const swaggerDocs = {
       },
     },
     '/submit/operating': {
-      get: {
-        ...submitSwaggerDocs.getSubmitOperating,
-        tags: ['Submit'],
-        security: [{ 'JWT-auth': [] }],
-      },
       post: {
         ...submitSwaggerDocs.submitOperating,
         tags: ['Submit'],

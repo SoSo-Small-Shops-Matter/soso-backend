@@ -9,10 +9,6 @@ import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto'
 export class SubmitController {
     constructor(private submitService: SubmitService){}
 
-    @Get('/')
-    async getAllShop(){
-        return new SuccessResponseDTO(await this.submitService.findAllShop());
-    }
     @Post('/')
     async submitNewShop(
         @Body() newShopData: SubmitNewShopDto,
@@ -24,10 +20,5 @@ export class SubmitController {
         @Body() operatingData: SubmitShopOperatingHoursDto,
     ){
         return new SuccessResponseDTO( await this.submitService.validateAndUpdateOperatingHours(operatingData)); 
-    }
-
-    @Get('/operating')
-    async getWaitForAllowShopOperatingHours(){
-        return new SuccessResponseDTO( await this.submitService.findValidateOperatingHours()); 
     }
 }

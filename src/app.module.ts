@@ -9,6 +9,7 @@ import { WishlistModule } from './api/wishlist/wishlist.module';
 import { ReviewModule } from './api/review/review.module';
 import { AwsModule } from './api/aws/aws.module';
 import { AppController } from './app.controller';
+import { AdminModule } from './api/admin/admin.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { AppController } from './app.controller';
     WishlistModule,
     ReviewModule,
     AwsModule,
+    AdminModule,
   ],
   controllers:[AppController],
 })
