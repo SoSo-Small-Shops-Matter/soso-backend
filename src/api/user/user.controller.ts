@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { NickNameDto, UpdateProfileDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
@@ -28,7 +28,7 @@ export class UserController {
         return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickName,uuid));
     }
 
-    @Put('/profile')
+    @Patch('/profile')
     @UseInterceptors(FileInterceptor('file'))
     async updateProfile(
         @Req() req,

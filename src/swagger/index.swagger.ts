@@ -31,7 +31,7 @@ export const swaggerDocs = {
       }
     },
     '/user/profile' : {
-      put: {
+      patch: {
         ...userSwaggerDocs.updateUserProfile,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
@@ -44,7 +44,7 @@ export const swaggerDocs = {
         ...shopSwaggerDocs.getShopWithin1Km,
         tags: ['Shop'],
       },
-      put: {
+      patch: {
         ...shopSwaggerDocs.updateShopProducts,
         tags: ['Shop'],
         security: [{ 'JWT-auth': [] }],
@@ -57,7 +57,7 @@ export const swaggerDocs = {
       },
     },
     '/shop/report' : {
-      put: {
+      patch: {
         ...shopSwaggerDocs.reportShop,
         tags: ['Shop'],
       },
@@ -118,7 +118,7 @@ export const swaggerDocs = {
         tags: ['Review'],
         security: [{ 'JWT-auth': [] }],
       },
-      put: {
+      patch: {
         ...reviewSwaggerDocs.updateReview,
         tags: ['Review'],
         security: [{ 'JWT-auth': [] }],

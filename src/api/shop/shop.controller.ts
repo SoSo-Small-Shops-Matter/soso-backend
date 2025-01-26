@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { ShopIdParamDto, UpdateShopProductsDto } from './dto/submit.dto';
@@ -17,7 +17,7 @@ export class ShopController {
         return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(lat,lng));
     }
 
-    @Put('/')
+    @Patch('/')
     @UseGuards(AuthGuard('jwt'))
     async updateShopProduct(
         @Body() updateShopProductsDto:UpdateShopProductsDto,
@@ -33,7 +33,7 @@ export class ShopController {
         return new SuccessResponseDTO(await this.shopService.findShopsWithin1KmAndSortByReviewCountAndAllShop(lat,lng));
     }
 
-    @Put('/report')
+    @Patch('/report')
     async reportShop(
         @Body() body:any
     ){
