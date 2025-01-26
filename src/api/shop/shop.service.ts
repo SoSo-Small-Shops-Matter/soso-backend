@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
 import { UpdateShopProductsDto } from './dto/submit.dto';
 import { Product } from 'src/database/entity/product.entity';
+import { ReviewService } from '../review/review.service';
 
 @Injectable()
 export class ShopService {
-    constructor(private shopRepository:ShopRepository){}
+    constructor(
+        private shopRepository:ShopRepository,
+        private reviewService:ReviewService,
+    ){}
 
     async findShopsWithin1Km(lat: number, lng: number){
         const radius = 6371; // 지구 반경 (km)
@@ -14,13 +18,18 @@ export class ShopService {
         return await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius);
     }
 
-    async findShopByShopId(shopId: number){
+    async findShopByShopId(shopId: number, uuid: string){
         const shop = await this.shopRepository.findShopByShopId(shopId);
         if(!shop){
             throw new NotFoundException('NOT_FOUND_SHOP');
         }
-        // shop.reviews createdAt순으로 sorting 필요 및 필요하면 userReview와 otherReivew 구분 
-        return shop;
+        const { userReviews, otherReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
+
+        return {
+            shop,
+            userReviews,
+            otherReviews,
+        };
     }
 
     async findShopsWithin1KmAndSortByReviewCountAndAllShop(lat: number, lng: number) {

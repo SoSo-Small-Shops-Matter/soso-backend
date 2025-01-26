@@ -104,4 +104,23 @@ export class ReviewRepository {
             throw new InternalServerErrorException()
         }
     }
+
+    async findShopReviewsByShopId(shopId: number){
+        try{
+            return await this.reviewRepository.find({
+                where:{
+                    shop: {
+                        id: shopId
+                    }
+                },
+                relations:['images','user'],
+                order: {
+                    createdAt: 'DESC', // 최신순
+                },
+            })
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException()
+        }
+    }
 }

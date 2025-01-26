@@ -167,7 +167,7 @@ export const shopSwaggerDocs = {
   },
   getShopByShopId: {
     summary: '장소 상세보기 API',
-    description: '특정 소품샵 ID를 통해 해당 소품샵의 데이터를 불러오는 API',
+    description: 'shop, userReviews, otherReviews 데이터가 존재함',
     parameters: [
       {
         name: 'shopId',
@@ -189,90 +189,116 @@ export const shopSwaggerDocs = {
               message: 'Success',
               statusCode: 200,
               result: {
-                id: 3,
-                name: "봄을상자 숲길점",
-                reportStatus: 0,
-                lat: 37.5664,
-                lng: 126.978,
-                location: "서울 마포구 성미산로23길 30 지1층",
-                operatingHours: [
-                  {
-                    "id": 1,
-                    "phoneNumber": "987-654-3210",
-                    "monday": false,
-                    "tuesday": true,
-                    "wednesday": false,
-                    "thursday": true,
-                    "friday": true,
-                    "saturday": false,
-                    "sunday": true,
-                    "time": "10:00:00"
-                  }
+                shop: {
+                    id: 3,
+                    name: "봄을상자 숲길점",
+                    reportStatus: 1,
+                    lat: 37.5664,
+                    lng: 126.978,
+                    location: "서울 마포구 성미산로23길 30 지1층",
+                    operatingHours: [
+                        {
+                            id: 2,
+                            phoneNumber: "987-654-3210",
+                            monday: false,
+                            tuesday: true,
+                            wednesday: false,
+                            thursday: true,
+                            friday: true,
+                            saturday: false,
+                            sunday: true,
+                            time: "10:00:00"
+                        }
+                    ],
+                    products: [
+                        { id: 1, name: "스티커" },
+                        { id: 2, name: "인형" },
+                        { id: 5, name: "키링" },
+                        { id: 7, name: "악세서리" }
+                    ]
+                },
+                userReviews: [
+                    {
+                        id: 11,
+                        content: "Affordable prices!",
+                        createdAt: "2025-01-05T05:00:00.000Z",
+                        images: [],
+                        user: {
+                            uuid: "100696381122086866149",
+                            photoUrl: "",
+                            nickName: "nickNam"
+                        }
+                    },
+                    {
+                        id: 10,
+                        content: "Great selection!",
+                        createdAt: "2025-01-04T04:00:00.000Z",
+                        images: [],
+                        user: {
+                            uuid: "100696381122086866149",
+                            photoUrl: "",
+                            nickName: "nickNam"
+                        }
+                    },
+                    {
+                        id: 9,
+                        content: "Highly recommend!",
+                        createdAt: "2025-01-03T03:00:00.000Z",
+                        images: [],
+                        user: {
+                            uuid: "100696381122086866149",
+                            photoUrl: "",
+                            nickName: "nickNam"
+                        }
+                    },
+                    {
+                        id: 8,
+                        content: "Friendly staff!",
+                        createdAt: "2025-01-02T02:00:00.000Z",
+                        images: [],
+                        user: {
+                            uuid: "100696381122086866149",
+                            photoUrl: "",
+                            nickName: "nickNam"
+                        }
+                    },
+                    {
+                        id: 7,
+                        content: "Amazing place!",
+                        createdAt: "2025-01-01T01:00:00.000Z",
+                        images: [],
+                        user: {
+                            uuid: "100696381122086866149",
+                            photoUrl: "",
+                            nickName: "nickNam"
+                        }
+                    }
                 ],
-                products: [
-                  { id: 1, name: "스티커" },
-                  { id: 2, name: "인형" },
-                  { id: 5, name: "키링" },
-                  { id: 7, name: "악세서리" }
-                ],
-                reviews: [
-                  {
-                    id: 7,
-                    content: "Amazing place!",
-                    createdAt: "2025-01-01T01:00:00.000Z",
-                    images: [],
-                    user: {
-                      uuid: "100696381122086866149",
-                      photoUrl: "",
-                      nickName: "nickNam"
+                otherReviews: [
+                    {
+                        id: 16,
+                        content: "test",
+                        createdAt: "2025-01-26T10:30:12.655Z",
+                        images: [],
+                        user: {
+                            uuid: "test",
+                            photoUrl: "",
+                            nickName: "test"
+                        }
+                    },
+                    {
+                        id: 15,
+                        content: "test",
+                        createdAt: "2025-01-26T10:30:12.653Z",
+                        images: [],
+                        user: {
+                            uuid: "test",
+                            photoUrl: "",
+                            nickName: "test"
+                        }
                     }
-                  },
-                  {
-                    id: 8,
-                    content: "Friendly staff!",
-                    createdAt: "2025-01-02T02:00:00.000Z",
-                    images: [],
-                    user: {
-                      uuid: "100696381122086866149",
-                      photoUrl: "",
-                      nickName: "nickNam"
-                    }
-                  },
-                  {
-                    id: 9,
-                    content: "Highly recommend!",
-                    createdAt: "2025-01-03T03:00:00.000Z",
-                    images: [],
-                    user: {
-                      uuid: "100696381122086866149",
-                      photoUrl: "",
-                      nickName: "nickNam"
-                    }
-                  },
-                  {
-                    id: 10,
-                    content: "Great selection!",
-                    createdAt: "2025-01-04T04:00:00.000Z",
-                    images: [],
-                    user: {
-                      uuid: "100696381122086866149",
-                      photoUrl: "",
-                      nickName: "nickNam"
-                    }
-                  },
-                  {
-                    id: 11,
-                    content: "Affordable prices!",
-                    createdAt: "2025-01-05T05:00:00.000Z",
-                    images: [],
-                    user: {
-                      uuid: "100696381122086866149",
-                      photoUrl: "",
-                      nickName: "nickNam"
-                    }
-                  }
                 ]
-              },              
+              },                    
             },
           },
         },

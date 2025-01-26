@@ -12,5 +12,6 @@ import { Image } from 'src/database/entity/image.entity';
   imports:[TypeOrmModule.forFeature([Review,Image]),AuthModule,AwsModule],
   controllers: [ReviewController],
   providers: [ReviewService,ReviewRepository],
+  exports: [ReviewService],
 })
 export class ReviewModule {}

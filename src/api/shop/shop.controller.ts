@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Put, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { ShopIdParamDto, UpdateShopProductsDto } from './dto/submit.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 
 @Controller('shop')
 export class ShopController {
@@ -41,11 +42,14 @@ export class ShopController {
     }
 
     @Get('/:shopId')
+    @UseGuards(OptionalAuthGuard)
     async getShopByShopId(
         // 파라미터로 들어오는 shopId는 String 타입인데, 이를 Number로 사용하기 위해 강제 형변환을 시킴
         @Param(new ValidationPipe({ transform: true })) params: ShopIdParamDto,
+        @Req() req: any,
     ){
         const { shopId } = params;
-        return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId));
+        const uuid = req.user ? req.user.uuid : null; // 유저 정보가 있으면 uuid를 사용
+        return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId, uuid));
     }
 }

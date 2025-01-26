@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Shop } from 'src/database/entity/shop.entity';
 import { ShopRepository } from './shop.repository';
 import { AuthModule } from '../auth/auth.module';
+import { ReviewModule } from '../review/review.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Shop]),AuthModule],
+    imports: [TypeOrmModule.forFeature([Shop]),AuthModule,ReviewModule],
     controllers: [ShopController],
     providers: [ShopService,ShopRepository],
     exports:[ShopRepository],
