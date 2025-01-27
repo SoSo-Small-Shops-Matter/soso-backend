@@ -21,7 +21,8 @@ export class SubmitNewShopDto {
 export interface OperatingHours {
     phoneNumber?: string;
 
-    time: string;
+    startTime: string;
+    endTime: string;
 
     monday?: boolean;
     tuesday?: boolean;

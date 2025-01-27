@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { SubmitService } from './submit.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -12,13 +12,18 @@ export class SubmitController {
     @Post('/')
     async submitNewShop(
         @Body() newShopData: SubmitNewShopDto,
+        @Req() req:any,
     ){
-        return new SuccessResponseDTO( await this.submitService.createNewShop(newShopData));
+        const { uuid } = req.user;
+        return new SuccessResponseDTO( await this.submitService.createNewShop(newShopData,uuid));
     }
+    
     @Post('/operating')
     async submitShopOperatingHours(
         @Body() operatingData: SubmitShopOperatingHoursDto,
+        @Req() req:any,
     ){
-        return new SuccessResponseDTO( await this.submitService.validateAndUpdateOperatingHours(operatingData)); 
+        const { uuid } = req.user;
+        return new SuccessResponseDTO( await this.submitService.validateAndUpdateOperatingHours(operatingData, uuid)); 
     }
 }

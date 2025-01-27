@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { SubmitRepository } from './submit.repository';
 import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { ShopRepository } from '../shop/shop.repository';
@@ -14,9 +14,16 @@ export class SubmitService {
         return await this.submitRepository.findAllShop();
     }
 
-    async createNewShop(newShopData:SubmitNewShopDto){
+    async createNewShop(newShopData:SubmitNewShopDto, uuid:string){
         const { shop, operatingHours, products } = newShopData;
-        const createShop =  await this.submitRepository.createNewShop(shop);
+        
+        const region = await this.submitRepository.findRegionByLocation(shop.location);
+        if(!region){
+            throw new NotFoundException('위치가 잘못됐습니다.');
+        }
+
+        const createShop =  await this.submitRepository.createNewShop(shop,region.id);
+
         if(!createShop){
             throw new ConflictException();
         }
@@ -32,10 +39,13 @@ export class SubmitService {
             }));
             await this.submitRepository.saveProductsByShopId(productMappings);
         }
-        return;
+
+        const result = await this.submitRepository.createSubmitUserRecordByNewShop(uuid,createShop.id);
+
+        return result;
     }
 
-    async validateAndUpdateOperatingHours(operatingData:SubmitShopOperatingHoursDto){
+    async validateAndUpdateOperatingHours(operatingData:SubmitShopOperatingHoursDto, uuid:string){
         const { shopId, operatingHours } = operatingData;
         const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
         if(!shop){
@@ -46,7 +56,12 @@ export class SubmitService {
         if(!createShop){
             throw new ConflictException('소풉샵을 제포하는 도중 오류가 발생했습니다.');
         }
-        return await this.submitRepository.validateAndUpdateOperatingHours(createShop.id,operatingHours);
+
+        await this.submitRepository.validateAndUpdateOperatingHours(createShop.id,operatingHours);
+
+        const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid,createShop.id);
+        
+        return result;
     }
 
     async findValidateOperatingHours(){

@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, Double } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 import { SubmitOperatingHours } from './submit-operating-hours.entity';
 import { SubmitProduct } from './submit-product.entity';
+import { Region } from './region.entity';
 
 @Entity('submit_shop')
 export class SubmitShop {
@@ -27,4 +28,8 @@ export class SubmitShop {
 
   @OneToMany(() => SubmitOperatingHours, (submitOperatingHours) => submitOperatingHours.submitShop)
   submitOperatingHours: SubmitOperatingHours[];
+
+  @ManyToOne (() => Region, (region) => region.shop)
+  @JoinColumn()
+  region: Region;
 }

@@ -55,7 +55,7 @@ export class WishlistRepository{
         try{
             const userWishlists = await this.whishlistRepository.find({
                 where: { user: { uuid} },
-                relations: ['user', 'shop'],
+                relations: ['user', 'shop', 'shop.region'],
             });
             return userWishlists;
         }catch(err){

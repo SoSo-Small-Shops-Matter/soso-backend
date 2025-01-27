@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, Double } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, Double, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from './product.entity';
-import { OperatingHours } from './operating-hours.entity';
+import { OperatingHours } from './operating-info.entity';
 import { Review } from './review.entity';
+import { Region } from './region.entity';
 
 @Entity('shop')
 export class Shop {
@@ -31,4 +32,8 @@ export class Shop {
 
   @OneToMany(() => Review, (review) => review.shop)
   reviews: [Review];
+
+  @ManyToOne( () => Region, (region) => region.shop)
+  @JoinColumn()
+  region: Region;
 }

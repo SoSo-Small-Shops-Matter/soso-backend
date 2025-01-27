@@ -3,8 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SubmitOperatingHours } from 'src/database/entity/submit-operating-hours.entity';
 import { SubmitProductMapping } from 'src/database/entity/submit-product_mapping.entity';
 import { SubmitShop } from 'src/database/entity/submit-shop.entity';
-import { MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { OperatingHours } from './dto/submit.dto';
+import { Region } from 'src/database/entity/region.entity';
+import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
 
 @Injectable()
 export class SubmitRepository{
@@ -15,7 +17,10 @@ export class SubmitRepository{
         private submitProductMappingRepository: Repository<SubmitProductMapping>, // ProductRepository 주입
         @InjectRepository(SubmitOperatingHours)
         private submitOperatingRepository: Repository<SubmitOperatingHours>, // OperatingHoursRepository 주입
-    
+        @InjectRepository(Region)
+        private regionRepository: Repository<Region>,
+        @InjectRepository(SubmitUserRecord)
+        private submitUserRecordRepository: Repository<SubmitUserRecord>,
     ) {}
 
     async findAllShop() {
@@ -50,14 +55,21 @@ export class SubmitRepository{
             throw new InternalServerErrorException();
         }
     }
-    async createNewShop(shop){
-        try{
-            return await this.submitShopRepository.save(shop);  
-        }catch(err){
+
+    async createNewShop(shop, regionId: number) {
+        try {
+            return await this.submitShopRepository.save({
+                ...shop,
+                region: {
+                    id: regionId,
+                }
+            });           
+        } catch (err) {
             console.error("SubmitShop/createNewShop Error", err); // 에러 로그 추가
             throw new InternalServerErrorException();
         }
     }
+    
 
     async createNewShopForUpdateOperatingHours(name,lat,lng,location){
         try{
@@ -96,6 +108,60 @@ export class SubmitRepository{
             });
         }catch(err){
             console.error("SubmitShop/findValidateOperatingHours Error", err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async findRegionByLocation(location){
+        try{
+            const regionName = location[0] + location[1];
+            return await this.regionRepository.findOne({
+                where:{
+                    name:regionName,
+                }
+            })
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async createSubmitUserRecordByNewShop(uuid, shopId){
+        try{
+            return await this.submitUserRecordRepository.save({
+                uuid,
+                shopId,
+                status: 0,
+                type: 0,
+                user: {
+                    uuid,
+                },
+                submitShop: {
+                    id: shopId,
+                }
+            })
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async createSubmitUserRecordByUpdateOperatingInfo(uuid, shopId) {
+        try{
+            return await this.submitUserRecordRepository.save({
+                uuid,
+                shopId,
+                status: 0,
+                type: 1,
+                user: {
+                    uuid,
+                },
+                submitShop: {
+                    id: shopId,
+                }
+            })
+        }catch(err){
+            console.error(err);
             throw new InternalServerErrorException();
         }
     }
