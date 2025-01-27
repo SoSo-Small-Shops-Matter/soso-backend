@@ -16,5 +16,6 @@ import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
   imports:[TypeOrmModule.forFeature([SubmitShop,SubmitOperatingHours,SubmitProduct,SubmitProductMapping,Region,SubmitUserRecord]),AuthModule,ShopModule],
   controllers: [SubmitController],
   providers: [SubmitService,SubmitRepository],
+  exports: [SubmitRepository]
 })
 export class SubmitModule {}

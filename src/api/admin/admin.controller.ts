@@ -13,4 +13,11 @@ export class AdminController {
         return new SuccessResponseDTO(await this.adminService.findReportedShops(report));
     }
 
+    @Get('/submit/:type')
+    async getSubmitShop(
+        @Param('type') type: number,
+    ){
+        return new SuccessResponseDTO(await this.adminService.findSubmitShops(type));
+    }
+
 }

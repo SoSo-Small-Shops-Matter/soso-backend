@@ -165,4 +165,18 @@ export class SubmitRepository{
             throw new InternalServerErrorException();
         }
     }
+
+    async findSubmitUserRecord(type: number){
+        try{
+            return await this.submitUserRecordRepository.find({
+                where: {
+                    type,
+                },
+                relations:['submitShop','user']
+            });
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException();
+        }
+    }
 }
