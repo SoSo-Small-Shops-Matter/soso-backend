@@ -1,19 +1,23 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { SubmitController } from './submit.controller';
 import { SubmitService } from './submit.service';
-import { SubmitShop } from 'src/database/entity/submit-shop.entity';
-import { SubmitOperatingHours } from 'src/database/entity/submit-operating-hours.entity';
-import { SubmitProduct } from 'src/database/entity/submit-product.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubmitRepository } from './submit.repository';
-import { SubmitProductMapping } from 'src/database/entity/submit-product_mapping.entity';
 import { AuthModule } from '../auth/auth.module';
 import { ShopModule } from '../shop/shop.module';
 import { Region } from 'src/database/entity/region.entity';
 import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
+import { Shop } from 'src/database/entity/shop.entity';
+import { OperatingHours } from 'src/database/entity/operating-hours.entity';
+import { Product } from 'src/database/entity/product.entity';
+import { ProductMapping } from 'src/database/entity/product_mapping.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([SubmitShop,SubmitOperatingHours,SubmitProduct,SubmitProductMapping,Region,SubmitUserRecord]),AuthModule,ShopModule],
+  imports:[
+    TypeOrmModule.forFeature([Shop,OperatingHours,Product,ProductMapping,Region,SubmitUserRecord]),
+    AuthModule,
+    forwardRef(() => ShopModule),
+  ],
   controllers: [SubmitController],
   providers: [SubmitService,SubmitRepository],
   exports: [SubmitRepository]

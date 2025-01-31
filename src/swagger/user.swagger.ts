@@ -230,4 +230,58 @@ export const userSwaggerDocs = {
       },
     },
   },
+  getUserSubmitRecords:{
+    summary: '사용자가 등록한 소품샵 API',
+    description: '사용자가 등록한 소품샵 데이터 불러오기 type:  0: 최초 제보  1: 운영 정보 수정 2: 판매 정보 수정 ',
+    responses: {
+      200: {
+        description: '성공',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Success',
+              statusCode: 200,
+              result: true,
+            },
+          },
+        },
+      },
+      400: {
+        description: '유효하지 않은 요청 데이터',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Bad Request',
+              error: 'Bad Request',
+              statusCode: 400,
+            },
+          },
+        },
+      },
+      401: {
+        description: '인증 실패',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Unauthorized',
+              error: 'Unauthorized',
+              statusCode: 401,
+            },
+          },
+        },
+      },
+      500: {
+        description: '내부 서버 오류',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Failed to save user case',
+              error: 'Internal Server Error',
+              statusCode: 500,
+            },
+          },
+        },
+      },
+    },
+  },
 };

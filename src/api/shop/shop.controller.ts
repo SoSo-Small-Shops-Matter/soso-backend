@@ -21,8 +21,10 @@ export class ShopController {
     @UseGuards(AuthGuard('jwt'))
     async updateShopProduct(
         @Body() updateShopProductsDto:UpdateShopProductsDto,
+        @Req() req: any,
     ){
-        return new SuccessResponseDTO(await this.shopService.updateShopProduct(updateShopProductsDto));
+        const { uuid } = req.user;
+        return new SuccessResponseDTO(await this.shopService.updateShopProduct(updateShopProductsDto, uuid));
     }
     
     @Get('/search')

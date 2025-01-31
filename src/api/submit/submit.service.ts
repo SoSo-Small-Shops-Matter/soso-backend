@@ -10,10 +10,6 @@ export class SubmitService {
         private shopRepository:ShopRepository,
     ){}
     
-    async findAllShop(){
-        return await this.submitRepository.findAllShop();
-    }
-
     async createNewShop(newShopData:SubmitNewShopDto, uuid:string){
         const { shop, operatingHours, products } = newShopData;
         
@@ -34,8 +30,8 @@ export class SubmitService {
         
         if(products){
             const productMappings = products.map((product) => ({
-                submitShop: { id: createShop.id },
-                submitProduct: { id: product.id },
+                shop: { id: createShop.id },
+                product: { id: product.id },
             }));
             await this.submitRepository.saveProductsByShopId(productMappings);
         }
@@ -47,24 +43,18 @@ export class SubmitService {
 
     async validateAndUpdateOperatingHours(operatingData:SubmitShopOperatingHoursDto, uuid:string){
         const { shopId, operatingHours } = operatingData;
+
+        console.log(operatingHours);
+        // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크 
         const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
         if(!shop){
             throw new ConflictException('없는 소풉샵입니다.');
         }
-        
-        const createShop =  await this.submitRepository.createNewShopForUpdateOperatingHours(shop.name,shop.lat,shop.lng,shop.location);
-        if(!createShop){
-            throw new ConflictException('소풉샵을 제포하는 도중 오류가 발생했습니다.');
-        }
+    
+        await this.submitRepository.validateAndUpdateOperatingHours(shop.id,operatingHours);
 
-        await this.submitRepository.validateAndUpdateOperatingHours(createShop.id,operatingHours);
-
-        const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid,createShop.id);
+        const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid,shop.id);
         
         return result;
-    }
-
-    async findValidateOperatingHours(){
-        return await this.submitRepository.findValidateOperatingHours();
     }
 }

@@ -198,16 +198,17 @@ export const shopSwaggerDocs = {
                     location: "서울 마포구 성미산로23길 30 지1층",
                     operatingHours: [
                         {
-                            id: 2,
-                            phoneNumber: "987-654-3210",
-                            monday: false,
-                            tuesday: true,
-                            wednesday: false,
-                            thursday: true,
-                            friday: true,
-                            saturday: false,
-                            sunday: true,
-                            time: "10:00:00"
+                          id: 2,
+                          phoneNumber: "987-654-3210",
+                          monday: false,
+                          tuesday: true,
+                          wednesday: false,
+                          thursday: true,
+                          friday: true,
+                          saturday: false,
+                          sunday: true,
+                          startTime: "10:00",
+                          endTime: "20:00"
                         }
                     ],
                     products: [

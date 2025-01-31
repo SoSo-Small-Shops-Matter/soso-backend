@@ -1,45 +1,32 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SubmitOperatingHours } from 'src/database/entity/submit-operating-hours.entity';
-import { SubmitProductMapping } from 'src/database/entity/submit-product_mapping.entity';
-import { SubmitShop } from 'src/database/entity/submit-shop.entity';
 import { Repository } from 'typeorm';
-import { OperatingHours } from './dto/submit.dto';
 import { Region } from 'src/database/entity/region.entity';
 import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
+import { Shop } from 'src/database/entity/shop.entity';
+import { ProductMapping } from 'src/database/entity/product_mapping.entity';
+import { OperatingHours } from 'src/database/entity/operating-hours.entity';
 
 @Injectable()
 export class SubmitRepository{
     constructor(
-        @InjectRepository(SubmitShop)
-        private submitShopRepository: Repository<SubmitShop>, // ProductRepository 주입
-        @InjectRepository(SubmitProductMapping)
-        private submitProductMappingRepository: Repository<SubmitProductMapping>, // ProductRepository 주입
-        @InjectRepository(SubmitOperatingHours)
-        private submitOperatingRepository: Repository<SubmitOperatingHours>, // OperatingHoursRepository 주입
+        @InjectRepository(Shop)
+        private submitShopRepository: Repository<Shop>, // ProductRepository 주입
+        @InjectRepository(ProductMapping)
+        private submitProductMappingRepository: Repository<ProductMapping>, // ProductRepository 주입
+        @InjectRepository(OperatingHours)
+        private submitOperatingRepository: Repository<OperatingHours>, // OperatingHoursRepository 주입
         @InjectRepository(Region)
         private regionRepository: Repository<Region>,
         @InjectRepository(SubmitUserRecord)
         private submitUserRecordRepository: Repository<SubmitUserRecord>,
     ) {}
 
-    async findAllShop() {
-        try{
-            return await this.submitShopRepository.find({
-                where: {
-                    existShop:false,
-                },
-                relations:['submitOperatingHours','submitProducts']
-            });
-        }catch(err){
-            console.error("Shop/findAllShop Error", err); // 에러 로그 추가
-            throw new InternalServerErrorException();
-        }
-    }
     async saveOperatingByShopId(operatingData,shopId){
         try{
             return await this.submitOperatingRepository.save({
-                submitShop: { id: shopId },
+                shop: { id: shopId },
+                type: 1,
                 ...operatingData,
             })
         }catch(err){
@@ -60,6 +47,7 @@ export class SubmitRepository{
         try {
             return await this.submitShopRepository.save({
                 ...shop,
+                type: 1,
                 region: {
                     id: regionId,
                 }
@@ -75,6 +63,7 @@ export class SubmitRepository{
         try{
             return await this.submitShopRepository.save({
                 name,
+                type: 1,
                 lat,
                 lng,
                 location,
@@ -86,28 +75,15 @@ export class SubmitRepository{
         }
     }
 
-    async validateAndUpdateOperatingHours(shopId:number,operatingData:OperatingHours){
+    async validateAndUpdateOperatingHours(shopId:number,operatingData){
         try{
             return await this.submitOperatingRepository.save({
-                submitShop: { id: shopId },
+                shop: { id: shopId },
+                type: 1,
                 ...operatingData,
             });
         }catch(err){
             console.error("SubmitShop/validateAndUpdateOperatingHours Error", err);
-            throw new InternalServerErrorException();
-        }
-    }
-
-    async findValidateOperatingHours(){
-        try{
-            return await this.submitShopRepository.find({
-                where: {
-                    existShop:true,
-                },
-                relations: ['submitOperatingHours'],
-            });
-        }catch(err){
-            console.error("SubmitShop/findValidateOperatingHours Error", err);
             throw new InternalServerErrorException();
         }
     }
@@ -136,7 +112,7 @@ export class SubmitRepository{
                 user: {
                     uuid,
                 },
-                submitShop: {
+                shop: {
                     id: shopId,
                 }
             })
@@ -156,7 +132,7 @@ export class SubmitRepository{
                 user: {
                     uuid,
                 },
-                submitShop: {
+                shop: {
                     id: shopId,
                 }
             })
@@ -166,14 +142,20 @@ export class SubmitRepository{
         }
     }
 
-    async findSubmitUserRecord(type: number){
+    async createSubmitUserRecordByUpdateProducts(uuid: string, shopId: number) {
         try{
-            return await this.submitUserRecordRepository.find({
-                where: {
-                    type,
+            return await this.submitUserRecordRepository.save({
+                uuid,
+                shopId,
+                status: 1,
+                type: 2,
+                user: {
+                    uuid,
                 },
-                relations:['submitShop','user']
-            });
+                shop: {
+                    id: shopId,
+                }
+            })
         }catch(err){
             console.error(err);
             throw new InternalServerErrorException();

@@ -12,7 +12,11 @@ export class ShopRepository {
 
     async findAllShop(){
         try{
-            return await this.shopRepository.find();
+            return await this.shopRepository.find({
+                where:{
+                    type: 0,
+                }
+            });
         }catch(err){
             console.error("Shop/findAllShop Error", err); // 에러 로그 추가
             throw new InternalServerErrorException();
@@ -22,7 +26,10 @@ export class ShopRepository {
     async findOnlyShopByShopId(shopId:number){
         try{
             return await this.shopRepository.findOne({
-                where:{id:shopId},
+                where:{
+                    id:shopId,
+                    type:0,
+                },
             });
         }catch(err){
             console.error("Shop/findOnlyShopByShopId Error", err); // 에러 로그 추가
@@ -32,10 +39,13 @@ export class ShopRepository {
     
     async findShopByShopId(shopId:number){
         try{
-            return await this.shopRepository.findOne({
-                where:{id:shopId},
-                relations:['operatingHours','products'],
-            });
+            return await this.shopRepository
+                .createQueryBuilder('shop')
+                .leftJoinAndSelect('shop.operatingHours', 'operatingHours', 'operatingHours.type = :operatingHoursType', { operatingHoursType: 0 }) // operatingHours.type = 0 조건
+                .leftJoinAndSelect('shop.products', 'products') // products는 조건 없이 조인
+                .where('shop.id = :shopId', { shopId })
+                .andWhere('shop.type = :type', { type: 0 }) // shop.type = 0 조건
+                .getOne();
         }catch(err){
             console.error("Shop/findShopByShopId Error", err); // 에러 로그 추가
             throw new InternalServerErrorException();
@@ -61,6 +71,7 @@ export class ShopRepository {
                 cos(radians(shop.lng) - radians(:lng)) +
                 sin(radians(:lat)) * sin(radians(shop.lat))
               ))`, 'distance')
+            .where('shop.type = :type', { type: 0 }) // type = 0 조건 추가
             .having('distance < :distanceLimit', { distanceLimit })
             .setParameters({ lat, lng })
             .getMany();
@@ -82,13 +93,14 @@ export class ShopRepository {
                 sin(radians(:lat)) * sin(radians(shop.lat))
                 ))`, 'distance')
             .addSelect('COUNT(review.id)', 'reviewCount') // 리뷰 개수 계산
-            .where(`
+            .where('shop.type = :type', { type: 0 }) // type = 0 조건 추가
+            .andWhere(`
                 (${radius} * acos(
                 cos(radians(:lat)) * cos(radians(shop.lat)) *
                 cos(radians(shop.lng) - radians(:lng)) +
                 sin(radians(:lat)) * sin(radians(shop.lat))
                 )) < :distanceLimit
-            `) // 거리 조건
+            `) // 거리
             .setParameters({ lat, lng, distanceLimit })
             .groupBy('shop.id') // shop 별로 그룹화
             .orderBy('reviewCount', 'DESC') // 리뷰 갯수로 정렬
@@ -102,7 +114,10 @@ export class ShopRepository {
     async findReportedShops(report:number){
         try{
             return await this.shopRepository.find({
-                where: { reportStatus: report },
+                where: { 
+                    reportStatus: report,
+                    type:0,
+                },
             });
         }catch(err){
             console.error("Shop/findReportedShops Error",err);

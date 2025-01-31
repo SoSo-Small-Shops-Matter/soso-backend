@@ -3,12 +3,14 @@ import { ShopRepository } from './shop.repository';
 import { UpdateShopProductsDto } from './dto/submit.dto';
 import { Product } from 'src/database/entity/product.entity';
 import { ReviewService } from '../review/review.service';
+import { SubmitRepository } from '../submit/submit.repository';
 
 @Injectable()
 export class ShopService {
     constructor(
         private shopRepository:ShopRepository,
         private reviewService:ReviewService,
+        private submitRepository:SubmitRepository,
     ){}
 
     async findShopsWithin1Km(lat: number, lng: number){
@@ -43,7 +45,7 @@ export class ShopService {
         }
     }
 
-    async updateShopProduct(updateShopProductsDto:UpdateShopProductsDto){
+    async updateShopProduct(updateShopProductsDto:UpdateShopProductsDto, uuid:string){
         const { shopId, products } = updateShopProductsDto;
         const shop =  await this.shopRepository.findShopByShopId(shopId);
         if(!shop){
@@ -58,7 +60,9 @@ export class ShopService {
         
         shop.products = productMappings;
 
-        return await this.shopRepository.saveShopProduct(shop);
+        await this.shopRepository.saveShopProduct(shop);
+
+        return await this.submitRepository.createSubmitUserRecordByUpdateProducts(uuid, shop.id);
     }
 
     async updateShopReportStatus(report: number, shopId: number){

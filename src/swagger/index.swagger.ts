@@ -37,6 +37,13 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       }
     },
+    '/user/submit' : {
+      get: {
+        ...userSwaggerDocs.getUserSubmitRecords,
+        tags: ['User'],
+        security: [{ 'JWT-auth': [] }],
+      }
+    },
 
     // 소풉샵 
     '/shop': {
@@ -65,6 +72,7 @@ export const swaggerDocs = {
     '/shop/{shopId}': {
       get: {
         ...shopSwaggerDocs.getShopByShopId,
+        security: [{ 'JWT-auth': [] }],
         tags: ['Shop'],
       },
     },

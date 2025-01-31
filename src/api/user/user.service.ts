@@ -1,5 +1,4 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { BadRequestResponseDTO } from 'src/common/response/response.dto';
 import { UserRepository } from './user.repository';
 import { AwsService } from '../aws/aws.service';
 
@@ -42,5 +41,9 @@ export class UserService {
             }
         }
         return;
+    }
+
+    async findSubmitRecord(uuid: string){
+        return await this.userRepository.findSubmitUserRecord(uuid);
     }
 }

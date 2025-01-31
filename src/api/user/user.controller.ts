@@ -39,4 +39,12 @@ export class UserController {
         const { uuid } = req.user;
         return new SuccessResponseDTO(await this.userService.updateUserProfile(nickName,uuid,file));
     }
+
+    @Get('/submit')
+    async getSubmitShop(
+        @Req() req,
+    ){
+        const { uuid } = req.user;
+        return new SuccessResponseDTO(await this.userService.findSubmitRecord(uuid));
+    }
 }
