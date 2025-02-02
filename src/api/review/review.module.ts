@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ReviewController } from './review.controller';
 import { ReviewService } from './review.service';
 import { AuthModule } from '../auth/auth.module';
@@ -9,9 +9,13 @@ import { AwsModule } from '../aws/aws.module';
 import { Image } from 'src/database/entity/image.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Review,Image]),AuthModule,AwsModule],
+  imports:[
+    TypeOrmModule.forFeature([Review,Image]),
+    forwardRef(() => AuthModule),
+    AwsModule
+  ],
   controllers: [ReviewController],
   providers: [ReviewService,ReviewRepository],
-  exports: [ReviewService],
+  exports: [ReviewService,ReviewRepository],
 })
 export class ReviewModule {}

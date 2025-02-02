@@ -47,4 +47,12 @@ export class UserController {
         const { uuid } = req.user;
         return new SuccessResponseDTO(await this.userService.findSubmitRecord(uuid));
     }
+
+    @Get('/review')
+    async getUserReview(
+        @Req() req:any,
+    ){
+        const { uuid } = req.user;
+        return new SuccessResponseDTO(await this.userService.findUserReviews(uuid));
+    }
 }

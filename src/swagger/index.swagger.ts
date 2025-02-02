@@ -44,6 +44,13 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       }
     },
+    '/user/review' :{
+      get: {
+        ...userSwaggerDocs.getUserReview,
+        tags: ['User'],
+        security: [{ 'JWT-auth': [] }],
+      }
+    },
 
     // 소풉샵 
     '/shop': {
@@ -116,11 +123,6 @@ export const swaggerDocs = {
 
     // 리뷰
     '/review': {
-      get: {
-        ...reviewSwaggerDocs.getUserReview,
-        tags: ['Review'],
-        security: [{ 'JWT-auth': [] }],
-      },
       post: {
         ...reviewSwaggerDocs.createReview,
         tags: ['Review'],

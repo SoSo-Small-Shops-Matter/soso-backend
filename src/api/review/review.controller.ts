@@ -42,12 +42,4 @@ export class ReviewController {
         const { uuid } = req.user;
         return new SuccessResponseDTO(await this.reviewService.deleteReviewByUUID(uuid,deleteReviewDto));
     }
-
-    @Get('/')
-    async getUserReview(
-        @Req() req:any,
-    ){
-        const { uuid } = req.user;
-        return new SuccessResponseDTO(await this.reviewService.findUserReviewByUUID(uuid));
-    }
 }
