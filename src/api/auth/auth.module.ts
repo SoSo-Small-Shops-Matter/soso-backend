@@ -21,7 +21,7 @@ const jwtConfig = config.get('jwt');
       }
     }),
     TypeOrmModule.forFeature([User]),
-    forwardRef(() => UserModule),
+    UserModule,
   ],
   controllers: [AuthController],
   providers: [AuthService,JwtStrategy,GoogleStrategy],

@@ -55,4 +55,12 @@ export class UserController {
         const { uuid } = req.user;
         return new SuccessResponseDTO(await this.userService.findUserReviews(uuid));
     }
+
+    @Get('/wishlist')
+    async getUserWishlist(
+        @Req() req: any
+    ){
+        const { uuid } = req.user;
+        return new SuccessResponseDTO(await this.userService.getWishlist(uuid));
+    }
 }

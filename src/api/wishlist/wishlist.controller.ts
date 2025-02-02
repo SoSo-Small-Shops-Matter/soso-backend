@@ -9,14 +9,6 @@ import { ShopIdDto, ShopIdParamDto } from './dto/wishlist.dto';
 export class WishlistController {
     constructor(private wishlistService:WishlistService){}
 
-    @Get('/')
-    async getWishlist(
-        @Req() req: any
-    ){
-        const uuid = req.user.uuid;
-        return new SuccessResponseDTO(await this.wishlistService.getWishlistByUUID(req.user.uuid));
-    }
-
     @Post('/')
     async addWishlist(
         @Req() req: any,

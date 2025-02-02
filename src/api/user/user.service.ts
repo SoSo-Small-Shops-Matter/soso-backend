@@ -2,6 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { UserRepository } from './user.repository';
 import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
+import { WishlistRepository } from '../wishlist/wishlist.repository';
 
 @Injectable()
 export class UserService {
@@ -9,6 +10,7 @@ export class UserService {
         private userRepository:UserRepository,
         private awsService:AwsService,
         private reviewRepository:ReviewRepository,
+        private wishlistRepository:WishlistRepository,
     ) {}
 
     async findUserNickName(nickName:string){
@@ -52,5 +54,17 @@ export class UserService {
 
     async findUserReviews(uuid: string){
         return await this.reviewRepository.findUserReviewByUUID(uuid);
+    }
+
+    async getWishlist(uuid: string){
+        const userWishlists = await this.wishlistRepository.findWishlistByUUID(uuid);
+        if(!userWishlists){
+            throw new NotFoundException();
+        }
+
+        const result = userWishlists.map((data)=>{
+            return data.shop;
+        });
+        return result;
     }
 }

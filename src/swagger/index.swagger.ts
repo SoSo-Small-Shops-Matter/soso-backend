@@ -51,6 +51,13 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       }
     },
+    '/user/wishlist' :{
+      get: {
+        ...userSwaggerDocs.getUserWishlist,
+        tags: ['User'],
+        security: [{ 'JWT-auth': [] }],
+      }
+    },
 
     // 소풉샵 
     '/shop': {
@@ -102,11 +109,6 @@ export const swaggerDocs = {
     
     // 찜하기 
     '/wishlist': {
-      get: {
-        ...wishlistSwaggerDocs.getUserWishlist,
-        tags: ['Wishlist'],
-        security: [{ 'JWT-auth': [] }],
-      },
       post: {
         ...wishlistSwaggerDocs.saveUserWishlist,
         tags: ['Wishlist'],

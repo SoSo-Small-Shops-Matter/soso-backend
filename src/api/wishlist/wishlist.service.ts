@@ -6,18 +6,6 @@ import { ShopIdDto } from './dto/wishlist.dto';
 export class WishlistService {
     constructor(private wishlistRepository:WishlistRepository){}
 
-    async getWishlistByUUID(uuid:string){
-        const userWishlists = await this.wishlistRepository.findWishlistByUUID(uuid);
-        if(!userWishlists){
-            throw new NotFoundException();
-        }
-
-        const result = userWishlists.map((data)=>{
-            return data.shop;
-        });
-        return result;
-    }
-
     async addWishlistByShopIdAndUUID(shopIdDto:ShopIdDto,uuid:string){
         const { shopId } = shopIdDto;
          
