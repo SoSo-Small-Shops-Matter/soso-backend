@@ -6,10 +6,13 @@ import { SuccessResponseDTO } from 'src/common/response/response.dto';
 export class AdminController {
     constructor(private adminService: AdminService){}
 
-    @Get('/report/:id')
-    async getReportedNonexistentShops(
-        @Param('id') report: number
-    ){
-        return new SuccessResponseDTO(await this.adminService.findReportedShops(report));
+    @Get('/report')
+    async getReportedShops(){
+        return new SuccessResponseDTO(await this.adminService.findReportedShops());
+    }
+
+    @Get('/submit')
+    async getSubmitedShops(){
+        return new SuccessResponseDTO(await this.adminService.findSubmitedShops());
     }
 }

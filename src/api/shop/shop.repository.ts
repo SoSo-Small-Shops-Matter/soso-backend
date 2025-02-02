@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shop } from 'src/database/entity/shop.entity';
-import { DataSource, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ShopRepository {
@@ -111,12 +111,12 @@ export class ShopRepository {
         }
     }
 
-    async findReportedShops(report:number){
+    async findReportedAllShops(){
         try{
             return await this.shopRepository.find({
                 where: { 
-                    reportStatus: report,
-                    type:0,
+                    reportStatus: Not(0), // 0 (신고되지 않음)이 아닌 모든 소품샵들 (1또는 2)
+                    type:0, // 확인 완료된 소품샵들  
                 },
             });
         }catch(err){

@@ -75,7 +75,7 @@ export class SubmitRepository{
         }
     }
 
-    async validateAndUpdateOperatingHours(shopId:number,operatingData){
+    async validateAndCreateOperatingHours(shopId:number,operatingData){
         try{
             return await this.submitOperatingRepository.save({
                 shop: { id: shopId },
@@ -83,7 +83,7 @@ export class SubmitRepository{
                 ...operatingData,
             });
         }catch(err){
-            console.error("SubmitShop/validateAndUpdateOperatingHours Error", err);
+            console.error("SubmitShop/validateAndCreateOperatingHours Error", err);
             throw new InternalServerErrorException();
         }
     }
@@ -155,6 +155,34 @@ export class SubmitRepository{
                 shop: {
                     id: shopId,
                 }
+            })
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async findSubmitedAllShops(){
+        try{
+            return await this.submitShopRepository.find({
+                where:{
+                    type:1,
+                },
+                relations: ['operatingHours','products']
+            })
+        }catch(err){
+            console.error(err);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async findSubmitedAllOperatings(){
+        try{
+            return await this.submitOperatingRepository.find({
+                where:{
+                    type:1,
+                },
+                relations: ['shop']
             })
         }catch(err){
             console.error(err);

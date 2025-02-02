@@ -44,14 +44,13 @@ export class SubmitService {
     async validateAndUpdateOperatingHours(operatingData:SubmitShopOperatingHoursDto, uuid:string){
         const { shopId, operatingHours } = operatingData;
 
-        console.log(operatingHours);
         // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크 
         const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
         if(!shop){
             throw new ConflictException('없는 소풉샵입니다.');
         }
     
-        await this.submitRepository.validateAndUpdateOperatingHours(shop.id,operatingHours);
+        await this.submitRepository.validateAndCreateOperatingHours(shop.id,operatingHours);
 
         const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid,shop.id);
         
