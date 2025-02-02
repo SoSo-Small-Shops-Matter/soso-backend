@@ -298,7 +298,8 @@ export const shopSwaggerDocs = {
                             nickName: "test"
                         }
                     }
-                ]
+                ],
+                wishlist: false
               },                    
             },
           },

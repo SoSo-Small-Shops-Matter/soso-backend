@@ -4,6 +4,7 @@ import { UpdateShopProductsDto } from './dto/submit.dto';
 import { Product } from 'src/database/entity/product.entity';
 import { ReviewService } from '../review/review.service';
 import { SubmitRepository } from '../submit/submit.repository';
+import { WishlistRepository } from '../wishlist/wishlist.repository';
 
 @Injectable()
 export class ShopService {
@@ -11,6 +12,7 @@ export class ShopService {
         private shopRepository:ShopRepository,
         private reviewService:ReviewService,
         private submitRepository:SubmitRepository,
+        private wishlistRepository:WishlistRepository,
     ){}
 
     async findShopsWithin1Km(lat: number, lng: number){
@@ -27,10 +29,13 @@ export class ShopService {
         }
         const { userReviews, otherReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
 
+        const wishlist = await this.wishlistRepository.isShopInUserWishlist(shopId, uuid) ? true : false;
+
         return {
             shop,
             userReviews,
             otherReviews,
+            wishlist,
         };
     }
 

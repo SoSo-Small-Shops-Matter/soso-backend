@@ -7,12 +7,12 @@ import { ShopRepository } from './shop.repository';
 import { AuthModule } from '../auth/auth.module';
 import { ReviewModule } from '../review/review.module';
 import { SubmitModule } from '../submit/submit.module';
+import { WishlistModule } from '../wishlist/wishlist.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Shop]),
-        AuthModule,ReviewModule,
-        forwardRef(() => SubmitModule),
+        AuthModule,ReviewModule,WishlistModule,SubmitModule,
     ],
     controllers: [ShopController],
     providers: [ShopService,ShopRepository],

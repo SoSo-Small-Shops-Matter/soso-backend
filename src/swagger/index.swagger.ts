@@ -115,13 +115,6 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       }
     },
-    '/wishlist/{shopId}': {
-      get: {
-        ...wishlistSwaggerDocs.checkUserWishlistByShopId,
-        tags: ['Wishlist'],
-        security: [{ 'JWT-auth': [] }],
-      },
-    },
 
     // 리뷰
     '/review': {

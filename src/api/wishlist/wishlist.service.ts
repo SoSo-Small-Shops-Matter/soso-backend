@@ -15,9 +15,4 @@ export class WishlistService {
         }
         return await this.wishlistRepository.addWishlistByShopIdAndUUID(shopId,uuid);
     }
-
-    async isShopInUserWishlist(shopId:number,uuid:string){
-        const result = await this.wishlistRepository.isShopInUserWishlist(shopId,uuid);
-        return result ? true : false;
-    }
 }
