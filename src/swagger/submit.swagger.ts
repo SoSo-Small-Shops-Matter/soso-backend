@@ -99,7 +99,8 @@ export const submitSwaggerDocs = {
               friday: true,
               saturday: false,
               sunday: true,
-              time: "10:00:00"
+              startTime: "10:00",
+              endTime: "20:00"
             },
             products: [
               {

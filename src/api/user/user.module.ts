@@ -6,14 +6,13 @@ import { User } from 'src/database/entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { AwsModule } from '../aws/aws.module';
-import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
 import { ReviewModule } from '../review/review.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
 
 @Module({
   imports:[
     forwardRef(() => AuthModule),
-    TypeOrmModule.forFeature([User,SubmitUserRecord]),
+    TypeOrmModule.forFeature([User]),
     AwsModule,ReviewModule,WishlistModule,
   ],
   controllers: [UserController],

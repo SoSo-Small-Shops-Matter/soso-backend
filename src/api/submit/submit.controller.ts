@@ -15,7 +15,8 @@ export class SubmitController {
         @Req() req:any,
     ){
         const { uuid } = req.user;
-        return new SuccessResponseDTO( await this.submitService.createNewShop(newShopData,uuid));
+        await this.submitService.createNewShop(newShopData,uuid)
+        return new SuccessResponseDTO();
     }
     
     @Post('/operating')
@@ -24,6 +25,7 @@ export class SubmitController {
         @Req() req:any,
     ){
         const { uuid } = req.user;
-        return new SuccessResponseDTO( await this.submitService.validateAndUpdateOperatingHours(operatingData, uuid)); 
+        await this.submitService.validateAndUpdateOperatingHours(operatingData, uuid)
+        return new SuccessResponseDTO(); 
     }
 }

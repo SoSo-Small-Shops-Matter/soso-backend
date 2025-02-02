@@ -2,6 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { UserRepository } from './user.repository';
 import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
+// import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class UserService {
         private awsService:AwsService,
         private reviewRepository:ReviewRepository,
         private wishlistRepository:WishlistRepository,
+        // private submitRepository: SubmitRepository,
     ) {}
 
     async findUserNickName(nickName:string){
@@ -48,7 +50,7 @@ export class UserService {
     }
 
     async findSubmitRecord(uuid: string){
-        return await this.userRepository.findSubmitUserRecord(uuid);
+        // return await this.submitRepository.findSubmitUserRecord(uuid);
     }
 
 

@@ -2,30 +2,36 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { SubmitRepository } from './submit.repository';
 import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { ShopRepository } from '../shop/shop.repository';
+import { RegionRepository } from '../region/region.repository';
+import { ProductRepository } from '../product/product.repository';
+import { OperateRepository } from '../operate/operate.repository';
 
 @Injectable()
 export class SubmitService {
     constructor(
-        private submitRepository:SubmitRepository,
-        private shopRepository:ShopRepository,
+        private submitRepository: SubmitRepository,
+        private regionRepository: RegionRepository,
+        private productRepository: ProductRepository,
+        private operateRepository: OperateRepository,
+        private shopRepository: ShopRepository,
     ){}
     
     async createNewShop(newShopData:SubmitNewShopDto, uuid:string){
         const { shop, operatingHours, products } = newShopData;
         
-        const region = await this.submitRepository.findRegionByLocation(shop.location);
+        const region = await this.regionRepository.findRegionByLocation(shop.location);
         if(!region){
             throw new NotFoundException('위치가 잘못됐습니다.');
         }
 
-        const createShop =  await this.submitRepository.createNewShop(shop,region.id);
+        const createShop =  await this.shopRepository.createNewShop(shop,region.id);
 
         if(!createShop){
             throw new ConflictException();
         }
 
         if(operatingHours){
-            await this.submitRepository.saveOperatingByShopId(operatingHours,createShop.id);
+            await this.operateRepository.saveOperatingByShopId(operatingHours,createShop.id);
         }
         
         if(products){
@@ -33,7 +39,7 @@ export class SubmitService {
                 shop: { id: createShop.id },
                 product: { id: product.id },
             }));
-            await this.submitRepository.saveProductsByShopId(productMappings);
+            await this.productRepository.saveProductsByShopId(productMappings);
         }
 
         const result = await this.submitRepository.createSubmitUserRecordByNewShop(uuid,createShop.id);
@@ -50,7 +56,7 @@ export class SubmitService {
             throw new ConflictException('없는 소풉샵입니다.');
         }
     
-        await this.submitRepository.validateAndCreateOperatingHours(shop.id,operatingHours);
+        await this.operateRepository.validateAndCreateOperatingHours(shop.id,operatingHours);
 
         const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid,shop.id);
         

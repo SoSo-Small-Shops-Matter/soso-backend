@@ -137,4 +137,51 @@ export class ShopRepository {
             throw new InternalServerErrorException();
         }
     }
+
+    async createNewShop(shop, regionId: number) {
+        try {
+            return await this.shopRepository.save({
+                ...shop,
+                type: 1,
+                region: {
+                    id: regionId,
+                }
+            });           
+        } catch (err) {
+            console.error("Shop/createNewShop Error", err); // 에러 로그 추가
+            throw new InternalServerErrorException();
+        }
+    }
+    
+
+    async createNewShopForUpdateOperatingHours(name,lat,lng,location){
+        try{
+            return await this.shopRepository.save({
+                name,
+                type: 1,
+                lat,
+                lng,
+                location,
+                existShop: true,
+            });  
+        }catch(err){
+            console.error("shop/createNewShopForUpdateOperatingHours Error", err); // 에러 로그 추가
+            throw new InternalServerErrorException();
+        }
+    }
+
+    async findSubmitedAllShops(){
+        try{
+            return await this.shopRepository.find({
+                where:{
+                    type:1,
+                },
+                relations: ['operatingHours','products']
+            })
+        }catch(err){
+            console.error("shop/findSubmitedAllShops Error", err);
+            throw new InternalServerErrorException();
+        }
+    }
+
 }

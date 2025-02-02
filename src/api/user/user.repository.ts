@@ -3,16 +3,11 @@ import { Repository } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 import { User } from 'src/database/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
-
 @Injectable()
 export class UserRepository {
     constructor(
         @InjectRepository(User)
         private userReposiotry:Repository<User>,
-
-        @InjectRepository(SubmitUserRecord)
-        private submitUserRecordRepository: Repository<SubmitUserRecord>,
     ) {}
     
     async findUserByUUID(uuid:string){
@@ -56,20 +51,6 @@ export class UserRepository {
             return await this.userReposiotry.update({uuid},{photoUrl});
         }catch(err){
             console.error("Error setNickName :", err); // 에러 로그 추가
-            throw new InternalServerErrorException();
-        }
-    }
-
-    async findSubmitUserRecord(uuid: string){
-        try{
-            return await this.submitUserRecordRepository.find({
-                where: {
-                    uuid,
-                },
-                relations:['shop']
-            });
-        }catch(err){
-            console.error(err);
             throw new InternalServerErrorException();
         }
     }
