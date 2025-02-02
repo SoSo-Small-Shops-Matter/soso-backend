@@ -13,8 +13,9 @@ import { OperateModule } from '../operate/operate.module';
 @Module({
   imports:[
     TypeOrmModule.forFeature([SubmitUserRecord]),
-    RegionModule,ProductModule,OperateModule,AuthModule,
     forwardRef(() => ShopModule),
+    forwardRef(() => AuthModule),
+    RegionModule,ProductModule,OperateModule,
   ],
   controllers: [SubmitController],
   providers: [SubmitService,SubmitRepository],

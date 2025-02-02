@@ -8,12 +8,13 @@ import { UserRepository } from './user.repository';
 import { AwsModule } from '../aws/aws.module';
 import { ReviewModule } from '../review/review.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
+import { SubmitModule } from '../submit/submit.module';
 
 @Module({
   imports:[
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([User]),
-    AwsModule,ReviewModule,WishlistModule,
+    AwsModule,ReviewModule,WishlistModule,SubmitModule
   ],
   controllers: [UserController],
   providers: [UserService,UserRepository],
