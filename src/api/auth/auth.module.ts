@@ -13,6 +13,7 @@ import { UserModule } from '../user/user.module';
 const jwtConfig = config.get('jwt');
 @Module({
   imports: [
+    forwardRef(()=>UserModule),
     PassportModule.register({defaultStrategy:'jwt'}),
     JwtModule.register({
       secret: jwtConfig.secret,
@@ -21,7 +22,6 @@ const jwtConfig = config.get('jwt');
       }
     }),
     TypeOrmModule.forFeature([User]),
-    UserModule,
   ],
   controllers: [AuthController],
   providers: [AuthService,JwtStrategy,GoogleStrategy],

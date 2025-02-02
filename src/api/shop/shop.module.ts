@@ -11,9 +11,9 @@ import { WishlistModule } from '../wishlist/wishlist.module';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Shop]),
         forwardRef(() => SubmitModule),
         forwardRef(() =>  AuthModule),
+        TypeOrmModule.forFeature([Shop]),
         ReviewModule,WishlistModule,
     ],
     controllers: [ShopController],

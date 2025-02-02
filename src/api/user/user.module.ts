@@ -13,8 +13,9 @@ import { SubmitModule } from '../submit/submit.module';
 @Module({
   imports:[
     forwardRef(() => AuthModule),
+    forwardRef(() => SubmitModule),
     TypeOrmModule.forFeature([User]),
-    AwsModule,ReviewModule,WishlistModule,SubmitModule
+    AwsModule,ReviewModule,WishlistModule,
   ],
   controllers: [UserController],
   providers: [UserService,UserRepository],

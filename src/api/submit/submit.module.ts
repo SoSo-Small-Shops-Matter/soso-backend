@@ -12,9 +12,9 @@ import { OperateModule } from '../operate/operate.module';
 
 @Module({
   imports:[
-    TypeOrmModule.forFeature([SubmitUserRecord]),
     forwardRef(() => ShopModule),
     forwardRef(() => AuthModule),
+    TypeOrmModule.forFeature([SubmitUserRecord]),
     RegionModule,ProductModule,OperateModule,
   ],
   controllers: [SubmitController],
