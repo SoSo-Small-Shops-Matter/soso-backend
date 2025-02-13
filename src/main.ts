@@ -11,10 +11,13 @@ async function bootstrap() {
   app.useGlobalPipes(new CustomValidationPipe());
   // CORS 활성화
   app.enableCors({
-    origin: 'https://soso-client-soso-web.vercel.app/ ', // 허용할 도메인
+    origin: [
+        'https://soso-client-soso-web.vercel.app',
+        'http://127.0.0.1:5500',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, 
-  });
+});
   setupSwagger(app);
   await app.listen(serverConfig.port ?? 3000);
 }
