@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalPipes(new CustomValidationPipe());
   // CORS 활성화
   app.enableCors({
-    origin: '*', // 허용할 도메인
+    origin: 'https://soso-client-soso-web.vercel.app/ ', // 허용할 도메인
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, 
   });
