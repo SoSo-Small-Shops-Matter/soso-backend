@@ -11,7 +11,7 @@ const googleConfig = config.get('google');
 export class GoogleStrategy extends PassportStrategy(Strategy) {
   constructor(
     private userService: AuthService,
-    private jwtService: JwtService // JwtService 주입
+    private jwtService: JwtService, // JwtService 주입
   ) {
     super({
       clientID: googleConfig.CLIENT_ID,
@@ -28,7 +28,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     let user = await this.userService.findUserById(id);
     if (!user) {
       // 사용자가 없을 경우 회원가입 진행
-      user = await this.userService.googleUserSignup(id,photoUrl,displayName);
+      user = await this.userService.googleUserSignup(id, photoUrl, displayName);
     }
     // JWT 생성 및 반환
     const payload = { uuid: user.uuid };

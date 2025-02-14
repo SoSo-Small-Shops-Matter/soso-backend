@@ -1,4 +1,3 @@
-import { authSwaggerDocs } from './auth.swagger';
 import { shopSwaggerDocs } from './shop.swagger';
 import { userSwaggerDocs } from './user.swagger';
 import { submitSwaggerDocs } from './submit.swagger';
@@ -7,14 +6,6 @@ import { reviewSwaggerDocs } from './review.swagger';
 
 export const swaggerDocs = {
   paths: {
-    // 인증 
-    '/auth/google': {
-      post: {
-        ...authSwaggerDocs.google,
-        tags: ['Auth'],
-      },
-    },
-
     // 유저 
     '/user/exist-nickname/{nickName}': {
       get: {
@@ -28,16 +19,16 @@ export const swaggerDocs = {
         ...userSwaggerDocs.saveUserNickName,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
-      }
+      },
     },
-    '/user/profile' : {
+    '/user/profile': {
       patch: {
         ...userSwaggerDocs.updateUserProfile,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
-      }
+      },
     },
-    '/user/submit' : {
+    '/user/submit': {
       get: {
         ...userSwaggerDocs.getUserSubmitRecords,
         tags: ['User'],
