@@ -6,6 +6,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from '../../database/entity/user.entity';
 import { Repository } from 'typeorm';
 import * as config from 'config';
+import * as jwt from 'jsonwebtoken';
 
 const jwtConfig = config.get('jwt');
 
@@ -20,8 +21,20 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
           if (req && req.cookies) {
-            console.log(req.cookies);
-            return req.cookies['access_token']; // ✅ 쿠키에서 JWT 추출
+            const token = req.cookies['access_token'];
+            if (!token) return null;
+
+            try {
+              // ✅ 토큰이 유효한지 검사 (만료 확인)
+              jwt.verify(token, jwtConfig.secret);
+            } catch (error) {
+              if (error.name === 'TokenExpiredError') {
+                throw new UnauthorizedException('토큰이 만료되었습니다.');
+              }
+              throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+            }
+
+            return token;
           }
           return null;
         },

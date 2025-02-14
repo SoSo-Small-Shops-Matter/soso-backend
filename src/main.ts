@@ -10,7 +10,7 @@ const serverConfig = config.get('server');
 
 async function bootstrap() {
   let app;
-  const port = process.env.NODE_ENV == 'prd' ? serverConfig.port : 3000;
+  const port = process.env.NODE_ENV == 'prd' ? serverConfig.port : 80;
 
   if (process.env.NODE_ENV === 'prd') {
     // SSL 인증서 로드 (절대 경로로 설정)

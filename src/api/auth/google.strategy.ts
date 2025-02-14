@@ -22,7 +22,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
-    const { id, photos, displayName} = profile;
+    const { id, photos, displayName } = profile;
     const photoUrl = photos[0]?.value;
 
     let user = await this.userService.findUserById(id);
