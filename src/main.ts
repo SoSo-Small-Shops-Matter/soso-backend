@@ -25,13 +25,18 @@ async function bootstrap() {
   app.useGlobalPipes(new CustomValidationPipe());
 
   app.enableCors({
-    origin: [
-      'https://soso-client-soso-web.vercel.app',
-      'http://127.0.0.1:5500',
-    ],
+    origin: (origin, callback) => {
+      // origin이 존재하지 않는 경우(null)도 허용 (서버 간 요청, Postman)
+      if (!origin || true) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    credentials: true, // 인증 관련 요청 허용
   });
+  
 
   setupSwagger(app);
 
