@@ -7,26 +7,25 @@ const jwtConfig = config.get('jwt');
 
 @Injectable()
 export class OptionalAuthGuard implements CanActivate {
-    constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) {}
 
-    canActivate(context: ExecutionContext): boolean {
-        const request = context.switchToHttp().getRequest();
-        const authHeader = request.headers['authorization'];
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const token = request.cookies?.access_token; // ✅ 쿠키에서 access_token 가져오기
 
-        if (!authHeader) {
-            request.user = null; // 인증되지 않은 사용자
-            return true;
-        }
-
-        try {
-            const token = authHeader.split(' ')[1];
-            const decoded = jwt.verify(token, jwtConfig.secret); // JWT_SECRET 환경 변수 필요
-            request.user = decoded; // 디코딩된 사용자 정보
-        } catch (err) {
-            console.log(err);
-            request.user = null; // 인증 실패한 경우
-        }
-
-        return true; // 요청을 계속 진행
+    if (!token) {
+      request.user = null; // 인증되지 않은 사용자
+      return true;
     }
+
+    try {
+      const decoded = jwt.verify(token, jwtConfig.access_token_secret); // ✅ 토큰 검증
+      request.user = decoded; // ✅ 검증 성공 시 유저 정보 저장
+    } catch (err) {
+      console.log(err);
+      request.user = null; // ✅ 인증 실패 시 null 처리
+    }
+
+    return true; // ✅ 요청 계속 진행
+  }
 }

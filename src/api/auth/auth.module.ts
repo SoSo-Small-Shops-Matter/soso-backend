@@ -13,18 +13,18 @@ import { UserModule } from '../user/user.module';
 const jwtConfig = config.get('jwt');
 @Module({
   imports: [
-    forwardRef(()=>UserModule),
-    PassportModule.register({defaultStrategy:'jwt'}),
+    forwardRef(() => UserModule),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: jwtConfig.secret,
-      signOptions:{
-        expiresIn: jwtConfig.expiresIn,
-      }
+      secret: jwtConfig.access_token_secret,
+      signOptions: {
+        expiresIn: jwtConfig.access_token_expiresIn,
+      },
     }),
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService,JwtStrategy,GoogleStrategy],
-  exports: [JwtStrategy, PassportModule]
+  providers: [AuthService, JwtStrategy, GoogleStrategy],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}

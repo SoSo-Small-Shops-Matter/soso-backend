@@ -6,6 +6,7 @@ import * as config from 'config';
 import { JwtService } from '@nestjs/jwt';
 
 const googleConfig = config.get('google');
+const jwtConfig = config.get('jwt');
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -32,8 +33,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     }
     // JWT 생성 및 반환
     const payload = { uuid: user.uuid };
-    const token = this.jwtService.sign(payload);
+    const access_token = await this.jwtService.signAsync(payload, {
+      secret: jwtConfig.access_token_secret,
+      expiresIn: jwtConfig.access_token_expiresIn,
+    });
 
-    return { token }; // 사용자와 토큰 반환
+    const refresh_token = await this.jwtService.signAsync(payload, {
+      secret: jwtConfig.refresh_token_secret,
+      expiresIn: jwtConfig.refresh_token_expiresIn,
+    });
+
+    return { access_token, refresh_token }; // 사용자와 토큰 반환
   }
 }
