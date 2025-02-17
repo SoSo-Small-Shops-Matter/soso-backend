@@ -21,7 +21,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get('/exist-nickname/:nickName')
+  @Get('/nickname/:nickName')
   async checkNickName(@Param() nickNameDto: NickNameDto) {
     const { nickName } = nickNameDto;
     return new SuccessResponseDTO(
