@@ -21,6 +21,7 @@ export class AuthController {
       httpOnly: true, // JavaScript에서 접근 불가 (보안 강화)
       secure: true, // HTTPS에서만 쿠키 전송
       sameSite: 'None', // 다른 도메인에서도 쿠키 전송 가능 (CORS 대응)
+      domain: 'soso-client-soso-web.vercel.app',
       path: '/', // 전체 경로에서 쿠키 사용 가능
     });
 
@@ -28,6 +29,7 @@ export class AuthController {
       httpOnly: true, // JavaScript에서 접근 불가 (보안 강화)
       secure: true, // HTTPS에서만 쿠키 전송
       sameSite: 'None', // 다른 도메인에서도 쿠키 전송 가능 (CORS 대응)
+      domain: 'soso-client-soso-web.vercel.app',
       path: '/', // 전체 경로에서 쿠키 사용 가능
     });
     return res.redirect('https://soso-client-soso-web.vercel.app/');
