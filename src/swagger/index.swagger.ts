@@ -7,7 +7,7 @@ import { reviewSwaggerDocs } from './review.swagger';
 export const swaggerDocs = {
   paths: {
     // 유저 
-    '/user/exist-nickname/{nickName}': {
+    '/user/nickname/{nickName}': {
       get: {
         ...userSwaggerDocs.getUserNickName,
         tags: ['User'],
