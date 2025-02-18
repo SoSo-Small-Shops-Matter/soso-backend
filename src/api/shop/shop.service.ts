@@ -27,12 +27,8 @@ export class ShopService {
     );
     return result;
   }
-  async findShopsByShopName(shopName: string, pageSize: number, limit: number) {
-    return await this.shopRepository.findShopsByShopName(
-      shopName,
-      pageSize,
-      limit,
-    );
+  async findShopsByShopName(shopName: string, page: number, limit: number) {
+    return await this.shopRepository.findShopsByShopName(shopName, page, limit);
   }
 
   async findShopByShopId(shopId: number, uuid: string) {

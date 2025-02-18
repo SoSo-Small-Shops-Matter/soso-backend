@@ -10,27 +10,14 @@ export class ShopRepository {
     private shopRepository: Repository<Shop>,
   ) {}
 
-  async findAllShop() {
-    try {
-      return await this.shopRepository.find({
-        where: {
-          type: 0,
-        },
-      });
-    } catch (err) {
-      console.error('Shop/findAllShop Error', err); // 에러 로그 추가
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async findShopsByShopName(shopName: string, pageSize: number, limit: number) {
+  async findShopsByShopName(shopName: string, page: number, limit: number) {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
         .where('shop.name LIKE :name', { name: `%${shopName}%` }) // 부분 검색
         .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
-        .skip(pageSize * (limit - 1)) // offset 계산
-        .take(pageSize) // 한 페이지당 표시할 개수
+        .skip(limit * (page - 1)) // offset 계산
+        .take(limit) // 한 페이지당 표시할 개수
         .getMany();
     } catch (err) {
       console.error('Shop/findShopsByShopName Error', err);

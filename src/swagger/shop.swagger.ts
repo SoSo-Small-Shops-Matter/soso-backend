@@ -428,7 +428,7 @@ export const shopSwaggerDocs = {
     description: '검색 페이지에서 사용자가 소품샵 이름으로 검색할 때 사용',
     parameters: [
       {
-        name: 'name',
+        name: 'shopName',
         in: 'query',
         required: true,
         description: '소품샵이름',
@@ -438,7 +438,7 @@ export const shopSwaggerDocs = {
         },
       },
       {
-        name: 'pageSize',
+        name: 'limit',
         in: 'query',
         required: true,
         description: '한 페이지당 개수',
@@ -448,7 +448,7 @@ export const shopSwaggerDocs = {
         },
       },
       {
-        name: 'limit',
+        name: 'page',
         in: 'query',
         required: true,
         description: '페이지 번호',

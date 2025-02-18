@@ -40,12 +40,12 @@ export class ShopController {
 
   @Get('/search')
   async getSearchPageShop(
+    @Query('page') page: number,
     @Query('limit') limit: number,
-    @Query('pageSize') pageSize: number,
-    @Query('name') shopName: string,
+    @Query('shopName') shopName: string,
   ) {
     return new SuccessResponseDTO(
-      await this.shopService.findShopsByShopName(shopName, pageSize, limit),
+      await this.shopService.findShopsByShopName(shopName, page, limit),
     );
   }
 
