@@ -1,7 +1,7 @@
 export const shopSwaggerDocs = {
   getShopWithin1Km: {
-    summary: '1KM 내 소품샵 데이터 불러오기 API',
-    description: '사용자 위치 기준 1KM 내 소품샵의 데이터',
+    summary: '1KM 내 소품샵 데이터 불러오기 API & 후기 순 불러오기',
+    description: '사용자 위치 기준 1KM 내 소품샵의 데이터 & 후기 순 불러오기',
     parameters: [
       {
         name: 'lat',
@@ -23,33 +23,35 @@ export const shopSwaggerDocs = {
           example: 126.978,
         },
       },
+      {
+        name: 'sorting',
+        in: 'query',
+        required: true,
+        description: '후기 순으로 정렬할 것인지 여부',
+        schema: {
+          type: 'boolean',
+          example: true,
+        },
+      },
     ],
     responses: {
       200: {
         content: {
           'application/json': {
             example: {
-              message: "Success",
+              message: 'Success',
               statusCode: 200,
               result: [
                 {
-                    "id": 2,
-                    "name": "더넛",
-                    "reportStatus": 0,
-                    "lat": 37.5666,
-                    "lng": 126.978,
-                    "location": "서울 성동구 상원6나길 6 B동 302호"
+                  id: 2,
+                  name: '더넛',
+                  reportStatus: 0,
+                  lat: 37.5666,
+                  lng: 126.978,
+                  location: '서울 성동구 상원6나길 6 B동 302호',
                 },
-                {
-                    "id": 3,
-                    "name": "봄을상자 숲길점",
-                    "reportStatus": 0,
-                    "lat": 37.5664,
-                    "lng": 126.978,
-                    "location": "서울 마포구 성미산로23길 30 지1층"
-                },
-              ]
-            }            
+              ],
+            },
           },
         },
       },
@@ -104,11 +106,11 @@ export const shopSwaggerDocs = {
             products: [
               {
                 id: 1,
-                name: "스티커",
+                name: '스티커',
               },
               {
                 id: 2,
-                name: "컵",
+                name: '컵',
               },
             ],
           },
@@ -176,7 +178,7 @@ export const shopSwaggerDocs = {
         required: true,
         schema: {
           type: 'string',
-          example: '12'
+          example: '12',
         },
       },
     ],
@@ -190,117 +192,117 @@ export const shopSwaggerDocs = {
               statusCode: 200,
               result: {
                 shop: {
-                    id: 3,
-                    name: "봄을상자 숲길점",
-                    reportStatus: 1,
-                    lat: 37.5664,
-                    lng: 126.978,
-                    location: "서울 마포구 성미산로23길 30 지1층",
-                    operatingHours: [
-                        {
-                          id: 2,
-                          phoneNumber: "987-654-3210",
-                          monday: false,
-                          tuesday: true,
-                          wednesday: false,
-                          thursday: true,
-                          friday: true,
-                          saturday: false,
-                          sunday: true,
-                          startTime: "10:00",
-                          endTime: "20:00"
-                        }
-                    ],
-                    products: [
-                        { id: 1, name: "스티커" },
-                        { id: 2, name: "인형" },
-                        { id: 5, name: "키링" },
-                        { id: 7, name: "악세서리" }
-                    ]
+                  id: 3,
+                  name: '봄을상자 숲길점',
+                  reportStatus: 1,
+                  lat: 37.5664,
+                  lng: 126.978,
+                  location: '서울 마포구 성미산로23길 30 지1층',
+                  operatingHours: [
+                    {
+                      id: 2,
+                      phoneNumber: '987-654-3210',
+                      monday: false,
+                      tuesday: true,
+                      wednesday: false,
+                      thursday: true,
+                      friday: true,
+                      saturday: false,
+                      sunday: true,
+                      startTime: '10:00',
+                      endTime: '20:00',
+                    },
+                  ],
+                  products: [
+                    { id: 1, name: '스티커' },
+                    { id: 2, name: '인형' },
+                    { id: 5, name: '키링' },
+                    { id: 7, name: '악세서리' },
+                  ],
                 },
                 userReviews: [
-                    {
-                        id: 11,
-                        content: "Affordable prices!",
-                        createdAt: "2025-01-05T05:00:00.000Z",
-                        images: [],
-                        user: {
-                            uuid: "100696381122086866149",
-                            photoUrl: "",
-                            nickName: "nickNam"
-                        }
+                  {
+                    id: 11,
+                    content: 'Affordable prices!',
+                    createdAt: '2025-01-05T05:00:00.000Z',
+                    images: [],
+                    user: {
+                      uuid: '100696381122086866149',
+                      photoUrl: '',
+                      nickName: 'nickNam',
                     },
-                    {
-                        id: 10,
-                        content: "Great selection!",
-                        createdAt: "2025-01-04T04:00:00.000Z",
-                        images: [],
-                        user: {
-                            uuid: "100696381122086866149",
-                            photoUrl: "",
-                            nickName: "nickNam"
-                        }
+                  },
+                  {
+                    id: 10,
+                    content: 'Great selection!',
+                    createdAt: '2025-01-04T04:00:00.000Z',
+                    images: [],
+                    user: {
+                      uuid: '100696381122086866149',
+                      photoUrl: '',
+                      nickName: 'nickNam',
                     },
-                    {
-                        id: 9,
-                        content: "Highly recommend!",
-                        createdAt: "2025-01-03T03:00:00.000Z",
-                        images: [],
-                        user: {
-                            uuid: "100696381122086866149",
-                            photoUrl: "",
-                            nickName: "nickNam"
-                        }
+                  },
+                  {
+                    id: 9,
+                    content: 'Highly recommend!',
+                    createdAt: '2025-01-03T03:00:00.000Z',
+                    images: [],
+                    user: {
+                      uuid: '100696381122086866149',
+                      photoUrl: '',
+                      nickName: 'nickNam',
                     },
-                    {
-                        id: 8,
-                        content: "Friendly staff!",
-                        createdAt: "2025-01-02T02:00:00.000Z",
-                        images: [],
-                        user: {
-                            uuid: "100696381122086866149",
-                            photoUrl: "",
-                            nickName: "nickNam"
-                        }
+                  },
+                  {
+                    id: 8,
+                    content: 'Friendly staff!',
+                    createdAt: '2025-01-02T02:00:00.000Z',
+                    images: [],
+                    user: {
+                      uuid: '100696381122086866149',
+                      photoUrl: '',
+                      nickName: 'nickNam',
                     },
-                    {
-                        id: 7,
-                        content: "Amazing place!",
-                        createdAt: "2025-01-01T01:00:00.000Z",
-                        images: [],
-                        user: {
-                            uuid: "100696381122086866149",
-                            photoUrl: "",
-                            nickName: "nickNam"
-                        }
-                    }
+                  },
+                  {
+                    id: 7,
+                    content: 'Amazing place!',
+                    createdAt: '2025-01-01T01:00:00.000Z',
+                    images: [],
+                    user: {
+                      uuid: '100696381122086866149',
+                      photoUrl: '',
+                      nickName: 'nickNam',
+                    },
+                  },
                 ],
                 otherReviews: [
-                    {
-                        id: 16,
-                        content: "test",
-                        createdAt: "2025-01-26T10:30:12.655Z",
-                        images: [],
-                        user: {
-                            uuid: "test",
-                            photoUrl: "",
-                            nickName: "test"
-                        }
+                  {
+                    id: 16,
+                    content: 'test',
+                    createdAt: '2025-01-26T10:30:12.655Z',
+                    images: [],
+                    user: {
+                      uuid: 'test',
+                      photoUrl: '',
+                      nickName: 'test',
                     },
-                    {
-                        id: 15,
-                        content: "test",
-                        createdAt: "2025-01-26T10:30:12.653Z",
-                        images: [],
-                        user: {
-                            uuid: "test",
-                            photoUrl: "",
-                            nickName: "test"
-                        }
-                    }
+                  },
+                  {
+                    id: 15,
+                    content: 'test',
+                    createdAt: '2025-01-26T10:30:12.653Z',
+                    images: [],
+                    user: {
+                      uuid: 'test',
+                      photoUrl: '',
+                      nickName: 'test',
+                    },
+                  },
                 ],
-                wishlist: false
-              },                    
+                wishlist: false,
+              },
             },
           },
         },
@@ -334,9 +336,9 @@ export const shopSwaggerDocs = {
         content: {
           'application/json': {
             example: {
-              message: "NOT_FOUND_SHOP",
-              error: "Not Found",
-              statusCode: 404
+              message: 'NOT_FOUND_SHOP',
+              error: 'Not Found',
+              statusCode: 404,
             },
           },
         },
@@ -357,7 +359,8 @@ export const shopSwaggerDocs = {
   },
   reportShop: {
     summary: '신고하기 API',
-    description: '소품샵의 정보가 일치하지 않을경우 신고하는 기능 report:1 -> 더이상 존재하지 않는 소품샵 , report:2 -> 위치가 잘못된 소품샵',
+    description:
+      '소품샵의 정보가 일치하지 않을경우 신고하는 기능 report:1 -> 더이상 존재하지 않는 소품샵 , report:2 -> 위치가 잘못된 소품샵',
     requestBody: {
       description: '신고하기',
       required: true,
@@ -365,7 +368,7 @@ export const shopSwaggerDocs = {
         'application/json': {
           example: {
             shopId: 3,
-            report:1,
+            report: 1,
           },
         },
       },
@@ -421,27 +424,37 @@ export const shopSwaggerDocs = {
     },
   },
   getSearchPageShop: {
-    summary: '1KM 내 소품샵 데이터 리뷰 순서로 불러오기 API',
-    description: '사용자 위치 기준 1KM 내 소품샵의 데이터 리뷰 순서로 불러오기 - 검색 페이지에서 사용',
+    summary: '소품샵 이름으로 검색 API',
+    description: '검색 페이지에서 사용자가 소품샵 이름으로 검색할 때 사용',
     parameters: [
       {
-        name: 'lat',
+        name: 'name',
         in: 'query',
         required: true,
-        description: '사용자의 위도 (latitude)',
+        description: '소품샵이름',
         schema: {
-          type: 'number',
-          example: 37.5665,
+          type: 'string',
+          example: '뉴뉴',
         },
       },
       {
-        name: 'lng',
+        name: 'pageSize',
         in: 'query',
         required: true,
-        description: '사용자의 경도 (longitude)',
+        description: '한 페이지당 개수',
         schema: {
           type: 'number',
-          example: 126.978,
+          example: 10,
+        },
+      },
+      {
+        name: 'limit',
+        in: 'query',
+        required: true,
+        description: '페이지 번호',
+        schema: {
+          type: 'number',
+          example: 1,
         },
       },
     ],
@@ -450,123 +463,20 @@ export const shopSwaggerDocs = {
         content: {
           'application/json': {
             example: {
-              message: "Success",
+              message: 'Success',
               statusCode: 200,
-              result: {
-                default: [
-                  {
-                    "shop_id": 3,
-                    "shop_name": "봄을상자 숲길점",
-                    "shop_reportStatus": 0,
-                    "shop_lat": 37.5664,
-                    "shop_lng": 126.978,
-                    "shop_location": "서울 마포구 성미산로23길 30 지1층",
-                    "distance": 0.014438282474090677,
-                    "reviewCount": "5"
-                  },
-                  {
-                    "shop_id": 2,
-                    "shop_name": "더넛",
-                    "shop_reportStatus": 0,
-                    "shop_lat": 37.5666,
-                    "shop_lng": 126.978,
-                    "shop_location": "서울 성동구 상원6나길 6 B동 302호",
-                    "distance": 0.014459178829561084,
-                    "reviewCount": "3"
-                  },
-                ],
-                all: [
-                  {
-                    "id": 2,
-                    "name": "더넛",
-                    "reportStatus": 0,
-                    "lat": 37.5666,
-                    "lng": 126.978,
-                    "location": "서울 성동구 상원6나길 6 B동 302호"
-                  },
-                  {
-                    "id": 3,
-                    "name": "봄을상자 숲길점",
-                    "reportStatus": 0,
-                    "lat": 37.5664,
-                    "lng": 126.978,
-                    "location": "서울 마포구 성미산로23길 30 지1층"
-                  },
-                  {
-                    "id": 4,
-                    "name": "벤자민",
-                    "reportStatus": 0,
-                    "lat": 37.5667,
-                    "lng": 126.978,
-                    "location": "서울 마포구 동교로51길 77-11 1층 102호, 2층 201호"
-                  },
-                  {
-                    "id": 5,
-                    "name": "틴",
-                    "reportStatus": 0,
-                    "lat": 37.5663,
-                    "lng": 126.978,
-                    "location": "서울 마포구 연남로11길 29 1층"
-                  },
-                  {
-                    "id": 6,
-                    "name": "쩜이삼오",
-                    "reportStatus": 0,
-                    "lat": 37.5668,
-                    "lng": 126.978,
-                    "location": "서울 마포구 성미산로17길 112 1층 쩜이삼오"
-                  },
-                  {
-                    "id": 7,
-                    "name": "클로비",
-                    "reportStatus": 0,
-                    "lat": 37.5662,
-                    "lng": 126.978,
-                    "location": "서울 서대문구 거북골로 148 . 지하 1층"
-                  },
-                  {
-                    "id": 8,
-                    "name": "카페포 옹",
-                    "reportStatus": 0,
-                    "lat": 37.5669,
-                    "lng": 126.978,
-                    "location": "서울 마포구 연남로 88 1층"
-                  },
-                  {
-                    "id": 9,
-                    "name": "젤시스쇼룸",
-                    "reportStatus": 0,
-                    "lat": 37.5665,
-                    "lng": 126.978,
-                    "location": "서울 강남구 강남대로94길 27 101호 젤시스쇼룸"
-                  },
-                  {
-                    "id": 10,
-                    "name": "뉴뉴 강남점",
-                    "reportStatus": 0,
-                    "lat": 37.5661,
-                    "lng": 126.978,
-                    "location": "서울 서초구 강남대로65길 1 B1F"
-                  },
-                  {
-                    "id": 11,
-                    "name": "더나인몰 건대점",
-                    "reportStatus": 0,
-                    "lat": 37.566,
-                    "lng": 126.979,
-                    "location": "서울 광진구 동일로20길 44 덕유빌딩 1층"
-                  },
-                  {
-                    "id": 12,
-                    "name": "위모먼트",
-                    "reportStatus": 0,
-                    "lat": 37.5665,
-                    "lng": 126.978,
-                    "location": "서울 광진구 능동로 143 1층 위모먼트 (소품샵)"
-                  }
-                ],
-              }
-            }            
+              result: [
+                {
+                  id: 3,
+                  name: '봄을상자 숲길점',
+                  type: 0,
+                  reportStatus: 0,
+                  lat: 37.5664,
+                  lng: 126.978,
+                  location: '서울 마포구 성미산로23길 30 지1층',
+                },
+              ],
+            },
           },
         },
       },
