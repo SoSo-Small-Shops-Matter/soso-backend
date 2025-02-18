@@ -37,6 +37,11 @@ export class UserController {
       await this.userService.findAndUpdateUserNickname(nickName, uuid),
     );
   }
+  @Get('/profile')
+  async getProfile(@Req() req) {
+    const { uuid } = req.user;
+    return new SuccessResponseDTO(await this.userService.getUserProfile(uuid));
+  }
 
   @Patch('/profile')
   @UseInterceptors(FileInterceptor('file'))

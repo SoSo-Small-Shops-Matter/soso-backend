@@ -6,7 +6,7 @@ import { reviewSwaggerDocs } from './review.swagger';
 
 export const swaggerDocs = {
   paths: {
-    // 유저 
+    // 유저
     '/user/nickname/{nickName}': {
       get: {
         ...userSwaggerDocs.getUserNickName,
@@ -27,30 +27,35 @@ export const swaggerDocs = {
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
       },
+      get: {
+        ...userSwaggerDocs.getUserProfile,
+        tags: ['User'],
+        security: [{ 'JWT-auth': [] }],
+      },
     },
     '/user/submit': {
       get: {
         ...userSwaggerDocs.getUserSubmitRecords,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
-      }
+      },
     },
-    '/user/review' :{
+    '/user/review': {
       get: {
         ...userSwaggerDocs.getUserReview,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
-      }
+      },
     },
-    '/user/wishlist' :{
+    '/user/wishlist': {
       get: {
         ...userSwaggerDocs.getUserWishlist,
         tags: ['User'],
         security: [{ 'JWT-auth': [] }],
-      }
+      },
     },
 
-    // 소풉샵 
+    // 소풉샵
     '/shop': {
       get: {
         ...shopSwaggerDocs.getShopWithin1Km,
@@ -68,7 +73,7 @@ export const swaggerDocs = {
         tags: ['Shop'],
       },
     },
-    '/shop/report' : {
+    '/shop/report': {
       patch: {
         ...shopSwaggerDocs.reportShop,
         tags: ['Shop'],
@@ -97,14 +102,14 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       },
     },
-    
-    // 찜하기 
+
+    // 찜하기
     '/wishlist': {
       post: {
         ...wishlistSwaggerDocs.saveUserWishlist,
         tags: ['Wishlist'],
         security: [{ 'JWT-auth': [] }],
-      }
+      },
     },
 
     // 리뷰
@@ -124,7 +129,7 @@ export const swaggerDocs = {
         tags: ['Review'],
         security: [{ 'JWT-auth': [] }],
       },
-    }
+    },
   },
   tags: [
     {

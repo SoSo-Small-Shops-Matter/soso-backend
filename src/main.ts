@@ -14,9 +14,18 @@ async function bootstrap() {
 
   if (process.env.NODE_ENV === 'prd') {
     // SSL 인증서 로드 (절대 경로로 설정)
-    const privateKey = fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key', 'utf8');
-    const certificate = fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt', 'utf8');
-    const ca = fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt', 'utf8');
+    const privateKey = fs.readFileSync(
+      '/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key',
+      'utf8',
+    );
+    const certificate = fs.readFileSync(
+      '/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt',
+      'utf8',
+    );
+    const ca = fs.readFileSync(
+      '/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt',
+      'utf8',
+    );
 
     const httpsOptions = {
       key: privateKey,

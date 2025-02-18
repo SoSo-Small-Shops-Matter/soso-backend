@@ -35,7 +35,7 @@ export class AuthController {
 
   @Get('/test')
   async devTestAPI(@Res() res) {
-    const payload = { uuid: '102784937796556996262' };
+    const payload = { uuid: '100696381122086866149' };
     const access_token = await this.jwtService.signAsync(payload, {
       secret: jwtConfig.access_token_secret,
       expiresIn: jwtConfig.access_token_expiresIn,
