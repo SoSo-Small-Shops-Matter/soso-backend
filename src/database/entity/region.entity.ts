@@ -3,12 +3,12 @@ import { Shop } from './shop.entity';
 
 @Entity('region')
 export class Region {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'varchar', length: 255 })
-    name: string;
+  @Column({ type: 'varchar', length: 255 })
+  name: string;
 
-    @OneToMany( () => Shop, (shop) => shop.region)
-    shop: Shop;
+  @OneToMany(() => Shop, (shop) => shop.region)
+  shop: Shop;
 }

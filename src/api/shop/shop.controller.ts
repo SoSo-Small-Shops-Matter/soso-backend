@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Query,
-  Req,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { ShopIdParamDto, UpdateShopProductsDto } from './dto/submit.dto';
@@ -21,21 +11,14 @@ export class ShopController {
 
   @Get('/')
   async getShopWithin1Km(@Query('lat') lat: number, @Query('lng') lng: number, @Query('sorting') sorting: string) {
-    return new SuccessResponseDTO(
-      await this.shopService.findShopsWithin1Km(lat, lng, sorting),
-    );
+    return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(lat, lng, sorting));
   }
 
   @Patch('/')
   @UseGuards(AuthGuard('jwt'))
-  async updateShopProduct(
-    @Body() updateShopProductsDto: UpdateShopProductsDto,
-    @Req() req: any,
-  ) {
+  async updateShopProduct(@Body() updateShopProductsDto: UpdateShopProductsDto, @Req() req: any) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(
-      await this.shopService.updateShopProduct(updateShopProductsDto, uuid),
-    );
+    return new SuccessResponseDTO(await this.shopService.updateShopProduct(updateShopProductsDto, uuid));
   }
 
   @Get('/search')
@@ -44,17 +27,13 @@ export class ShopController {
     @Query('limit') limit: number,
     @Query('shopName') shopName: string,
   ) {
-    return new SuccessResponseDTO(
-      await this.shopService.findShopsByShopName(shopName, page, limit),
-    );
+    return new SuccessResponseDTO(await this.shopService.findShopsByShopName(shopName, page, limit));
   }
 
   @Patch('/report')
   async reportShop(@Body() body: any) {
     const { report, shopId } = body;
-    return new SuccessResponseDTO(
-      await this.shopService.updateShopReportStatus(report, shopId),
-    );
+    return new SuccessResponseDTO(await this.shopService.updateShopReportStatus(report, shopId));
   }
 
   @Get('/:shopId')
@@ -65,9 +44,7 @@ export class ShopController {
     @Req() req: any,
   ) {
     const { shopId } = params;
-    const uuid = req.user ? req.user.uuid : null; // 유저 정보가 있으면 uuid를 사용
-    return new SuccessResponseDTO(
-      await this.shopService.findShopByShopId(shopId, uuid),
-    );
+    const uuid = req.user ? req.user.uuid : null; // 유저 정보가 있으면 uuid를 사용'
+    return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId, uuid));
   }
 }

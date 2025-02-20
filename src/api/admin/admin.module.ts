@@ -5,8 +5,8 @@ import { ShopModule } from '../shop/shop.module';
 import { OperateModule } from '../operate/operate.module';
 
 @Module({
-  imports:[ShopModule,OperateModule],
+  imports: [ShopModule, OperateModule],
   controllers: [AdminController],
-  providers: [AdminService]
+  providers: [AdminService],
 })
 export class AdminModule {}

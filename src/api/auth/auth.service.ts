@@ -19,10 +19,7 @@ export class AuthService {
   async refresh(refresh_token: string) {
     try {
       // ✅ refresh_token 검증
-      const payload = jwt.verify(
-        refresh_token,
-        jwtConfig.refresh_token_secret,
-      ) as { uuid: string };
+      const payload = jwt.verify(refresh_token, jwtConfig.refresh_token_secret) as { uuid: string };
 
       // ✅ 새로운 access_token 발급 (payload에서 uuid를 올바르게 추출)
       const newAccessToken = jwt.sign(
@@ -34,9 +31,7 @@ export class AuthService {
       return { access_token: newAccessToken };
     } catch (error) {
       console.error(error);
-      throw new UnauthorizedException(
-        `유효하지 않은 refresh 토큰: ${error.message}`,
-      );
+      throw new UnauthorizedException(`유효하지 않은 refresh 토큰: ${error.message}`);
     }
   }
 }

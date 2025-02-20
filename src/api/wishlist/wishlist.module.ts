@@ -7,12 +7,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports:[
-    TypeOrmModule.forFeature([Wishlist]),
-    forwardRef(() =>AuthModule),
-  ],
+  imports: [TypeOrmModule.forFeature([Wishlist]), forwardRef(() => AuthModule)],
   controllers: [WishlistController],
-  providers: [WishlistService,WishlistRepository],
+  providers: [WishlistService, WishlistRepository],
   exports: [WishlistRepository],
 })
 export class WishlistModule {}

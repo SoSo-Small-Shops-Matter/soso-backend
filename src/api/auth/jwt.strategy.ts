@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -21,9 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       secretOrKey: jwtConfig.access_token_secret,
       ignoreExpiration: true,
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request) => request?.cookies?.access_token,
-      ]),
+      jwtFromRequest: ExtractJwt.fromExtractors([(request) => request?.cookies?.access_token]),
     });
   }
 
@@ -37,6 +31,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
     }
-    return user.uuid;
+    return user;
   }
 }

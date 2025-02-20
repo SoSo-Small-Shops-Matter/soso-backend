@@ -3,12 +3,12 @@ import { Review } from './review.entity';
 
 @Entity('image')
 export class Image {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    url: string;
+  @Column()
+  url: string;
 
-    @ManyToMany(() => Review, (review) => review.images)
-    reviews: Review[];
+  @ManyToMany(() => Review, (review) => review.images)
+  reviews: Review[];
 }

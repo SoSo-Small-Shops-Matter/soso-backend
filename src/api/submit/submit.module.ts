@@ -11,14 +11,16 @@ import { ProductModule } from '../product/product.module';
 import { OperateModule } from '../operate/operate.module';
 
 @Module({
-  imports:[
+  imports: [
     forwardRef(() => ShopModule),
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([SubmitUserRecord]),
-    RegionModule,ProductModule,OperateModule,
+    RegionModule,
+    ProductModule,
+    OperateModule,
   ],
   controllers: [SubmitController],
-  providers: [SubmitService,SubmitRepository],
-  exports: [SubmitRepository]
+  providers: [SubmitService, SubmitRepository],
+  exports: [SubmitRepository],
 })
 export class SubmitModule {}

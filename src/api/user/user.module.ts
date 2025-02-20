@@ -11,14 +11,16 @@ import { WishlistModule } from '../wishlist/wishlist.module';
 import { SubmitModule } from '../submit/submit.module';
 
 @Module({
-  imports:[
+  imports: [
     forwardRef(() => AuthModule),
     forwardRef(() => SubmitModule),
     TypeOrmModule.forFeature([User]),
-    AwsModule,ReviewModule,WishlistModule,
+    AwsModule,
+    ReviewModule,
+    WishlistModule,
   ],
   controllers: [UserController],
-  providers: [UserService,UserRepository],
+  providers: [UserService, UserRepository],
   exports:[UserService,UserRepository],
 })
 export class UserModule {}

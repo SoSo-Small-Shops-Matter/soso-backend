@@ -43,12 +43,7 @@ export class ShopRepository {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
-        .leftJoinAndSelect(
-          'shop.operatingHours',
-          'operatingHours',
-          'operatingHours.type = :operatingHoursType',
-          { operatingHoursType: 0 },
-        ) // operatingHours.type = 0 조건
+        .leftJoinAndSelect('shop.operatingHours', 'operatingHours', 'operatingHours.type = :operatingHoursType', { operatingHoursType: 0 }) // operatingHours.type = 0 조건
         .leftJoinAndSelect('shop.products', 'products') // products는 조건 없이 조인
         .where('shop.id = :shopId', { shopId })
         .andWhere('shop.type = :type', { type: 0 }) // shop.type = 0 조건
@@ -68,13 +63,7 @@ export class ShopRepository {
       throw new InternalServerErrorException();
     }
   }
-  async findShopsWithin1Km(
-    lat: number,
-    lng: number,
-    distanceLimit: number,
-    radius: number,
-    sortByReviewCount = false,
-  ) {
+  async findShopsWithin1Km(lat: number, lng: number, distanceLimit: number, radius: number, sortByReviewCount = false) {
     try {
       let query = this.shopRepository
         .createQueryBuilder('shop')
@@ -99,23 +88,7 @@ export class ShopRepository {
           .orderBy('reviewCount', 'DESC'); // 리뷰 개수 기준 정렬
       }
 
-      const rawResults = await query.getRawMany(); // getRawMany() 사용하여 깔끔한 데이터 가져오기
-
-      // shop_ 프리픽스 제거 + 필요한 필드만 추출
-      const formattedResults = rawResults.map((shop) => ({
-        id: shop.shop_id,
-        name: shop.shop_name,
-        type: shop.shop_type,
-        reportStatus: shop.shop_reportStatus,
-        lat: shop.shop_lat,
-        lng: shop.shop_lng,
-        location: shop.shop_location,
-        regionId: shop.shop_regionId,
-        distance: shop.distance,
-        ...(sortByReviewCount ? { reviewCount: Number(shop.reviewCount) } : {}) // sortByReviewCount가 true일 때만 포함
-      }));
-
-      return formattedResults
+      return await query.getRawMany(); // getRawMany() 사용하여 깔끔한 데이터 가져오기
     } catch (err) {
       console.error('Shop/findShopsWithin1Km Error', err);
       throw new InternalServerErrorException();

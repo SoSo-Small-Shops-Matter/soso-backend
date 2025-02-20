@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as jwt from 'jsonwebtoken';
 import * as config from 'config';
@@ -9,7 +9,7 @@ const jwtConfig = config.get('jwt');
 export class OptionalAuthGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const token = request.cookies?.access_token; // ✅ 쿠키에서 access_token 가져오기
 
@@ -23,9 +23,10 @@ export class OptionalAuthGuard implements CanActivate {
       request.user = decoded; // ✅ 검증 성공 시 유저 정보 저장
     } catch (err) {
       console.log(err);
-      request.user = null; // ✅ 인증 실패 시 null 처리
+      request.user = null;
+      if (err.name === 'TokenExpiredError') throw new UnauthorizedException('토큰이 만료되었습니다.');
     }
 
-    return true; // ✅ 요청 계속 진행
+    return request.user; // ✅ 요청 계속 진행
   }
 }

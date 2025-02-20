@@ -7,25 +7,19 @@ import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto'
 @Controller('submit')
 @UseGuards(AuthGuard('jwt'))
 export class SubmitController {
-    constructor(private submitService: SubmitService){}
+  constructor(private submitService: SubmitService) {}
 
-    @Post('/')
-    async submitNewShop(
-        @Body() newShopData: SubmitNewShopDto,
-        @Req() req:any,
-    ){
-        const { uuid } = req.user;
-        await this.submitService.createNewShop(newShopData,uuid)
-        return new SuccessResponseDTO();
-    }
-    
-    @Post('/operating')
-    async submitShopOperatingHours(
-        @Body() operatingData: SubmitShopOperatingHoursDto,
-        @Req() req:any,
-    ){
-        const { uuid } = req.user;
-        await this.submitService.validateAndUpdateOperatingHours(operatingData, uuid)
-        return new SuccessResponseDTO(); 
-    }
+  @Post('/')
+  async submitNewShop(@Body() newShopData: SubmitNewShopDto, @Req() req: any) {
+    const { uuid } = req.user;
+    await this.submitService.createNewShop(newShopData, uuid);
+    return new SuccessResponseDTO();
+  }
+
+  @Post('/operating')
+  async submitShopOperatingHours(@Body() operatingData: SubmitShopOperatingHoursDto, @Req() req: any) {
+    const { uuid } = req.user;
+    await this.submitService.validateAndUpdateOperatingHours(operatingData, uuid);
+    return new SuccessResponseDTO();
+  }
 }
