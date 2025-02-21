@@ -125,7 +125,7 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       },
     },
-    '/review/{id}': {
+    '/review/{reviewId}': {
       delete: {
         ...reviewSwaggerDocs.deleteReview,
         tags: ['Review'],

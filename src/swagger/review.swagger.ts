@@ -142,7 +142,7 @@ export const reviewSwaggerDocs = {
     description: '사용자가 작성한 리뷰 데이터 삭제하기',
     parameters: [
       {
-        name: 'id',
+        name: 'reviewId',
         in: 'path',
         description: '리뷰 ID',
         required: true,

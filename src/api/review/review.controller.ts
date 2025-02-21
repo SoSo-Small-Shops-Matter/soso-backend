@@ -35,7 +35,7 @@ export class ReviewController {
     return new SuccessResponseDTO(await this.reviewService.updateReview(uuid, updateReviewDto, files || file));
   }
 
-  @Delete('/:id')
+  @Delete('/:reviewId')
   async deleteReview(@Param() deleteReviewDto: DeleteReviewDto, @Req() req: any) {
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.reviewService.deleteReviewByUUID(uuid, deleteReviewDto));
