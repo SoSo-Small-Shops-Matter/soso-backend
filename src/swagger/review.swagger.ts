@@ -6,29 +6,29 @@ export const reviewSwaggerDocs = {
       description: '새로운 리뷰 데이터와 파일 업로드',
       required: true,
       content: {
-          'multipart/form-data': { 
-              schema: {
-                  type: 'object',
-                  properties: {
-                      shopId: {
-                          type: 'integer',
-                          example: 3
-                      },
-                      content: {
-                          type: 'string',
-                          example: 'Great shop with amazing coffee!'
-                      },
-                      files: { 
-                          type: 'array', 
-                          items: {
-                              type: 'string',
-                              format: 'binary'
-                          }
-                      }
-                  }
-              }
-          }
-      }
+        'multipart/form-data': {
+          schema: {
+            type: 'object',
+            properties: {
+              shopId: {
+                type: 'integer',
+                example: 3,
+              },
+              content: {
+                type: 'string',
+                example: 'Great shop with amazing coffee!',
+              },
+              files: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  format: 'binary',
+                },
+              },
+            },
+          },
+        },
+      },
     },
     responses: {
       200: {
@@ -75,29 +75,29 @@ export const reviewSwaggerDocs = {
       description: '새로운 리뷰 데이터와 파일 업로드',
       required: true,
       content: {
-          'multipart/form-data': { 
-              schema: {
-                  type: 'object',
-                  properties: {
-                      shopId: {
-                          type: 'integer',
-                          example: 3
-                      },
-                      content: {
-                          type: 'string',
-                          example: 'Great shop with amazing coffee!'
-                      },
-                      files: { 
-                          type: 'array', 
-                          items: {
-                              type: 'string',
-                              format: 'binary'
-                          }
-                      }
-                  }
-              }
-          }
-      }
+        'multipart/form-data': {
+          schema: {
+            type: 'object',
+            properties: {
+              shopId: {
+                type: 'integer',
+                example: 3,
+              },
+              content: {
+                type: 'string',
+                example: 'Great shop with amazing coffee!',
+              },
+              files: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  format: 'binary',
+                },
+              },
+            },
+          },
+        },
+      },
     },
     responses: {
       200: {
@@ -140,6 +140,18 @@ export const reviewSwaggerDocs = {
   deleteReview: {
     summary: '리뷰 삭제하기 API',
     description: '사용자가 작성한 리뷰 데이터 삭제하기',
+    parameters: [
+      {
+        name: 'id',
+        in: 'path',
+        description: '리뷰 ID',
+        required: true,
+        schema: {
+          type: 'string',
+          example: '3',
+        },
+      },
+    ],
     responses: {
       200: {
         description: '성공',
