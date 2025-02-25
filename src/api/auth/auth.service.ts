@@ -47,8 +47,10 @@ export class AuthService {
     });
 
     const userData = userResponse.data;
-
-    await this.googleUserSignup(userData.id, userData.picture, userData.name, userData.email);
+    const existUser = await this.findUserById(userData.id);
+    if (!existUser) {
+      await this.googleUserSignup(userData.id, userData.picture, userData.name, userData.email);
+    }
 
     const accessToken = jwt.sign({ uuid: userData.id }, jwtConfig.access_token_secret, { expiresIn: jwtConfig.access_token_expiresIn });
 

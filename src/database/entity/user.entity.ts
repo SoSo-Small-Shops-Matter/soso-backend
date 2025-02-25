@@ -19,6 +19,9 @@ export class User extends BaseEntity {
   })
   nickName: string;
 
+  @Column({ default: true })
+  isNew: boolean;
+
   @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
   wishlists: Wishlist[]; // 사용자가 소유한 위시리스트 목록
 

@@ -50,7 +50,7 @@ export class UserRepository {
   }
   async updateNickName(uuid: string, nickName: string) {
     try {
-      return await this.userReposiotry.update({ uuid }, { nickName });
+      return await this.userReposiotry.update({ uuid }, { nickName, isNew: false });
     } catch (err) {
       console.error('Error updateNickName :', err); // 에러 로그 추가
       throw new InternalServerErrorException();
