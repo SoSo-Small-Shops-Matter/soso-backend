@@ -15,6 +15,7 @@ export function setupSwagger(app: INestApplication): void {
       description: 'Enter JWT token',
       in: 'header',
     }, 'JWT-auth')
+    .addServer('/v1/api') 
     .build();
 
   // SwaggerModule.createDocument를 사용해 직접 병합
