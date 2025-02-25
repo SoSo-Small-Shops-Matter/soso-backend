@@ -13,9 +13,7 @@ export class AuthService {
   private googleTokenUrl = 'https://oauth2.googleapis.com/token';
   private googleUserInfoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
-  constructor(
-    private userRepository: UserRepository,
-  ) {}
+  constructor(private userRepository: UserRepository) {}
 
   async findUserById(uuid: string) {
     return await this.userRepository.findUserByUUID(uuid);
@@ -25,8 +23,8 @@ export class AuthService {
   }
 
   async getUserData(authCode: string, redirectUri: string) {
-    if(!authCode || !redirectUri) throw new BadRequestException('code 또는 redirectUri 데이터가 없습니다.');
-    
+    if (!authCode || !redirectUri) throw new BadRequestException('code 또는 redirectUri 데이터가 없습니다.');
+
     const tokenResponse = await axios.post(
       this.googleTokenUrl,
       qs.stringify({
@@ -49,27 +47,19 @@ export class AuthService {
     });
 
     const userData = userResponse.data;
-    
-    await this.googleUserSignup(userData.id,userData.picture,userData.name,userData.email);
 
-    const accessToken = jwt.sign(
-      { uuid: userData.id },
-      jwtConfig.access_token_secret,
-      { expiresIn: jwtConfig.access_token_expiresIn },
-    );
+    await this.googleUserSignup(userData.id, userData.picture, userData.name, userData.email);
 
-    const refreshToken = jwt.sign(
-      { uuid: userData.id },
-      jwtConfig.refresh_token_secret,
-      { expiresIn: jwtConfig.refresh_token_expiresIn },
-    );
-    
+    const accessToken = jwt.sign({ uuid: userData.id }, jwtConfig.access_token_secret, { expiresIn: jwtConfig.access_token_expiresIn });
+
+    const refreshToken = jwt.sign({ uuid: userData.id }, jwtConfig.refresh_token_secret, { expiresIn: jwtConfig.refresh_token_expiresIn });
+
     return { accessToken, refreshToken };
   }
 
   async refresh(refreshToken: string) {
     try {
-      if(!refreshToken) throw new UnauthorizedException('헤더에 Refresh Token이 포함되지 않았습니다.');
+      if (!refreshToken) throw new UnauthorizedException('헤더에 Refresh Token이 포함되지 않았습니다.');
 
       // ✅ refresh_token 검증
       const payload = jwt.verify(refreshToken, jwtConfig.refresh_token_secret) as { uuid: string };
@@ -86,5 +76,14 @@ export class AuthService {
       console.error(error);
       throw new UnauthorizedException(`유효하지 않은 refresh 토큰: ${error.message}`);
     }
+  }
+
+  async test() {
+    const accessToken = jwt.sign(
+      { uuid: '102784937796556996262' }, // ✅ 여기서 payload.uuid만 넣어야 함!
+      jwtConfig.access_token_secret,
+      { expiresIn: '24h' },
+    );
+    return accessToken;
   }
 }
