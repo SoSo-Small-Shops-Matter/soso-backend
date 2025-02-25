@@ -14,7 +14,6 @@ import { ProductModule } from './api/product/product.module';
 import { OperateModule } from './api/operate/operate.module';
 import { RegionModule } from './api/region/region.module';
 
-
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
@@ -30,6 +29,6 @@ import { RegionModule } from './api/region/region.module';
     OperateModule,
     RegionModule,
   ],
-  controllers:[AppController],
+  controllers: [AppController],
 })
 export class AppModule {}

@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as config from 'config';
 import * as fs from 'fs';
-import * as cookieParser from 'cookie-parser'; // 추가
 import { CustomValidationPipe } from './common/pipe/validationPipe.pipe';
 import { setupSwagger } from './swagger/swagger';
 
@@ -41,7 +40,6 @@ async function bootstrap() {
   }
 
   app.useGlobalPipes(new CustomValidationPipe());
-  app.use(cookieParser()); // ✅ 쿠키 파서 적용
   app.enableCors({
     origin: (origin, callback) => {
       // origin이 존재하지 않는 경우(null)도 허용 (서버 간 요청, Postman)
