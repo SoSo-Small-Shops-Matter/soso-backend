@@ -1,8 +1,7 @@
 export const userSwaggerDocs = {
   getUserNickName: {
     summary: '닉네임 중복 체크 API',
-    description:
-      '사용자의 닉네임 중복 여부를 체크합니다. true면 중복된 닉네임, false면 중복되지 않은 닉네임',
+    description: '사용자의 닉네임 중복 여부를 체크합니다. true면 중복된 닉네임, false면 중복되지 않은 닉네임',
     parameters: [
       {
         name: 'nickName',
@@ -233,8 +232,7 @@ export const userSwaggerDocs = {
   },
   getUserSubmitRecords: {
     summary: '사용자가 등록한 소품샵 API',
-    description:
-      '사용자가 등록한 소품샵 데이터 불러오기 type:  0: 최초 제보  1: 운영 정보 수정 2: 판매 정보 수정 ',
+    description: '사용자가 등록한 소품샵 데이터 불러오기 type:  0: 최초 제보  1: 운영 정보 수정 2: 판매 정보 수정 ',
     responses: {
       200: {
         description: '성공',
@@ -438,6 +436,7 @@ export const userSwaggerDocs = {
                   uuid: 'uuid',
                   photoUrl: 'url',
                   nickname: 'nickname',
+                  email: 'email',
                 },
               ],
             },

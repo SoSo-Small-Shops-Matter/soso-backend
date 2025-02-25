@@ -87,6 +87,7 @@ export class ReviewService {
     const { reviewId } = deleteReviewDto;
 
     const review = await this.reviewRepository.findReviewByReviewId(uuid, reviewId);
+    if (!review) throw new NotFoundException('존재하지 않는 리뷰ID 입니다.');
 
     if (review.images.length > 0) {
       await Promise.all(

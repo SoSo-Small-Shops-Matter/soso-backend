@@ -35,12 +35,13 @@ export class UserRepository {
       throw new InternalServerErrorException('User signup failed');
     }
   }
-  async createUser(uuid: string, photoUrl: string, nickName: string) {
+  async createUser(uuid: string, photoUrl: string, nickName: string, email: string) {
     try {
       return await this.userReposiotry.save({
         uuid,
         photoUrl,
         nickName,
+        email,
       });
     } catch (err) {
       console.error('Error create user:', err); // 에러 로그 추가

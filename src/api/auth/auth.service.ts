@@ -12,8 +12,8 @@ export class AuthService {
   async findUserById(uuid: string) {
     return await this.userRepository.findUserByUUID(uuid);
   }
-  async googleUserSignup(uuid: string, photoUrl: string, nickName: string) {
-    return await this.userRepository.createUser(uuid, photoUrl, nickName);
+  async googleUserSignup(uuid: string, photoUrl: string, nickName: string, email: string) {
+    return await this.userRepository.createUser(uuid, photoUrl, nickName, email);
   }
 
   async refresh(refresh_token: string) {
