@@ -11,12 +11,14 @@ export class OptionalAuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    const token = request.cookies?.access_token; // ✅ 쿠키에서 access_token 가져오기
+    const authHeader = request.headers.authorization; // ✅ Authorization 헤더에서 토큰 추출
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       request.user = null; // 인증되지 않은 사용자
       return true;
     }
+
+    const token = authHeader.split(' ')[1]; // ✅ "Bearer <token>"에서 토큰만 추출
 
     try {
       const decoded = jwt.verify(token, jwtConfig.access_token_secret); // ✅ 토큰 검증

@@ -22,15 +22,12 @@ export class ShopController {
   }
 
   @Get('/search')
-  async getSearchPageShop(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-    @Query('shopName') shopName: string,
-  ) {
+  async getSearchPageShop(@Query('page') page: number, @Query('limit') limit: number, @Query('shopName') shopName: string) {
     return new SuccessResponseDTO(await this.shopService.findShopsByShopName(shopName, page, limit));
   }
 
   @Patch('/report')
+  @UseGuards(AuthGuard('jwt'))
   async reportShop(@Body() body: any) {
     const { report, shopId } = body;
     return new SuccessResponseDTO(await this.shopService.updateShopReportStatus(report, shopId));
