@@ -4,9 +4,6 @@ import { Shop } from './shop.entity';
 
 @Entity('submit_user_record')
 export class SubmitUserRecord {
-  @PrimaryColumn()
-  uuid: string;
-
   @PrimaryColumn({ type: 'int' })
   shopId: number;
 
