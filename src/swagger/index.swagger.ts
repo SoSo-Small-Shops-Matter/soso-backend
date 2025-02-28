@@ -11,7 +11,6 @@ export const swaggerDocs = {
       get: {
         ...userSwaggerDocs.getUserNickName,
         tags: ['User'],
-        security: [{ 'JWT-auth': [] }],
       },
     },
     '/user/nickname': {
