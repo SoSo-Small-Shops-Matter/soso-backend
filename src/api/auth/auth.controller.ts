@@ -12,8 +12,8 @@ export class AuthController {
   }
 
   @Post('/refresh')
-  async refresh(@Req() req: Request) {
-    const refreshToken = req.headers['authorization']?.split(' ')[1];
+  async refresh(@Body() body: any) {
+    const { refreshToken } = body;
     return new SuccessResponseDTO(await this.authService.refresh(refreshToken));
   }
 

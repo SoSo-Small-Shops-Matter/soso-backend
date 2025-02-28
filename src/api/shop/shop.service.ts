@@ -36,11 +36,13 @@ export class ShopService {
   }
   async findShopsByShopName(shopName: string, page: number, limit: number) {
     const result = await this.shopRepository.findShopsByShopName(shopName, page, limit);
+    const totalPages = Math.ceil(page / result.length);
     const pageInfo = {
       page: Number(page),
       limit: Number(limit),
       totalElements: result.length,
-      totalPages: Math.ceil(page / result.length),
+      totalPages: totalPages,
+      nextPage: page >= totalPages ? false : true,
     };
     return {
       data: result,

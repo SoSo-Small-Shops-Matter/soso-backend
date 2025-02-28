@@ -92,6 +92,11 @@ export class AuthService {
       jwtConfig.access_token_secret,
       { expiresIn: '24h' },
     );
-    return accessToken;
+    const refreshToken = jwt.sign(
+      { uuid: '102784937796556996262' }, // ✅ 여기서 payload.uuid만 넣어야 함!
+      jwtConfig.refresh_token_secret,
+      { expiresIn: jwtConfig.refresh_token_expiresIn },
+    );
+    return { accessToken, refreshToken };
   }
 }
