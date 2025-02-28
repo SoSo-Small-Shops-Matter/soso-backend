@@ -6,7 +6,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
-@UseGuards(AuthGuard('jwt'))
 export class UserController {
   constructor(private userService: UserService) {}
 
@@ -17,18 +16,21 @@ export class UserController {
   }
 
   @Post('/nickname')
+  @UseGuards(AuthGuard('jwt'))
   async setNickName(@Body() nickNameDto: NickNameDto, @Req() req) {
     const { nickName } = nickNameDto;
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickName, uuid));
   }
   @Get('/profile')
+  @UseGuards(AuthGuard('jwt'))
   async getProfile(@Req() req) {
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.userService.getUserProfile(uuid));
   }
 
   @Patch('/profile')
+  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file'))
   async updateProfile(@Req() req, @Body() updateProfileDto?: UpdateProfileDto, @UploadedFile() file?: Express.Multer.File) {
     const { nickName } = updateProfileDto;
@@ -37,18 +39,21 @@ export class UserController {
   }
 
   @Get('/submit')
+  @UseGuards(AuthGuard('jwt'))
   async getSubmitShop(@Req() req) {
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.userService.findSubmitRecord(uuid));
   }
 
   @Get('/review')
+  @UseGuards(AuthGuard('jwt'))
   async getUserReview(@Req() req: any) {
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.userService.findUserReviews(uuid));
   }
 
   @Get('/wishlist')
+  @UseGuards(AuthGuard('jwt'))
   async getUserWishlist(@Req() req: any) {
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.userService.getWishlist(uuid));
