@@ -73,7 +73,13 @@ export class AuthService {
         { expiresIn: jwtConfig.access_token_expiresIn },
       );
 
-      return { access_token: newAccessToken };
+      const newRefreshToken = jwt.sign(
+        { uuid: payload.uuid }, // ✅ 여기서 payload.uuid만 넣어야 함!
+        jwtConfig.refresh_token_secret,
+        { expiresIn: jwtConfig.refresh_token_expiresIn },
+      );
+
+      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException(`유효하지 않은 refresh 토큰: ${error.message}`);

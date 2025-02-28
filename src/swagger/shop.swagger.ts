@@ -359,8 +359,7 @@ export const shopSwaggerDocs = {
   },
   reportShop: {
     summary: '신고하기 API',
-    description:
-      '소품샵의 정보가 일치하지 않을경우 신고하는 기능 report:1 -> 더이상 존재하지 않는 소품샵 , report:2 -> 위치가 잘못된 소품샵',
+    description: '소품샵의 정보가 일치하지 않을경우 신고하는 기능 report:1 -> 더이상 존재하지 않는 소품샵 , report:2 -> 위치가 잘못된 소품샵',
     requestBody: {
       description: '신고하기',
       required: true,
@@ -434,7 +433,7 @@ export const shopSwaggerDocs = {
         description: '소품샵이름',
         schema: {
           type: 'string',
-          example: '뉴뉴',
+          example: '더',
         },
       },
       {
@@ -465,17 +464,56 @@ export const shopSwaggerDocs = {
             example: {
               message: 'Success',
               statusCode: 200,
-              result: [
-                {
-                  id: 3,
-                  name: '봄을상자 숲길점',
-                  type: 0,
-                  reportStatus: 0,
-                  lat: 37.5664,
-                  lng: 126.978,
-                  location: '서울 마포구 성미산로23길 30 지1층',
+              result: {
+                data: [
+                  {
+                    id: 2,
+                    name: '더넛',
+                    image: '',
+                    type: 0,
+                    reportStatus: 0,
+                    lat: 37.5666,
+                    lng: 126.978,
+                    location: '서울 성동구 상원6나길 6 B동 302호',
+                  },
+                  {
+                    id: 11,
+                    name: '더나인몰 건대점',
+                    image: '',
+                    type: 0,
+                    reportStatus: 0,
+                    lat: 37.566,
+                    lng: 126.979,
+                    location: '서울 광진구 동일로20길 44 덕우빌딩 1층',
+                  },
+                  {
+                    id: 19,
+                    name: '더나인몰 서울숲점',
+                    image: null,
+                    type: 0,
+                    reportStatus: 0,
+                    lat: 37.5472,
+                    lng: 127.043,
+                    location: '서울 성동구 서울숲4길 20 1층 더나인몰 서울숲점',
+                  },
+                  {
+                    id: 21,
+                    name: '더나인몰 건대점',
+                    image: null,
+                    type: 0,
+                    reportStatus: 0,
+                    lat: 37.5408,
+                    lng: 127.066,
+                    location: '서울 광진구 동일로20길 44 덕유빌딩 1층',
+                  },
+                ],
+                pageInfo: {
+                  page: 1,
+                  limit: 10,
+                  totalElements: 1,
+                  totalPages: 1,
                 },
-              ],
+              },
             },
           },
         },

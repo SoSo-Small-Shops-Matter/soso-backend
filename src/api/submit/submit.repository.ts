@@ -74,7 +74,7 @@ export class SubmitRepository {
     try {
       return await this.submitUserRecordRepository.find({
         where: {
-          uuid,
+          user: { uuid },
         },
         relations: ['shop'],
       });

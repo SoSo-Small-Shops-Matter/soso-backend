@@ -35,7 +35,17 @@ export class ShopService {
     }));
   }
   async findShopsByShopName(shopName: string, page: number, limit: number) {
-    return await this.shopRepository.findShopsByShopName(shopName, page, limit);
+    const result = await this.shopRepository.findShopsByShopName(shopName, page, limit);
+    const pageInfo = {
+      page: Number(page),
+      limit: Number(limit),
+      totalElements: result.length,
+      totalPages: Math.ceil(page / result.length),
+    };
+    return {
+      data: result,
+      pageInfo,
+    };
   }
 
   async findShopByShopId(shopId: number, uuid: string) {
