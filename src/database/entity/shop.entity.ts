@@ -21,10 +21,10 @@ export class Shop {
   @Column({ type: 'int', default: 0 }) // 0: 정상 1: 더이상 운영하지 않는 가게 2: 위치가 잘못됨
   reportStatus: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'double' })
   lat: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'double' })
   lng: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })

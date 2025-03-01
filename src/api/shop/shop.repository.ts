@@ -25,6 +25,19 @@ export class ShopRepository {
     }
   }
 
+  async findAllShopsByShopName(shopName: string) {
+    try {
+      return await this.shopRepository
+        .createQueryBuilder('shop')
+        .where('shop.name LIKE :name', { name: `%${shopName}%` }) // 부분 검색
+        .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
+        .getMany();
+    } catch (err) {
+      console.error('Shop/findAllShopsByShopName Error', err);
+      throw new InternalServerErrorException();
+    }
+  }
+
   async findOnlyShopByShopId(shopId: number) {
     try {
       return await this.shopRepository.findOne({

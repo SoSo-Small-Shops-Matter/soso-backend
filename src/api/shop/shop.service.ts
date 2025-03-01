@@ -5,6 +5,7 @@ import { Product } from 'src/database/entity/product.entity';
 import { ReviewService } from '../review/review.service';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
+import { all } from 'axios';
 
 @Injectable()
 export class ShopService {
@@ -36,11 +37,12 @@ export class ShopService {
   }
   async findShopsByShopName(shopName: string, page: number, limit: number) {
     const result = await this.shopRepository.findShopsByShopName(shopName, page, limit);
-    const totalPages = Math.ceil(page / result.length);
+    const allShops = await this.shopRepository.findAllShopsByShopName(shopName);
+    const totalPages = Math.ceil(allShops.length / limit);
     const pageInfo = {
       page: Number(page),
       limit: Number(limit),
-      totalElements: result.length,
+      totalElements: allShops.length,
       totalPages: totalPages,
       nextPage: page >= totalPages ? false : true,
     };
