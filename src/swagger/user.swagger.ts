@@ -1,4 +1,81 @@
 export const userSwaggerDocs = {
+  deleteUser: {
+    summary: '회원탈퇴 API',
+    description: '소프트딜리트',
+    parameters: [
+      {
+        name: 'uuid',
+        in: 'path',
+        description: 'uuid',
+        required: true,
+        schema: {
+          type: 'string',
+          example: '102784937796556996262',
+        },
+      },
+    ],
+    responses: {
+      204: {
+        description: '성공',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Success',
+              statusCode: 200,
+            },
+          },
+        },
+      },
+      400: {
+        description: '유효하지 않은 요청 데이터',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Bad Request',
+              error: 'Bad Request',
+              statusCode: 400,
+            },
+          },
+        },
+      },
+      401: {
+        description: '인증 실패',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Unauthorized',
+              error: 'Unauthorized',
+              statusCode: 401,
+            },
+          },
+        },
+      },
+      404: {
+        description: '존재하지 않는 유저',
+        content: {
+          'application/json': {
+            example: {
+              message: '존재하지 않는 유저입니다.',
+              error: 'Not Found',
+              statusCode: 404,
+            },
+          },
+        },
+      },
+      500: {
+        description: '내부 서버 오류',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Failed to save user case',
+              error: 'Internal Server Error',
+              statusCode: 500,
+            },
+          },
+        },
+      },
+    },
+  },
   getUserNickName: {
     summary: '닉네임 중복 체크 API',
     description: '사용자의 닉네임 중복 여부를 체크합니다. true면 중복된 닉네임, false면 중복되지 않은 닉네임',
@@ -122,7 +199,7 @@ export const userSwaggerDocs = {
             example: {
               message: 'Conflict',
               error: 'Conflict',
-              statusCode: 404,
+              statusCode: 409,
             },
           },
         },
@@ -211,7 +288,7 @@ export const userSwaggerDocs = {
             example: {
               message: 'Conflict',
               error: 'Conflict',
-              statusCode: 404,
+              statusCode: 409,
             },
           },
         },

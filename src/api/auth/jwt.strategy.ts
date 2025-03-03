@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('토큰이 만료되었습니다.');
     }
 
-    const user: User = await this.userRepository.findOne({ where: { uuid } });
+    const user: User = await this.userRepository.findOne({ where: { uuid, deletedAt: null } });
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
     }

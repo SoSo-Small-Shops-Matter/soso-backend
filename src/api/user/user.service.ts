@@ -28,7 +28,7 @@ export class UserService {
   }
 
   async getUserProfile(uuid: string) {
-    return await this.userRepository.findUserProfileByUUID(uuid);
+    return await this.userRepository.findUserByUUID(uuid);
   }
 
   async updateUserProfile(nickName: string, uuid: string, file: Express.Multer.File) {
@@ -70,5 +70,12 @@ export class UserService {
     return userWishlists.map((data) => {
       return data.shop;
     });
+  }
+
+  async deleteUser(uuid: string, deleteType: number) {
+    const user = await this.userRepository.findUserByUUID(uuid);
+    if (!user) throw new NotFoundException();
+    user.deleteType = deleteType;
+    await this.userRepository.deleteUser(user);
   }
 }

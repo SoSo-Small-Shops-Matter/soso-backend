@@ -7,12 +7,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class UserRepository {
   constructor(
     @InjectRepository(User)
-    private userReposiotry: Repository<User>,
+    private userRepository: Repository<User>,
   ) {}
 
   async findUserByUUID(uuid: string) {
     try {
-      return await this.userReposiotry.findOne({ where: { uuid } });
+      return await this.userRepository.findOne({
+        where: {
+          uuid: uuid,
+          deletedAt: null,
+        },
+      });
     } catch (err) {
       console.error('Error find user By Id:', err); // 에러 로그 추가
       throw new InternalServerErrorException();
@@ -20,24 +25,15 @@ export class UserRepository {
   }
   async findUserByNickName(nickName: string) {
     try {
-      return await this.userReposiotry.findOne({ where: { nickName } });
+      return await this.userRepository.findOne({ where: { nickName } });
     } catch (err) {
       console.error('Error findUserNickname :', err); // 에러 로그 추가
       throw new InternalServerErrorException();
     }
   }
-
-  async findUserProfileByUUID(uuid: string) {
-    try {
-      return await this.userReposiotry.findOne({ where: { uuid } });
-    } catch (err) {
-      console.error('Error create user:', err); // 에러 로그 추가
-      throw new InternalServerErrorException('User signup failed');
-    }
-  }
   async createUser(uuid: string, photoUrl: string, nickName: string, email: string) {
     try {
-      return await this.userReposiotry.save({
+      return await this.userRepository.save({
         uuid,
         photoUrl,
         nickName,
@@ -50,7 +46,7 @@ export class UserRepository {
   }
   async updateNickName(uuid: string, nickName: string) {
     try {
-      return await this.userReposiotry.update({ uuid }, { nickName, isNew: false });
+      return await this.userRepository.update({ uuid }, { nickName, isNew: false });
     } catch (err) {
       console.error('Error updateNickName :', err); // 에러 로그 추가
       throw new InternalServerErrorException();
@@ -58,9 +54,18 @@ export class UserRepository {
   }
   async updateUserPhotoUrl(uuid: string, photoUrl: string) {
     try {
-      return await this.userReposiotry.update({ uuid }, { photoUrl });
+      return await this.userRepository.update({ uuid }, { photoUrl });
     } catch (err) {
       console.error('Error setNickName :', err); // 에러 로그 추가
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async deleteUser(user: User) {
+    try {
+      return await this.userRepository.softRemove(user);
+    } catch (err) {
+      console.error('Error deleting user:', err);
       throw new InternalServerErrorException();
     }
   }

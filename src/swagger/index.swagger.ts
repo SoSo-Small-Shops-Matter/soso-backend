@@ -7,6 +7,13 @@ import { reviewSwaggerDocs } from './review.swagger';
 export const swaggerDocs = {
   paths: {
     // 유저
+    '/user/{uuid}': {
+      delete: {
+        ...userSwaggerDocs.deleteUser,
+        tags: ['User'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
     '/user/nickname/{nickName}': {
       get: {
         ...userSwaggerDocs.getUserNickName,
