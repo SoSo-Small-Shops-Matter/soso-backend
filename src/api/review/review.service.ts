@@ -37,21 +37,34 @@ export class ReviewService {
     await this.reviewRepository.saveReview(review);
   }
 
-  async updateReview(uuid: string, updateReviewDto: UpdateReviewDto, files?: Express.Multer.File[] | Express.Multer.File) {
+  async updateReview(uuid: string, updateReviewDto: UpdateReviewDto, files?: Express.Multer.File[]) {
     const { reviewId, content } = updateReviewDto;
 
     // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
     const imageUrls = files ? await this.awsService.uploadImagesToS3(files, 'jpg') : [];
 
-    // Review 생성
+    // Review 찾기
     const review = await this.reviewRepository.findReviewByReviewId(uuid, reviewId);
 
     if (!review) {
       throw new NotFoundException('찾을 수 없는 리뷰');
     }
 
+    // 업로드된 파일이 없는 경우 기존 이미지 삭제
+    if (files.length == 0 && review.images.length > 0) {
+      await Promise.all(
+        review.images.map(async (data) => {
+          await this.reviewRepository.deleteImage(data.id);
+        }),
+      );
+
+      // 리뷰의 이미지 리스트를 비움
+      review.images = [];
+    }
+
     // 리뷰 이미지를 수정했을 경우
     if (imageUrls.length > 0) {
+      console.log('?');
       if (review.images.length > 0) {
         await Promise.all(
           review.images.map(async (data) => {
@@ -78,6 +91,8 @@ export class ReviewService {
     // 리뷰 글을 수정했을 경우
     if (content) {
       review.content = content;
+    } else {
+      review.content = '';
     }
 
     return await this.reviewRepository.saveReview(review);

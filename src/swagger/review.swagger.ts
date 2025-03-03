@@ -79,7 +79,7 @@ export const reviewSwaggerDocs = {
           schema: {
             type: 'object',
             properties: {
-              shopId: {
+              reviewId: {
                 type: 'integer',
                 example: 3,
               },

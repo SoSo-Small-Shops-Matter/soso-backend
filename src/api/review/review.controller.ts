@@ -25,14 +25,9 @@ export class ReviewController {
 
   @Patch('/')
   @UseInterceptors(FilesInterceptor('files', 3)) // 최대 3개의 파일 허용
-  async updateReview(
-    @Body() updateReviewDto: UpdateReviewDto,
-    @Req() req: any,
-    @UploadedFiles() files?: Express.Multer.File[],
-    @UploadedFile() file?: Express.Multer.File, // 단일 파일 처리
-  ) {
+  async updateReview(@Body() updateReviewDto: UpdateReviewDto, @Req() req: any, @UploadedFiles() files?: Express.Multer.File[]) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.reviewService.updateReview(uuid, updateReviewDto, files || file));
+    return new SuccessResponseDTO(await this.reviewService.updateReview(uuid, updateReviewDto, files));
   }
 
   @Delete('/:reviewId')
