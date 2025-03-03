@@ -13,6 +13,7 @@ import { AdminModule } from './api/admin/admin.module';
 import { ProductModule } from './api/product/product.module';
 import { OperateModule } from './api/operate/operate.module';
 import { RegionModule } from './api/region/region.module';
+import { NoticeModule } from './api/notice/notice.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RegionModule } from './api/region/region.module';
     ProductModule,
     OperateModule,
     RegionModule,
+    NoticeModule,
   ],
   controllers: [AppController],
 })

@@ -1,13 +1,21 @@
-import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors, Delete } from '@nestjs/common';
 import { NickNameDto, UpdateProfileDto } from './dto/user.dto';
 import { UserService } from './user.service';
-import { SuccessResponseDTO } from 'src/common/response/response.dto';
+import { Success204ResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
+
+  @Delete('/')
+  @UseGuards(AuthGuard('jwt'))
+  async deleteUser(@Body() body: any, @Req() req) {
+    const { deleteType } = body;
+    const { uuid } = req;
+    return new Success204ResponseDTO(await this.userService.deleteUser(uuid, deleteType));
+  }
 
   @Get('/nickname/:nickName')
   async checkNickName(@Param() nickNameDto: NickNameDto) {
@@ -22,6 +30,7 @@ export class UserController {
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickName, uuid));
   }
+
   @Get('/profile')
   @UseGuards(AuthGuard('jwt'))
   async getProfile(@Req() req) {
