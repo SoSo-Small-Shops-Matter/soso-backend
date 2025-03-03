@@ -29,7 +29,6 @@ export class UserController {
     const { uuid } = req.user;
     return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickName, uuid));
   }
-
   @Get('/profile')
   @UseGuards(AuthGuard('jwt'))
   async getProfile(@Req() req) {
