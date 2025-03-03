@@ -22,8 +22,8 @@ export class ShopController {
   }
 
   @Get('/search')
-  async getSearchPageShop(@Query('page') page: number, @Query('limit') limit: number, @Query('shopName') shopName: string) {
-    return new SuccessResponseDTO(await this.shopService.findShopsByShopName(shopName, page, limit));
+  async getSearchPageShop(@Query('page') page: number, @Query('limit') limit: number, @Query('keyword') keyword: string) {
+    return new SuccessResponseDTO(await this.shopService.findShopsByKeyword(keyword, page, limit));
   }
 
   @Patch('/report')

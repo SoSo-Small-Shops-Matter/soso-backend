@@ -423,14 +423,14 @@ export const shopSwaggerDocs = {
     },
   },
   getSearchPageShop: {
-    summary: '소품샵 이름으로 검색 API',
-    description: '검색 페이지에서 사용자가 소품샵 이름으로 검색할 때 사용',
+    summary: '소품샵 이름 또는 도로명으로 검색 API',
+    description: '검색 페이지에서 사용자가 소품샵 이름 또는 도로명으로 검색할 때 사용',
     parameters: [
       {
-        name: 'shopName',
+        name: 'keyword',
         in: 'query',
         required: true,
-        description: '소품샵이름',
+        description: '소품샵이름 또는 도로명',
         schema: {
           type: 'string',
           example: '더',

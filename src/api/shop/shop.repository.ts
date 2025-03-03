@@ -10,30 +10,32 @@ export class ShopRepository {
     private shopRepository: Repository<Shop>,
   ) {}
 
-  async findShopsByShopName(shopName: string, page: number, limit: number) {
+  async findShopsByKeyword(keyword: string, page: number, limit: number) {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
-        .where('shop.name LIKE :name', { name: `%${shopName}%` }) // 부분 검색
+        .where('shop.name LIKE :keyword', { keyword: `%${keyword}%` }) // 부분 검색
+        .orWhere('shop.location LIKE :keyword', { keyword: `%${keyword}%` }) // 도로명 검색
         .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
         .skip(limit * (page - 1)) // offset 계산
         .take(limit) // 한 페이지당 표시할 개수
         .getMany();
     } catch (err) {
-      console.error('Shop/findShopsByShopName Error', err);
+      console.error('Shop/findShopsByKeyword Error', err);
       throw new InternalServerErrorException();
     }
   }
 
-  async findAllShopsByShopName(shopName: string) {
+  async findAllShopsByKeyword(keyword: string) {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
-        .where('shop.name LIKE :name', { name: `%${shopName}%` }) // 부분 검색
+        .where('shop.name LIKE :keyword', { keyword: `%${keyword}%` }) // 부분 검색
+        .orWhere('shop.location LIKE :keyword', { keyword: `%${keyword}%` }) // 도로명 검색
         .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
         .getMany();
     } catch (err) {
-      console.error('Shop/findAllShopsByShopName Error', err);
+      console.error('Shop/findAllShopsByKeyword Error', err);
       throw new InternalServerErrorException();
     }
   }

@@ -35,9 +35,9 @@ export class ShopService {
       ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}), // sorting이 true일 때만 포함
     }));
   }
-  async findShopsByShopName(shopName: string, page: number, limit: number) {
-    const result = await this.shopRepository.findShopsByShopName(shopName, page, limit);
-    const allShops = await this.shopRepository.findAllShopsByShopName(shopName);
+  async findShopsByKeyword(keyword: string, page: number, limit: number) {
+    const result = await this.shopRepository.findShopsByKeyword(keyword, page, limit);
+    const allShops = await this.shopRepository.findAllShopsByKeyword(keyword);
     const totalPages = Math.ceil(allShops.length / limit);
     const pageInfo = {
       page: Number(page),
