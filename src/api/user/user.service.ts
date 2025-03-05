@@ -76,6 +76,7 @@ export class UserService {
     const user = await this.userRepository.findUserByUUID(uuid);
     if (!user) throw new NotFoundException();
     user.deleteType = deleteType;
+    await this.userRepository.saveUser(user);
     await this.userRepository.deleteUser(user);
   }
 }

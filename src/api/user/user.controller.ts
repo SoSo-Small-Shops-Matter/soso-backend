@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors, Delete, Query, ParseIntPipe } from '@nestjs/common';
 import { NickNameDto, UpdateProfileDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
@@ -11,8 +11,7 @@ export class UserController {
 
   @Delete('/:uuid')
   @UseGuards(AuthGuard('jwt'))
-  async deleteUser(@Body() body: any, @Param('uuid') uuid: string) {
-    const { deleteType } = body;
+  async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string) {
     return new Success204ResponseDTO(await this.userService.deleteUser(uuid, deleteType));
   }
 

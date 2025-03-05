@@ -69,4 +69,13 @@ export class UserRepository {
       throw new InternalServerErrorException();
     }
   }
+  
+  async saveUser(user: User) {
+    try{
+      return await this.userRepository.save(user);
+    }catch(err){
+      console.error('Error save user:', err);
+      throw new InternalServerErrorException();
+    }
+  }
 }

@@ -13,6 +13,16 @@ export const userSwaggerDocs = {
           example: '102784937796556996262',
         },
       },
+      {
+        name: 'deleteType',
+        in: 'query',
+        description: '삭제 유형 (예: 1: 일반 탈퇴, 2: 강제 탈퇴)',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 1,
+        },
+      },
     ],
     responses: {
       204: {
