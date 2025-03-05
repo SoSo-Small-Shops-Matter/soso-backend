@@ -16,7 +16,7 @@ export const userSwaggerDocs = {
       {
         name: 'deleteType',
         in: 'query',
-        description: '삭제 유형 (예: 1: 일반 탈퇴, 2: 강제 탈퇴)',
+        description: '삭제 유형 (예: 0: 앱을 자주 사용하지 않아요, 1: 개인 정보 문제가 걱정이 돼요. 3: 앱 사용이 불편해요. 4: 다른 계정이 있어요.)',
         required: true,
         schema: {
           type: 'number',
