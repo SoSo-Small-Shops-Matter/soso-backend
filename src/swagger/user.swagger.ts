@@ -320,6 +320,26 @@ export const userSwaggerDocs = {
   getUserSubmitRecords: {
     summary: '사용자가 등록한 소품샵 API',
     description: '사용자가 등록한 소품샵 데이터 불러오기 type:  0: 최초 제보  1: 운영 정보 수정 2: 판매 정보 수정 ',
+    parameters: [
+      {
+        name: 'page',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 1,
+        },
+      },
+      {
+        name: 'limit',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 1,
+        },
+      },
+    ],
     responses: {
       200: {
         description: '성공',
@@ -374,6 +394,26 @@ export const userSwaggerDocs = {
   getUserReview: {
     summary: '사용자 리뷰 데이터 불러오기 API',
     description: '사용자가 작성한 리뷰 데이터 불러오기',
+    parameters: [
+      {
+        name: 'page',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 1,
+        },
+      },
+      {
+        name: 'limit',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 1,
+        },
+      },
+    ],
     responses: {
       200: {
         description: '성공',
@@ -459,6 +499,26 @@ export const userSwaggerDocs = {
   getUserWishlist: {
     summary: '사용자가 찜한 목록 불러오기 API',
     description: '사용자가 찜한 목록 불러오기',
+    parameters: [
+      {
+        name: 'page',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 1,
+        },
+      },
+      {
+        name: 'limit',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'number',
+          example: 1,
+        },
+      },
+    ],
     responses: {
       200: {
         description: '성공',

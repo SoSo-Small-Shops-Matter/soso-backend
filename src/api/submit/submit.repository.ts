@@ -70,7 +70,7 @@ export class SubmitRepository {
     }
   }
 
-  async findSubmitUserRecord(uuid: string) {
+  async findUserSubmitUserRecord(uuid: string) {
     try {
       return await this.submitUserRecordRepository.find({
         where: {
@@ -78,6 +78,21 @@ export class SubmitRepository {
         },
         relations: ['shop'],
       });
+    } catch (err) {
+      console.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findUserSubmitUserRecordByPageNation(uuid: string, page: number, limit: number) {
+    try {
+      return await this.submitUserRecordRepository
+        .createQueryBuilder('submit') // ✅ 엔티티 별칭 수정
+        .where('submit.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
+        .leftJoinAndSelect('submit.shop', 'shop') // ✅ shop 관계 조인
+        .skip(limit * (page - 1)) // ✅ offset 설정
+        .take(limit) // ✅ limit 설정
+        .getMany();
     } catch (err) {
       console.error(err);
       throw new InternalServerErrorException();

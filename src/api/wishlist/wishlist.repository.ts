@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from 'src/database/entity/wishlist.entity';
 import { Repository } from 'typeorm';
@@ -55,12 +51,26 @@ export class WishlistRepository {
     }
   }
 
-  async findWishlistByUUID(uuid: string) {
+  async findUserWishlistByUUID(uuid: string) {
     try {
       return await this.whishlistRepository.find({
         where: { user: { uuid } },
-        relations: ['user', 'shop', 'shop.region'],
       });
+    } catch (err) {
+      console.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findUserWishlistByPageNation(uuid: string, page: number, limit: number) {
+    try {
+      return await this.whishlistRepository
+        .createQueryBuilder('wishlist') // ✅ 엔티티 별칭 수정
+        .where('wishlist.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
+        .leftJoinAndSelect('wishlist.shop', 'shop')
+        .skip(limit * (page - 1)) // ✅ offset 설정
+        .take(limit) // ✅ limit 설정
+        .getMany();
     } catch (err) {
       console.error(err);
       throw new InternalServerErrorException();
@@ -74,7 +84,6 @@ export class WishlistRepository {
           user: { uuid },
           shop: { id: shopId },
         },
-        relations: ['user', 'shop'],
       });
     } catch (err) {
       console.error(err);

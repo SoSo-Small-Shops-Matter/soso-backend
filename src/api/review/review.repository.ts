@@ -45,8 +45,23 @@ export class ReviewRepository {
         where: {
           user: { uuid },
         },
-        relations: ['shop', 'images'],
       });
+    } catch (err) {
+      console.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findUserReviewByPageNation(uuid: string, page: number, limit: number) {
+    try {
+      return await this.reviewRepository
+        .createQueryBuilder('review') // ✅ 엔티티 별칭 수정
+        .where('review.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
+        .leftJoinAndSelect('review.shop', 'shop') // ✅ shop 관계 조인
+        .leftJoinAndSelect('review.images', 'image') // ✅ shop의 images도 함께 가져오기
+        .skip(limit * (page - 1)) // ✅ offset 설정
+        .take(limit) // ✅ limit 설정
+        .getMany();
     } catch (err) {
       console.error(err);
       throw new InternalServerErrorException();

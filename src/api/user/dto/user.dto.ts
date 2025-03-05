@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class NickNameDto {
   nickName: string;
@@ -9,4 +9,12 @@ export class UpdateProfileDto {
   // @IsString()
   // @Length(2, 10)
   nickName?: string | null;
+}
+
+export class PageNationDto {
+  @IsNotEmpty()
+  page: number;
+
+  @IsNotEmpty()
+  limit: number;
 }

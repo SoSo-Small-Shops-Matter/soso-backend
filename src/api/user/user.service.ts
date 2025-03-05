@@ -53,23 +53,55 @@ export class UserService {
     return;
   }
 
-  async findSubmitRecord(uuid: string) {
-    return await this.submitRepository.findSubmitUserRecord(uuid);
+  async findSubmitRecord(uuid: string, page: number, limit: number) {
+    const userSubmits = await this.submitRepository.findUserSubmitUserRecord(uuid);
+    const pageNationResult = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
+    const totalPages = Math.ceil(userSubmits.length / limit);
+    const pageInfo = {
+      page: Number(page),
+      limit: Number(limit),
+      totalElements: userSubmits.length,
+      totalPages: totalPages,
+      nextPage: page < totalPages,
+    };
+    return {
+      data: pageNationResult,
+      pageInfo,
+    };
   }
 
-  async findUserReviews(uuid: string) {
-    return await this.reviewRepository.findUserReviewByUUID(uuid);
+  async findUserReviews(uuid: string, page: number, limit: number) {
+    const userReviews = await this.reviewRepository.findUserReviewByUUID(uuid);
+    const pageNationResult = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit);
+    const totalPages = Math.ceil(userReviews.length / limit);
+    const pageInfo = {
+      page: Number(page),
+      limit: Number(limit),
+      totalElements: userReviews.length,
+      totalPages: totalPages,
+      nextPage: page < totalPages,
+    };
+    return {
+      data: pageNationResult,
+      pageInfo,
+    };
   }
 
-  async getWishlist(uuid: string) {
-    const userWishlists = await this.wishlistRepository.findWishlistByUUID(uuid);
-    if (!userWishlists) {
-      throw new NotFoundException();
-    }
-
-    return userWishlists.map((data) => {
-      return data.shop;
-    });
+  async getWishlist(uuid: string, page: number, limit: number) {
+    const userWishlists = await this.wishlistRepository.findUserWishlistByUUID(uuid);
+    const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit);
+    const totalPages = Math.ceil(userWishlists.length / limit);
+    const pageInfo = {
+      page: Number(page),
+      limit: Number(limit),
+      totalElements: userWishlists.length,
+      totalPages: totalPages,
+      nextPage: page < totalPages,
+    };
+    return {
+      data: pageNationResult,
+      pageInfo,
+    };
   }
 
   async deleteUser(uuid: string, deleteType: number) {

@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors, Delete, Query, ParseIntPipe } from '@nestjs/common';
-import { NickNameDto, UpdateProfileDto } from './dto/user.dto';
+import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors, Delete, Query } from '@nestjs/common';
+import { NickNameDto, PageNationDto, UpdateProfileDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -46,22 +46,25 @@ export class UserController {
 
   @Get('/submit')
   @UseGuards(AuthGuard('jwt'))
-  async getSubmitShop(@Req() req) {
+  async getSubmitShop(@Req() req, @Query() pageNation: PageNationDto) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.userService.findSubmitRecord(uuid));
+    const { page, limit } = pageNation;
+    return new SuccessResponseDTO(await this.userService.findSubmitRecord(uuid, page, limit));
   }
 
   @Get('/review')
   @UseGuards(AuthGuard('jwt'))
-  async getUserReview(@Req() req: any) {
+  async getUserReview(@Req() req: any, @Query() pageNation: PageNationDto) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.userService.findUserReviews(uuid));
+    const { page, limit } = pageNation;
+    return new SuccessResponseDTO(await this.userService.findUserReviews(uuid, page, limit));
   }
 
   @Get('/wishlist')
   @UseGuards(AuthGuard('jwt'))
-  async getUserWishlist(@Req() req: any) {
+  async getUserWishlist(@Req() req: any, @Query() pageNation: PageNationDto) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.userService.getWishlist(uuid));
+    const { page, limit } = pageNation;
+    return new SuccessResponseDTO(await this.userService.getWishlist(uuid, page, limit));
   }
 }
