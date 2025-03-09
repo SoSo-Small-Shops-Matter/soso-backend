@@ -14,6 +14,7 @@ import { ProductModule } from './api/product/product.module';
 import { OperateModule } from './api/operate/operate.module';
 import { RegionModule } from './api/region/region.module';
 import { NoticeModule } from './api/notice/notice.module';
+import { FeedbackModule } from './api/feedback/feedback.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { NoticeModule } from './api/notice/notice.module';
     OperateModule,
     RegionModule,
     NoticeModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
 })
