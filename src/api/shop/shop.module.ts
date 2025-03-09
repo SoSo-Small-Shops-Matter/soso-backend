@@ -8,16 +8,19 @@ import { AuthModule } from '../auth/auth.module';
 import { ReviewModule } from '../review/review.module';
 import { SubmitModule } from '../submit/submit.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
+import { RegionModule } from '../region/region.module';
 
 @Module({
-    imports: [
-        forwardRef(() => SubmitModule),
-        forwardRef(() =>  AuthModule),
-        TypeOrmModule.forFeature([Shop]),
-        ReviewModule,WishlistModule,
-    ],
-    controllers: [ShopController],
-    providers: [ShopService,ShopRepository],
-    exports:[ShopRepository],
+  imports: [
+    forwardRef(() => SubmitModule),
+    forwardRef(() => AuthModule),
+    TypeOrmModule.forFeature([Shop]),
+    ReviewModule,
+    WishlistModule,
+    RegionModule,
+  ],
+  controllers: [ShopController],
+  providers: [ShopService, ShopRepository],
+  exports: [ShopRepository],
 })
 export class ShopModule {}

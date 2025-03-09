@@ -33,6 +33,10 @@ export class ShopController {
     return new SuccessResponseDTO(await this.shopService.updateShopReportStatus(report, shopId));
   }
 
+  @Get('/region')
+  async getAllShopRegion() {
+    return new SuccessResponseDTO(await this.shopService.findAllShopRegion());
+  }
   @Get('/:shopId')
   @UseGuards(OptionalAuthGuard)
   async getShopByShopId(

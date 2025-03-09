@@ -12,6 +12,7 @@ export class FeedbackController {
   async saveFeedback(@Req() req, @Body() body: SaveFeedback) {
     const { uuid } = req.user;
     const { feedback } = body;
-    return new Success201ResponseDTO(await this.feedbackService.saveFeedback(uuid, feedback));
+    await this.feedbackService.saveFeedback(uuid, feedback);
+    return new Success201ResponseDTO();
   }
 }

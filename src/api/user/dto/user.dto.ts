@@ -18,3 +18,25 @@ export class PageNationDto {
   @IsNotEmpty()
   limit: number;
 }
+
+export class WishlistPageNationDto {
+  @IsNotEmpty()
+  page: number;
+
+  @IsNotEmpty()
+  limit: number;
+
+  @IsNotEmpty()
+  area: string;
+}
+
+export class ReviewPageNationDto {
+  @IsNotEmpty()
+  page: number;
+
+  @IsNotEmpty()
+  limit: number;
+
+  @IsNotEmpty()
+  sort: string;
+}

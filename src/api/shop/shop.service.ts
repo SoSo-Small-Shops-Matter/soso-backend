@@ -6,6 +6,7 @@ import { ReviewService } from '../review/review.service';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { all } from 'axios';
+import { RegionRepository } from '../region/region.repository';
 
 @Injectable()
 export class ShopService {
@@ -14,6 +15,7 @@ export class ShopService {
     private reviewService: ReviewService,
     private submitRepository: SubmitRepository,
     private wishlistRepository: WishlistRepository,
+    private regionRepository: RegionRepository,
   ) {}
 
   async findShopsWithin1Km(lat: number, lng: number, sorting: string) {
@@ -91,5 +93,13 @@ export class ShopService {
 
   async updateShopReportStatus(report: number, shopId: number) {
     return await this.shopRepository.updateShopReportStatusByShopId(report, shopId);
+  }
+
+  async findAllShopRegion() {
+    const regionList = await this.regionRepository.findAllRegions();
+    const result = regionList.map((region) => {
+      return region.name;
+    });
+    return result;
   }
 }

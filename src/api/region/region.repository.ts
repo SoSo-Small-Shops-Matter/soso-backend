@@ -23,4 +23,13 @@ export class RegionRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async findAllRegions() {
+    try {
+      return await this.regionRepository.find();
+    } catch (err) {
+      console.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
 }

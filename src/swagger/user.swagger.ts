@@ -413,6 +413,15 @@ export const userSwaggerDocs = {
           example: 1,
         },
       },
+      {
+        name: 'sort',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'string',
+          example: 'DESC',
+        },
+      },
     ],
     responses: {
       200: {
@@ -516,6 +525,15 @@ export const userSwaggerDocs = {
         schema: {
           type: 'number',
           example: 1,
+        },
+      },
+      {
+        name: 'area',
+        in: 'query',
+        required: true,
+        schema: {
+          type: 'string',
+          example: '서울',
         },
       },
     ],

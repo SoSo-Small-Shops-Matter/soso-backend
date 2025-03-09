@@ -556,4 +556,57 @@ export const shopSwaggerDocs = {
       },
     },
   },
+  getShopRegion: {
+    summary: '지역 데이터 불러오기 API',
+    description: '지역 데이터 불러오기 API',
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            example: {
+              message: 'Success',
+              statusCode: 200,
+              result: ['서울', '대전', '대구', '천안', '제주'],
+            },
+          },
+        },
+      },
+      400: {
+        description: '유효하지 않은 요청 데이터',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Bad Request',
+              error: 'Bad Request',
+              statusCode: 400,
+            },
+          },
+        },
+      },
+      401: {
+        description: '인증 실패',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Unauthorized',
+              error: 'Unauthorized',
+              statusCode: 401,
+            },
+          },
+        },
+      },
+      500: {
+        description: '내부 서버 오류',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Internal Server Error',
+              error: 'Internal Server Error',
+              statusCode: 500,
+            },
+          },
+        },
+      },
+    },
+  },
 };

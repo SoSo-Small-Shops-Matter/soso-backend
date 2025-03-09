@@ -62,13 +62,15 @@ export class WishlistRepository {
     }
   }
 
-  async findUserWishlistByPageNation(uuid: string, page: number, limit: number) {
+  async findUserWishlistByPageNation(uuid: string, page: number, limit: number, area: string) {
     try {
       return await this.whishlistRepository
-        .createQueryBuilder('wishlist') // ✅ 엔티티 별칭 수정
-        .where('wishlist.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
-        .leftJoinAndSelect('wishlist.shop', 'shop')
-        .skip(limit * (page - 1)) // ✅ offset 설정
+        .createQueryBuilder('wishlist') // ✅ 엔티티 별칭
+        .leftJoinAndSelect('wishlist.shop', 'shop') // ✅ shop 관계 조인
+        .leftJoinAndSelect('shop.region', 'region') // ✅ region 조인 추가
+        .where('wishlist.userUuid = :uuid', { uuid }) // ✅ 사용자 필터링
+        .andWhere('region.name = :area', { area }) // ✅ 올바른 참조 방식
+        .skip(limit * (page - 1)) // ✅ offset 설정 (페이징)
         .take(limit) // ✅ limit 설정
         .getMany();
     } catch (err) {

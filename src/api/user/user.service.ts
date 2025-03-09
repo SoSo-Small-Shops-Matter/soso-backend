@@ -70,9 +70,10 @@ export class UserService {
     };
   }
 
-  async findUserReviews(uuid: string, page: number, limit: number) {
+  async findUserReviews(uuid: string, page: number, limit: number, sort: string) {
+    const sortType = sort == 'ASC' ? 'ASC' : 'DESC';
     const userReviews = await this.reviewRepository.findUserReviewByUUID(uuid);
-    const pageNationResult = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit);
+    const pageNationResult = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sortType);
     const totalPages = Math.ceil(userReviews.length / limit);
     const pageInfo = {
       page: Number(page),
@@ -87,9 +88,9 @@ export class UserService {
     };
   }
 
-  async getWishlist(uuid: string, page: number, limit: number) {
+  async getWishlist(uuid: string, page: number, limit: number, area: string) {
     const userWishlists = await this.wishlistRepository.findUserWishlistByUUID(uuid);
-    const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit);
+    const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, area);
     const totalPages = Math.ceil(userWishlists.length / limit);
     const pageInfo = {
       page: Number(page),

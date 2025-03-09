@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('feedback')
 export class Feedback {
@@ -13,10 +13,4 @@ export class Feedback {
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date; // 생성 시간 자동 저장
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date; // 업데이트 시간 자동 갱신
-
-  @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deletedAt?: Date | null; // 소프트 삭제 시간 (Soft Delete)
 }

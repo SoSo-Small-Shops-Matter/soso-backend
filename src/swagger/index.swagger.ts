@@ -3,6 +3,8 @@ import { userSwaggerDocs } from './user.swagger';
 import { submitSwaggerDocs } from './submit.swagger';
 import { wishlistSwaggerDocs } from './wishlist.swagger';
 import { reviewSwaggerDocs } from './review.swagger';
+import { feedbackSwaggerDocs } from './feedback.swagger';
+import { noticeSwaggerDocs } from './notice.swagger';
 
 export const swaggerDocs = {
   paths: {
@@ -73,6 +75,12 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       },
     },
+    '/shop/region': {
+      get: {
+        ...shopSwaggerDocs.getShopRegion,
+        tags: ['Shop'],
+      },
+    },
     '/shop/search': {
       get: {
         ...shopSwaggerDocs.getSearchPageShop,
@@ -138,6 +146,21 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       },
     },
+
+    '/feedback': {
+      post: {
+        ...feedbackSwaggerDocs.saveFeedback,
+        tags: ['Feedback'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
+
+    '/notice': {
+      get: {
+        ...noticeSwaggerDocs.getAllNotice,
+        tags: ['Notice'],
+      },
+    },
   },
   tags: [
     {
@@ -157,6 +180,15 @@ export const swaggerDocs = {
     },
     {
       name: 'Review',
+    },
+    {
+      name: 'Feedback',
+    },
+    {
+      name: 'Notice',
+    },
+    {
+      name: 'Admin',
     },
   ],
 };
