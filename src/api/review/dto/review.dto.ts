@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 export class PostReviewDto {
   // @IsInt()
@@ -15,6 +16,8 @@ export class UpdateReviewDto {
   reviewId: number;
 
   content?: string;
+
+  deleteImages?: number[];
 }
 
 export class DeleteReviewDto {

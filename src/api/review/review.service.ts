@@ -36,46 +36,31 @@ export class ReviewService {
 
     await this.reviewRepository.saveReview(review);
   }
-
-  async updateReview(uuid: string, updateReviewDto: UpdateReviewDto, files?: Express.Multer.File[]) {
-    const { reviewId, content } = updateReviewDto;
-
-    // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
-    const imageUrls = files ? await this.awsService.uploadImagesToS3(files, 'jpg') : [];
+  async updateReview(uuid: string, updateReviewDto: UpdateReviewDto, newFiles?: Express.Multer.File[]) {
+    const { reviewId, content, deleteImages } = updateReviewDto;
 
     // Review 찾기
     const review = await this.reviewRepository.findReviewByReviewId(uuid, reviewId);
-
     if (!review) {
       throw new NotFoundException('찾을 수 없는 리뷰');
     }
-
-    // 업로드된 파일이 없는 경우 기존 이미지 삭제
-    if (files.length == 0 && review.images.length > 0) {
+    // 제거할 이미지가 존재하면 삭제
+    if (deleteImages?.length > 0) {
       await Promise.all(
-        review.images.map(async (data) => {
-          await this.reviewRepository.deleteImage(data.id);
+        deleteImages.map(async (data) => {
+          await this.reviewRepository.deleteImage(data);
         }),
       );
 
-      // 리뷰의 이미지 리스트를 비움
-      review.images = [];
+      // 기존 이미지에서 삭제된 이미지를 필터링하여 남겨둠
+      review.images = review.images.filter((image) => !deleteImages.some((del) => del == image.id));
     }
 
-    // 리뷰 이미지를 수정했을 경우
-    if (imageUrls.length > 0) {
-      console.log('?');
-      if (review.images.length > 0) {
-        await Promise.all(
-          review.images.map(async (data) => {
-            console.log(data.id);
-            const result = await this.reviewRepository.deleteImage(data.id);
-            console.log(result);
-          }),
-        );
-      }
+    // 새 파일이 존재하면 업로드 후 기존 이미지와 병합
+    if (newFiles?.length > 0) {
+      // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
+      const imageUrls = await this.awsService.uploadImagesToS3(newFiles, 'jpg');
 
-      // Image 엔티티 생성 및 저장
       const images = await Promise.all(
         imageUrls.map(async (url) => {
           const image = await this.reviewRepository.createImage(url);
@@ -84,15 +69,13 @@ export class ReviewService {
         }),
       );
 
-      // Review와 Image 연결
-      review.images = images;
+      // 기존 이미지 + 새 이미지 병합
+      review.images = [...review.images, ...images];
     }
 
-    // 리뷰 글을 수정했을 경우
+    // 리뷰 글을 수정했을 경우 업데이트
     if (content) {
       review.content = content;
-    } else {
-      review.content = '';
     }
 
     return await this.reviewRepository.saveReview(review);

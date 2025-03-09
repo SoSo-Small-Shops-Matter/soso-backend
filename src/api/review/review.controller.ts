@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Patch, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Patch, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Param } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -25,9 +25,9 @@ export class ReviewController {
 
   @Patch('/')
   @UseInterceptors(FilesInterceptor('files', 10)) // 최대 10개의 파일 허용
-  async updateReview(@Body() updateReviewDto: UpdateReviewDto, @Req() req: any, @UploadedFiles() files?: Express.Multer.File[]) {
+  async updateReview(@Body() updateReviewDto: UpdateReviewDto, @Req() req: any, @UploadedFiles() newFiles?: Express.Multer.File[]) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.reviewService.updateReview(uuid, updateReviewDto, files));
+    return new SuccessResponseDTO(await this.reviewService.updateReview(uuid, updateReviewDto, newFiles));
   }
 
   @Delete('/:reviewId')

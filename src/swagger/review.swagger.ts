@@ -87,7 +87,15 @@ export const reviewSwaggerDocs = {
                 type: 'string',
                 example: 'Great shop with amazing coffee!',
               },
-              files: {
+              deleteImages: {
+                type: 'array',
+                description: '삭제할 이미지 목록 (배열)',
+                items: {
+                  type: 'integer',
+                  example: 1,
+                },
+              },
+              newFiles: {
                 type: 'array',
                 items: {
                   type: 'string',
