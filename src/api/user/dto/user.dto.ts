@@ -26,8 +26,7 @@ export class WishlistPageNationDto {
   @IsNotEmpty()
   limit: number;
 
-  @IsNotEmpty()
-  area: string;
+  area?: string;
 }
 
 export class ReviewPageNationDto {

@@ -51,25 +51,39 @@ export class WishlistRepository {
     }
   }
 
-  async findUserWishlistByUUID(uuid: string) {
+  async findUserWishlistByUUID(uuid: string, area: string | null) {
     try {
-      return await this.whishlistRepository.find({
-        where: { user: { uuid } },
-      });
+      const query = this.whishlistRepository
+        .createQueryBuilder('wishlist')
+        .leftJoinAndSelect('wishlist.shop', 'shop')
+        .leftJoinAndSelect('shop.region', 'region')
+        .where('wishlist.userUuid = :uuid', { uuid });
+
+      // ✅ area가 null 또는 undefined가 아닐 때만 필터링 추가
+      if (area) {
+        query.andWhere('region.name = :area', { area });
+      }
+
+      return await query.getMany();
     } catch (err) {
       console.error(err);
       throw new InternalServerErrorException();
     }
   }
 
-  async findUserWishlistByPageNation(uuid: string, page: number, limit: number, area: string) {
+  async findUserWishlistByPageNation(uuid: string, page: number, limit: number, area: string | null) {
     try {
-      return await this.whishlistRepository
-        .createQueryBuilder('wishlist') // ✅ 엔티티 별칭
-        .leftJoinAndSelect('wishlist.shop', 'shop') // ✅ shop 관계 조인
-        .leftJoinAndSelect('shop.region', 'region') // ✅ region 조인 추가
-        .where('wishlist.userUuid = :uuid', { uuid }) // ✅ 사용자 필터링
-        .andWhere('region.name = :area', { area }) // ✅ 올바른 참조 방식
+      const query = this.whishlistRepository
+        .createQueryBuilder('wishlist')
+        .leftJoinAndSelect('wishlist.shop', 'shop')
+        .leftJoinAndSelect('shop.region', 'region')
+        .where('wishlist.userUuid = :uuid', { uuid });
+
+      if (area) {
+        query.andWhere('region.name = :area', { area });
+      }
+
+      return await query
         .skip(limit * (page - 1)) // ✅ offset 설정 (페이징)
         .take(limit) // ✅ limit 설정
         .getMany();

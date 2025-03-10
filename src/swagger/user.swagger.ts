@@ -530,7 +530,6 @@ export const userSwaggerDocs = {
       {
         name: 'area',
         in: 'query',
-        required: true,
         schema: {
           type: 'string',
           example: '서울',

@@ -89,8 +89,9 @@ export class UserService {
   }
 
   async getWishlist(uuid: string, page: number, limit: number, area: string) {
-    const userWishlists = await this.wishlistRepository.findUserWishlistByUUID(uuid);
+    const userWishlists = await this.wishlistRepository.findUserWishlistByUUID(uuid, area);
     const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, area);
+
     const totalPages = Math.ceil(userWishlists.length / limit);
     const pageInfo = {
       page: Number(page),
