@@ -38,7 +38,6 @@ export class AwsService {
         Bucket: awsConfig.BUCKET_NAME,
         Key: fileName,
         Body: file.buffer,
-        ACL: 'public-read',
         ContentType: `image/${ext}`,
       });
 

@@ -1,48 +1,56 @@
-import { IsInt, IsNotEmpty } from "class-validator";
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class SubmitShopOperatingHoursDto {
-    @IsInt()
-    @IsNotEmpty()
-    shopId:number;
+  @IsInt()
+  @IsNotEmpty()
+  shopId: number;
 
-    @IsNotEmpty()
-    operatingHours:OperatingHours;
+  @IsNotEmpty()
+  operatingHours: OperatingHours;
 }
 
 export class SubmitNewShopDto {
-    @IsNotEmpty()
-    shop:SubmitShop;
+  @IsNotEmpty()
+  shop: SubmitShop;
 
-    operatingHours?:OperatingHours;
+  operatingHours?: OperatingHours;
 
-    products?: Products[];
+  products?: Products[];
+}
+
+export class SubmitNewProductsDto {
+  @IsNotEmpty()
+  shopId: number;
+
+  @IsNotEmpty()
+  products?: Products[];
 }
 
 export interface OperatingHours {
-    phoneNumber?: string;
+  phoneNumber?: string;
 
-    startTime: string;
-    endTime: string;
+  startTime: string;
+  endTime: string;
 
-    monday?: boolean;
-    tuesday?: boolean;
-    wednesday?: boolean;
-    thursday?: boolean;
-    friday?: boolean;
-    saturday?: boolean;
-    sunday?: boolean;
+  monday?: boolean;
+  tuesday?: boolean;
+  wednesday?: boolean;
+  thursday?: boolean;
+  friday?: boolean;
+  saturday?: boolean;
+  sunday?: boolean;
 }
 
 export interface SubmitShop {
-    name: string;
+  name: string;
 
-    lat: number;
+  lat: number;
 
-    lng: number;
-    
-    location: string;
+  lng: number;
+
+  location: string;
 }
 
 export interface Products {
-    id: number;
+  id: number;
 }

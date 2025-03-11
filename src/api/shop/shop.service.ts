@@ -5,10 +5,8 @@ import { Product } from 'src/database/entity/product.entity';
 import { ReviewService } from '../review/review.service';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
-import { all } from 'axios';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
-import { RecentSearch } from '../../database/entity/recent-search.entity';
 
 @Injectable()
 export class ShopService {

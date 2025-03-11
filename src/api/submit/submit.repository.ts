@@ -55,7 +55,7 @@ export class SubmitRepository {
       return await this.submitUserRecordRepository.save({
         uuid,
         shopId,
-        status: 1,
+        status: 0,
         type: 2,
         user: {
           uuid,
