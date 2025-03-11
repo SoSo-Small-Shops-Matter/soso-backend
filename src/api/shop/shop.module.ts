@@ -9,6 +9,7 @@ import { ReviewModule } from '../review/review.module';
 import { SubmitModule } from '../submit/submit.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
 import { RegionModule } from '../region/region.module';
+import { RecentSearchModule } from '../recent-search/recent-search.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RegionModule } from '../region/region.module';
     ReviewModule,
     WishlistModule,
     RegionModule,
+    RecentSearchModule,
   ],
   controllers: [ShopController],
   providers: [ShopService, ShopRepository],

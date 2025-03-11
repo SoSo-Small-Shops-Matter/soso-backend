@@ -14,6 +14,7 @@ import { OperateModule } from './api/operate/operate.module';
 import { RegionModule } from './api/region/region.module';
 import { NoticeModule } from './api/notice/notice.module';
 import { FeedbackModule } from './api/feedback/feedback.module';
+import { RecentSearchModule } from './api/recent-search/recent-search.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FeedbackModule } from './api/feedback/feedback.module';
     RegionModule,
     NoticeModule,
     FeedbackModule,
+    RecentSearchModule,
   ],
   controllers: [AppController],
 })

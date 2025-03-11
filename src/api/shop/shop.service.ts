@@ -7,6 +7,8 @@ import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { all } from 'axios';
 import { RegionRepository } from '../region/region.repository';
+import { RecentSearchRepository } from '../recent-search/recent-search.repository';
+import { RecentSearch } from '../../database/entity/recent-search.entity';
 
 @Injectable()
 export class ShopService {
@@ -16,6 +18,7 @@ export class ShopService {
     private submitRepository: SubmitRepository,
     private wishlistRepository: WishlistRepository,
     private regionRepository: RegionRepository,
+    private recentSearchRepository: RecentSearchRepository,
   ) {}
 
   async findShopsWithin1Km(lat: number, lng: number, sorting: string) {
@@ -63,11 +66,26 @@ export class ShopService {
 
     const wishlist = !!(await this.wishlistRepository.isShopInUserWishlist(shopId, uuid));
 
+    const userRecenSearchtList = (await this.recentSearchRepository.findRecentSearchListByUUID(uuid)) || [];
+    if (uuid) {
+      const checkRecentSearchByShopName = await this.recentSearchRepository.checkRecentSearchByShopName(uuid, shop.name);
+      if (!checkRecentSearchByShopName) {
+        const newUserRecentSearch = await this.recentSearchRepository.createRecentSearch(uuid, shop.name);
+        if (userRecenSearchtList.length == 10) {
+          const deleteData = userRecenSearchtList.pop();
+          await this.recentSearchRepository.deleteRecentSearch(deleteData.uuid, deleteData.shopName);
+        }
+        userRecenSearchtList.unshift(newUserRecentSearch);
+        await this.recentSearchRepository.saveRecentSearch(userRecenSearchtList);
+      }
+    }
+
     return {
       shop,
       userReviews,
       otherReviews,
       wishlist,
+      recentSearch: userRecenSearchtList,
     };
   }
 
