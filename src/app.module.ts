@@ -9,7 +9,6 @@ import { WishlistModule } from './api/wishlist/wishlist.module';
 import { ReviewModule } from './api/review/review.module';
 import { AwsModule } from './api/aws/aws.module';
 import { AppController } from './app.controller';
-import { AdminModule } from './api/admin/admin.module';
 import { ProductModule } from './api/product/product.module';
 import { OperateModule } from './api/operate/operate.module';
 import { RegionModule } from './api/region/region.module';
@@ -26,7 +25,6 @@ import { FeedbackModule } from './api/feedback/feedback.module';
     WishlistModule,
     ReviewModule,
     AwsModule,
-    AdminModule,
     ProductModule,
     OperateModule,
     RegionModule,
