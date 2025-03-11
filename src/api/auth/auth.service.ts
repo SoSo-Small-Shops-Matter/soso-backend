@@ -4,6 +4,7 @@ import * as config from 'config';
 import * as qs from 'querystring';
 import { UserRepository } from '../user/user.repository';
 import axios from 'axios';
+import { LoggerService } from '../logger/logger.service';
 
 const jwtConfig = config.get('jwt');
 const googleConfig = config.get('google');
@@ -13,7 +14,10 @@ export class AuthService {
   private googleTokenUrl = 'https://oauth2.googleapis.com/token';
   private googleUserInfoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private readonly loggerService: LoggerService,
+  ) {}
 
   async findUserById(uuid: string) {
     return await this.userRepository.findUserByUUID(uuid);
@@ -80,9 +84,9 @@ export class AuthService {
       );
 
       return { accessToken: newAccessToken, refreshToken: newRefreshToken };
-    } catch (error) {
-      console.error(error);
-      throw new UnauthorizedException(`유효하지 않은 refresh 토큰: ${error.message}`);
+    } catch (err) {
+      this.loggerService.warn(`Auth/ Refresh Error: ${err}`);
+      throw new UnauthorizedException(`유효하지 않은 refresh 토큰: ${err.message}`);
     }
   }
 

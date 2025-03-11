@@ -15,6 +15,7 @@ import { RegionModule } from './api/region/region.module';
 import { NoticeModule } from './api/notice/notice.module';
 import { FeedbackModule } from './api/feedback/feedback.module';
 import { RecentSearchModule } from './api/recent-search/recent-search.module';
+import { LoggerModule } from './api/logger/logger.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RecentSearchModule } from './api/recent-search/recent-search.module';
     NoticeModule,
     FeedbackModule,
     RecentSearchModule,
+    LoggerModule,
   ],
   controllers: [AppController],
 })

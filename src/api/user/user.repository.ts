@@ -3,11 +3,13 @@ import { Repository } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 import { User } from 'src/database/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LoggerService } from '../logger/logger.service';
 @Injectable()
 export class UserRepository {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private loggerService: LoggerService,
   ) {}
 
   async findUserByUUID(uuid: string) {
@@ -19,7 +21,7 @@ export class UserRepository {
         },
       });
     } catch (err) {
-      console.error('Error find user By Id:', err); // 에러 로그 추가
+      this.loggerService.warn(`User/ findUserByUUID Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -27,7 +29,7 @@ export class UserRepository {
     try {
       return await this.userRepository.findOne({ where: { nickName } });
     } catch (err) {
-      console.error('Error findUserNickname :', err); // 에러 로그 추가
+      this.loggerService.warn(`User/ findUserByNickName Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -40,7 +42,7 @@ export class UserRepository {
         email,
       });
     } catch (err) {
-      console.error('Error create user:', err); // 에러 로그 추가
+      this.loggerService.warn(`User/ createUser Error: ${err}`);
       throw new InternalServerErrorException('User signup failed');
     }
   }
@@ -48,7 +50,7 @@ export class UserRepository {
     try {
       return await this.userRepository.update({ uuid }, { nickName, isNew: false });
     } catch (err) {
-      console.error('Error updateNickName :', err); // 에러 로그 추가
+      this.loggerService.warn(`User/ updateNickName Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -56,7 +58,7 @@ export class UserRepository {
     try {
       return await this.userRepository.update({ uuid }, { photoUrl });
     } catch (err) {
-      console.error('Error setNickName :', err); // 에러 로그 추가
+      this.loggerService.warn(`User/  updateUserPhotoUrl Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -65,7 +67,7 @@ export class UserRepository {
     try {
       return await this.userRepository.softRemove(user);
     } catch (err) {
-      console.error('Error deleting user:', err);
+      this.loggerService.warn(`User/ deleteUser Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -74,7 +76,7 @@ export class UserRepository {
     try {
       return await this.userRepository.save(user);
     } catch (err) {
-      console.error('Error save user:', err);
+      this.loggerService.warn(`User/ saveUser Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

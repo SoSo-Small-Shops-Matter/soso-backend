@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Image } from 'src/database/entity/image.entity';
 import { Review } from 'src/database/entity/review.entity';
 import { Repository } from 'typeorm';
+import { LoggerService } from '../logger/logger.service';
 
 export class ReviewRepository {
   constructor(
@@ -11,6 +12,7 @@ export class ReviewRepository {
 
     @InjectRepository(Image)
     private imageRepository: Repository<Image>,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async createReview(uuid, shopId, content) {
@@ -25,7 +27,7 @@ export class ReviewRepository {
         content,
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ createReview Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -34,7 +36,7 @@ export class ReviewRepository {
     try {
       return await this.reviewRepository.save(review);
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ saveReview Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -47,7 +49,7 @@ export class ReviewRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ findUserReviewByUUID Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -64,7 +66,7 @@ export class ReviewRepository {
         .take(limit) // ✅ limit 설정
         .getMany();
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ findUserReviewByPageNation Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -72,7 +74,7 @@ export class ReviewRepository {
     try {
       return await this.imageRepository.delete({ id: imageId });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ deleteImage Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -83,7 +85,7 @@ export class ReviewRepository {
         url,
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ createImage Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -92,7 +94,7 @@ export class ReviewRepository {
     try {
       return await this.imageRepository.save(image);
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ saveImage Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -107,7 +109,7 @@ export class ReviewRepository {
         relations: ['images'],
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ findReviewByReviewId Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -116,7 +118,7 @@ export class ReviewRepository {
     try {
       return await this.reviewRepository.remove(review);
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ removeReview Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -135,7 +137,7 @@ export class ReviewRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Review/ findShopReviewsByShopId Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

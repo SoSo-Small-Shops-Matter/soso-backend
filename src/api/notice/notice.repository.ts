@@ -2,11 +2,13 @@ import { Notice } from '../../database/entity/notice.entity';
 import { Repository } from 'typeorm';
 import { InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LoggerService } from '../logger/logger.service';
 
 export class NoticeRepository {
   constructor(
     @InjectRepository(Notice)
     private readonly noticeRepository: Repository<Notice>,
+    private readonly loggerService: LoggerService, // LoggerService 주입
   ) {}
 
   async findAll() {
@@ -17,7 +19,7 @@ export class NoticeRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Notice/ findAll Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

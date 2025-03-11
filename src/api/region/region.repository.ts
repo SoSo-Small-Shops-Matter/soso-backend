@@ -3,11 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Region } from 'src/database/entity/region.entity';
 
 import { Repository } from 'typeorm';
+import { LoggerService } from '../logger/logger.service';
 
 export class RegionRepository {
   constructor(
     @InjectRepository(Region)
     private regionRepository: Repository<Region>,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async findRegionByLocation(location) {
@@ -19,7 +21,7 @@ export class RegionRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Region/ findRegionByLocation Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -28,7 +30,7 @@ export class RegionRepository {
     try {
       return await this.regionRepository.find();
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Region/ findAllRegions Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

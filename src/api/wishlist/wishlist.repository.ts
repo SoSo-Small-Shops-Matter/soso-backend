@@ -2,12 +2,14 @@ import { ConflictException, Injectable, InternalServerErrorException } from '@ne
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from 'src/database/entity/wishlist.entity';
 import { Repository } from 'typeorm';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class WishlistRepository {
   constructor(
     @InjectRepository(Wishlist)
     private whishlistRepository: Repository<Wishlist>,
+    private loggerService: LoggerService,
   ) {}
 
   async findWishlistByShopIdAndUUID(shopId: number, uuid: string) {
@@ -20,7 +22,7 @@ export class WishlistRepository {
         relations: ['user', 'shop'],
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Wishlist/ findWishlistByShopIdAndUUID Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -31,7 +33,7 @@ export class WishlistRepository {
         id: wishlistId,
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Wishlist/ deleteWishlistByWishlistId Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -43,7 +45,7 @@ export class WishlistRepository {
         shop: { id: shopId }, // Shop 엔티티와 연결
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Wishlist/ addWishlistByShopIdAndUUID Error: ${err}`);
       if (err.code == 'ER_DUP_ENTRY') {
         throw new ConflictException('이미 존재하는 데이터입니다');
       }
@@ -66,7 +68,7 @@ export class WishlistRepository {
 
       return await query.getMany();
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Wishlist/ findUserWishlistByUUID Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -88,7 +90,7 @@ export class WishlistRepository {
         .take(limit) // ✅ limit 설정
         .getMany();
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Wishlist/ findUserWishlistByPageNation Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -102,7 +104,7 @@ export class WishlistRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Wishlist/ isShopInUserWishlist Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

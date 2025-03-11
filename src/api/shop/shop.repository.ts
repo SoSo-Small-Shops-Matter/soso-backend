@@ -2,12 +2,14 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shop } from 'src/database/entity/shop.entity';
 import { Not, Repository } from 'typeorm';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class ShopRepository {
   constructor(
     @InjectRepository(Shop)
     private shopRepository: Repository<Shop>,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async findShopsByKeyword(keyword: string, page: number, limit: number) {
@@ -21,7 +23,7 @@ export class ShopRepository {
         .take(limit) // 한 페이지당 표시할 개수
         .getMany();
     } catch (err) {
-      console.error('Shop/findShopsByKeyword Error', err);
+      this.loggerService.warn(`Shop/ findShopsByKeyword Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -35,7 +37,7 @@ export class ShopRepository {
         .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
         .getMany();
     } catch (err) {
-      console.error('Shop/findAllShopsByKeyword Error', err);
+      this.loggerService.warn(`Shop/ findAllShopsByKeyword Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -49,7 +51,7 @@ export class ShopRepository {
         },
       });
     } catch (err) {
-      console.error('Shop/findOnlyShopByShopId Error', err); // 에러 로그 추가
+      this.loggerService.warn(`Shop/ findOnlyShopByShopId Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -64,7 +66,7 @@ export class ShopRepository {
         .andWhere('shop.type = :type', { type: 0 }) // shop.type = 0 조건
         .getOne();
     } catch (err) {
-      console.error('Shop/findShopByShopId Error', err); // 에러 로그 추가
+      this.loggerService.warn(`Shop/ findShopByShopId Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -74,7 +76,7 @@ export class ShopRepository {
       await this.shopRepository.save(shop);
       return shop;
     } catch (err) {
-      console.error('Shop/saveShopProduct Error', err);
+      this.loggerService.warn(`Shop/ saveShopProduct Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -105,21 +107,7 @@ export class ShopRepository {
 
       return await query.getRawMany(); // getRawMany() 사용하여 깔끔한 데이터 가져오기
     } catch (err) {
-      console.error('Shop/findShopsWithin1Km Error', err);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async findReportedAllShops() {
-    try {
-      return await this.shopRepository.find({
-        where: {
-          reportStatus: Not(0), // 0 (신고되지 않음)이 아닌 모든 소품샵들 (1또는 2)
-          type: 0, // 확인 완료된 소품샵들
-        },
-      });
-    } catch (err) {
-      console.error('Shop/findReportedShops Error', err);
+      this.loggerService.warn(`Shop/ findShopsWithin1Km Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -131,7 +119,7 @@ export class ShopRepository {
         { reportStatus: report },
       );
     } catch (err) {
-      console.error('Shop/updateShopReportStatusByShopId Error', err);
+      this.loggerService.warn(`Shop/ updateShopReportStatusByShopId Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -146,37 +134,7 @@ export class ShopRepository {
         },
       });
     } catch (err) {
-      console.error('Shop/createNewShop Error', err); // 에러 로그 추가
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async createNewShopForUpdateOperatingHours(name, lat, lng, location) {
-    try {
-      return await this.shopRepository.save({
-        name,
-        type: 1,
-        lat,
-        lng,
-        location,
-        existShop: true,
-      });
-    } catch (err) {
-      console.error('shop/createNewShopForUpdateOperatingHours Error', err); // 에러 로그 추가
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async findSubmitedAllShops() {
-    try {
-      return await this.shopRepository.find({
-        where: {
-          type: 1,
-        },
-        relations: ['operatingHours', 'products'],
-      });
-    } catch (err) {
-      console.error('shop/findSubmitedAllShops Error', err);
+      this.loggerService.warn(`Shop/ createNewShop Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

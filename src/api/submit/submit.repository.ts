@@ -2,12 +2,14 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class SubmitRepository {
   constructor(
     @InjectRepository(SubmitUserRecord)
     private submitUserRecordRepository: Repository<SubmitUserRecord>,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async createSubmitUserRecordByNewShop(uuid, shopId) {
@@ -25,7 +27,7 @@ export class SubmitRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Submit/ createSubmitUserRecordByNewShop Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -45,7 +47,7 @@ export class SubmitRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Submit/ createSubmitUserRecordByUpdateOperatingInfo Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -65,7 +67,7 @@ export class SubmitRepository {
         },
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Submit/ createSubmitUserRecordByUpdateProducts Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -79,7 +81,7 @@ export class SubmitRepository {
         relations: ['shop'],
       });
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Submit/ findUserSubmitUserRecord Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -94,7 +96,7 @@ export class SubmitRepository {
         .take(limit) // ✅ limit 설정
         .getMany();
     } catch (err) {
-      console.error(err);
+      this.loggerService.warn(`Submit/ findUserSubmitUserRecordByPageNation Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
