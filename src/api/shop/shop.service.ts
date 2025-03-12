@@ -83,7 +83,6 @@ export class ShopService {
       userReviews,
       otherReviews,
       wishlist,
-      recentSearch: userRecenSearchtList,
     };
   }
 

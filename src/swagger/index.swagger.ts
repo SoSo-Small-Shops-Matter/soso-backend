@@ -5,6 +5,7 @@ import { wishlistSwaggerDocs } from './wishlist.swagger';
 import { reviewSwaggerDocs } from './review.swagger';
 import { feedbackSwaggerDocs } from './feedback.swagger';
 import { noticeSwaggerDocs } from './notice.swagger';
+import { recentSearchSwaggerDocs } from './recent-search.swagger';
 
 export const swaggerDocs = {
   paths: {
@@ -161,6 +162,19 @@ export const swaggerDocs = {
         tags: ['Notice'],
       },
     },
+
+    '/recent-search': {
+      get: {
+        ...recentSearchSwaggerDocs.getRecentSearch,
+        tags: ['RecentSearch'],
+        security: [{ 'JWT-auth': [] }],
+      },
+      delete: {
+        ...recentSearchSwaggerDocs.deleteRecentSearch,
+        tags: ['RecentSearch'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
   },
   tags: [
     {
@@ -188,7 +202,7 @@ export const swaggerDocs = {
       name: 'Notice',
     },
     {
-      name: 'Admin',
+      name: 'RecentSearch',
     },
   ],
 };

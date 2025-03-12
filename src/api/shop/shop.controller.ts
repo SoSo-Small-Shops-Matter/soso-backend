@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Query, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
-import { ShopIdParamDto, UpdateShopProductsDto } from './dto/submit.dto';
+import { UpdateShopProductsDto } from './dto/submit.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 
