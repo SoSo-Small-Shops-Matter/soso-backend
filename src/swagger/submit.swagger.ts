@@ -181,13 +181,13 @@ export const submitSwaggerDocs = {
       },
     },
     responses: {
-      200: {
+      201: {
         description: '성공',
         content: {
           'application/json': {
             example: {
               message: 'Success',
-              statusCode: 200,
+              statusCode: 201,
             },
           },
         },
@@ -218,70 +218,29 @@ export const submitSwaggerDocs = {
       },
     },
   },
-  getSubmitOperating: {
-    summary: '소품샵 운영시간 제안 전체 데이터 불러오기 API -> Admin',
-    description: '소품샵 운영시간 제안 전체 데이터 불러오기',
+  submitProducts: {
+    summary: '기존에 존재하는 소품샵 판매목록 제안하기 API',
+    description: '사용자가 기존에 존재하는 소품샵 판매목록 제안',
+    requestBody: {
+      description: '판매목록 데이터',
+      required: true,
+      content: {
+        'application/json': {
+          example: {
+            shopId: 3,
+            products: [{ id: 3 }, { id: 5 }],
+          },
+        },
+      },
+    },
     responses: {
-      200: {
+      201: {
         description: '성공',
         content: {
           'application/json': {
             example: {
               message: 'Success',
-              statusCode: 200,
-              result: [
-                {
-                  id: 1,
-                  existShop: true,
-                  name: 'Green Valley Market',
-                  lat: 37.7749,
-                  lng: -122.419,
-                  location: '123 Main St, San Francisco, CA',
-                  submitOperatingHours: [
-                    {
-                      id: 1,
-                      phoneNumber: '123-456-7890',
-                      mondayStartHours: '09:00:00',
-                      mondayEndHours: '18:00:00',
-                      tuesdayStartHours: '09:00:00',
-                      tuesdayEndHours: '18:00:00',
-                      wednesdayStartHours: '09:00:00',
-                      wednesdayEndHours: '18:00:00',
-                      thursdayStartHours: '09:00:00',
-                      thursdayEndHours: '18:00:00',
-                      fridayStartHours: '09:00:00',
-                      fridayEndHours: '18:00:00',
-                      saturdayStartHours: '10:00:00',
-                      saturdayEndHours: '16:00:00',
-                      sundayStartHours: null,
-                      sundayEndHours: null,
-                    },
-                  ],
-                },
-                {
-                  id: 3,
-                  existShop: true,
-                  name: 'Fresh Farm Foods',
-                  lat: 40.7128,
-                  lng: -74.006,
-                  location: '789 Oak St, New York, NY',
-                  submitOperatingHours: [
-                    {
-                      id: 1,
-                      phoneNumber: '987-654-3210',
-                      monday: false,
-                      tuesday: true,
-                      wednesday: false,
-                      thursday: true,
-                      friday: true,
-                      saturday: false,
-                      sunday: true,
-                      startTime: '10:00',
-                      endTime: '20:00',
-                    },
-                  ],
-                },
-              ],
+              statusCode: 201,
             },
           },
         },

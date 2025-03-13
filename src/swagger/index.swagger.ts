@@ -117,6 +117,13 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       },
     },
+    '/submit/products': {
+      post: {
+        ...submitSwaggerDocs.submitProducts,
+        tags: ['Submit'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
 
     // 찜하기
     '/wishlist': {
