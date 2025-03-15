@@ -12,4 +12,8 @@ export class RecentSearchService {
   async deleteRecentSearch(uuid: string, shopName: string) {
     return await this.recentSearchRepository.deleteRecentSearch(uuid, shopName);
   }
+
+  async deleteAllRecentSearch(uuid: string) {
+    return await this.recentSearchRepository.deleteAllRecentSearch(uuid);
+  }
 }

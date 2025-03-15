@@ -148,4 +148,45 @@ export const recentSearchSwaggerDocs = {
       },
     },
   },
+  deleteAllRecentSearch: {
+    summary: '최근 검색 전체 지우기 API',
+    description: '최근 검색 전체 지우기',
+    responses: {
+      204: {
+        description: '성공',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Success',
+              statusCode: 204,
+            },
+          },
+        },
+      },
+      400: {
+        description: '유효하지 않은 요청 데이터',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Bad Request',
+              error: 'Bad Request',
+              statusCode: 400,
+            },
+          },
+        },
+      },
+      500: {
+        description: '내부 서버 오류',
+        content: {
+          'application/json': {
+            example: {
+              message: 'Internal Server Error',
+              error: 'Internal Server Error',
+              statusCode: 500,
+            },
+          },
+        },
+      },
+    },
+  },
 };

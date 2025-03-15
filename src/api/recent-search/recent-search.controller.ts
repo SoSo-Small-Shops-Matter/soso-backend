@@ -21,4 +21,12 @@ export class RecentSearchController {
     await this.recentSearchService.deleteRecentSearch(uuid, shopName);
     return new Success204ResponseDTO();
   }
+
+  @Delete('/all')
+  @UseGuards(AuthGuard('jwt'))
+  async deleteAllRecentSearch(@Req() req: any) {
+    const { uuid } = req.user;
+    await this.recentSearchService.deleteAllRecentSearch(uuid);
+    return new Success204ResponseDTO();
+  }
 }

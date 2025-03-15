@@ -60,4 +60,13 @@ export class RecentSearchRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteAllRecentSearch(uuid: string): Promise<void> {
+    try {
+      await this.recentSearchRepository.delete({ uuid });
+    } catch (err) {
+      this.loggerService.warn(`Recent-Search/ deleteRecentSearch Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
 }

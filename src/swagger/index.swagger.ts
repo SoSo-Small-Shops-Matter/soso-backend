@@ -182,6 +182,13 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       },
     },
+    '/recent-search/all': {
+      delete: {
+        ...recentSearchSwaggerDocs.deleteAllRecentSearch,
+        tags: ['RecentSearch'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
   },
   tags: [
     {
