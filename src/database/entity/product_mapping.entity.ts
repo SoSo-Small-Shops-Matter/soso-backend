@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, ManyToOne, Column } from 'typeorm';
+import { Entity, PrimaryColumn, ManyToOne, Column, JoinColumn } from 'typeorm';
 import { Product } from './product.entity';
 import { Shop } from './shop.entity';
 
@@ -16,9 +16,11 @@ export class ProductMapping {
   @Column({ default: 'admin' })
   user: string;
 
-  @ManyToOne(() => Product, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Product, (product) => product.productMappings, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'productId' }) // productId를 Product의 id와 연결
   product: Product;
 
-  @ManyToOne(() => Shop, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Shop, (shop) => shop.productMappings, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'shopId' }) // shopId를 Shop의 id와 연결
   shop: Shop;
 }

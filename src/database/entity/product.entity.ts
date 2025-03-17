@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Shop } from './shop.entity';
+import { ProductMapping } from './product_mapping.entity';
 
 @Entity('product')
 export class Product {
@@ -12,4 +13,7 @@ export class Product {
   @ManyToMany(() => Shop, (shop) => shop.products)
   @JoinTable({ name: 'product_mapping' })
   shops: Shop[];
+
+  @OneToMany(() => ProductMapping, (productMapping) => productMapping.shop)
+  productMappings: ProductMapping[];
 }
