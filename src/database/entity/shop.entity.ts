@@ -3,6 +3,7 @@ import { Product } from './product.entity';
 import { OperatingHours } from './operating-hours.entity';
 import { Review } from './review.entity';
 import { Region } from './region.entity';
+import { ProductMapping } from './product_mapping.entity';
 
 @Entity('shop')
 export class Shop {
@@ -17,9 +18,6 @@ export class Shop {
 
   @Column({ type: 'int', default: 0 }) // 0: 검증된 shop , 1: 사용자 제보하기로 생성된 shop
   type: number;
-
-  @Column({ type: 'int', default: 0 }) // 0: 정상 1: 더이상 운영하지 않는 가게 2: 위치가 잘못됨
-  reportStatus: number;
 
   @Column({ type: 'double' })
   lat: number;
@@ -42,4 +40,7 @@ export class Shop {
   @ManyToOne(() => Region, (region) => region.shop)
   @JoinColumn()
   region: Region;
+
+  @OneToMany(() => ProductMapping, (productMapping) => productMapping.shop)
+  productMappings: ProductMapping[];
 }

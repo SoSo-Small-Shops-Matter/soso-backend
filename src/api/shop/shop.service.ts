@@ -60,6 +60,19 @@ export class ShopService {
     if (!shop) {
       throw new NotFoundException('NOT_FOUND_SHOP');
     }
+    // "productMappings" 배열을 "products" 배열로 변환
+    const products = shop.productMappings.map((mapping) => ({
+      id: mapping.product.id,
+      name: mapping.product.name,
+    }));
+
+    // 기존 shop 객체에서 "productMappings" 제거 후 "products" 추가
+    const transformedShop = {
+      ...shop,
+      products, // 새로운 products 배열 추가
+    };
+    delete transformedShop.productMappings; // 기존 productMappings 제거
+
     const { userReviews, otherReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
 
     const wishlist = !!(await this.wishlistRepository.isShopInUserWishlist(shopId, uuid));
@@ -79,7 +92,7 @@ export class ShopService {
     }
 
     return {
-      shop,
+      shop: transformedShop,
       userReviews,
       otherReviews,
       wishlist,
@@ -104,10 +117,6 @@ export class ShopService {
     await this.shopRepository.saveShopProduct(shop);
 
     return await this.submitRepository.createSubmitUserRecordByUpdateProducts(uuid, shop.id);
-  }
-
-  async updateShopReportStatus(report: number, shopId: number) {
-    return await this.shopRepository.updateShopReportStatusByShopId(report, shopId);
   }
 
   async findAllShopRegion() {

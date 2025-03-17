@@ -5,7 +5,6 @@ import { ShopRepository } from '../shop/shop.repository';
 import { RegionRepository } from '../region/region.repository';
 import { ProductRepository } from '../product/product.repository';
 import { OperateRepository } from '../operate/operate.repository';
-import { ProductMapping } from '../../database/entity/product_mapping.entity';
 
 @Injectable()
 export class SubmitService {

@@ -26,13 +26,6 @@ export class ShopController {
     return new SuccessResponseDTO(await this.shopService.findShopsByKeyword(keyword, page, limit));
   }
 
-  @Patch('/report')
-  @UseGuards(AuthGuard('jwt'))
-  async reportShop(@Body() body: any) {
-    const { report, shopId } = body;
-    return new SuccessResponseDTO(await this.shopService.updateShopReportStatus(report, shopId));
-  }
-
   @Get('/region')
   async getAllShopRegion() {
     return new SuccessResponseDTO(await this.shopService.findAllShopRegion());

@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shop } from 'src/database/entity/shop.entity';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
@@ -60,10 +60,11 @@ export class ShopRepository {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
-        .leftJoinAndSelect('shop.operatingHours', 'operatingHours', 'operatingHours.type = :operatingHoursType', { operatingHoursType: 0 }) // operatingHours.type = 0 조건
-        .leftJoinAndSelect('shop.products', 'products') // products는 조건 없이 조인
+        .leftJoinAndSelect('shop.operatingHours', 'operatingHours', 'operatingHours.type = :operatingHoursType', { operatingHoursType: 0 }) // 운영 시간 필터링
+        .leftJoinAndSelect('shop.productMappings', 'productMapping', 'productMapping.type = :productMappingType', { productMappingType: 0 }) // product_mapping에서 type=0 필터링
+        .leftJoinAndSelect('productMapping.product', 'product') // product_mapping을 통해 product 조인
         .where('shop.id = :shopId', { shopId })
-        .andWhere('shop.type = :type', { type: 0 }) // shop.type = 0 조건
+        .andWhere('shop.type = :type', { type: 0 }) // shop.type = 0 필터링
         .getOne();
     } catch (err) {
       this.loggerService.warn(`Shop/ findShopByShopId Error: ${err}`);
@@ -108,18 +109,6 @@ export class ShopRepository {
       return await query.getRawMany(); // getRawMany() 사용하여 깔끔한 데이터 가져오기
     } catch (err) {
       this.loggerService.warn(`Shop/ findShopsWithin1Km Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async updateShopReportStatusByShopId(report: number, shopId: number) {
-    try {
-      return await this.shopRepository.update(
-        { id: shopId }, // 조건
-        { reportStatus: report },
-      );
-    } catch (err) {
-      this.loggerService.warn(`Shop/ updateShopReportStatusByShopId Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
