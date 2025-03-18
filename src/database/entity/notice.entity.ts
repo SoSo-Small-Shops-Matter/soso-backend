@@ -8,6 +8,9 @@ export class Notice {
   @Column()
   text: string;
 
+  @Column()
+  title: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date; // 생성 시간 자동 저장
 
@@ -15,5 +18,5 @@ export class Notice {
   updatedAt: Date; // 업데이트 시간 자동 갱신
 
   @DeleteDateColumn({ type: 'timestamp', nullable: true })
-  deletedAt?: Date | null; // 소프트 삭제 시간 (Soft Delete)
+  deletedAt?: Date | null; // 소프트 삭제 시간 (Soft Delete)\\
 }
