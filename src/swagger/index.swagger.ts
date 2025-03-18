@@ -6,6 +6,7 @@ import { reviewSwaggerDocs } from './review.swagger';
 import { feedbackSwaggerDocs } from './feedback.swagger';
 import { noticeSwaggerDocs } from './notice.swagger';
 import { recentSearchSwaggerDocs } from './recent-search.swagger';
+import { reportSwaggerDocs } from './report.swagger';
 
 export const swaggerDocs = {
   paths: {
@@ -85,12 +86,6 @@ export const swaggerDocs = {
     '/shop/search': {
       get: {
         ...shopSwaggerDocs.getSearchPageShop,
-        tags: ['Shop'],
-      },
-    },
-    '/shop/report': {
-      patch: {
-        ...shopSwaggerDocs.reportShop,
         tags: ['Shop'],
       },
     },
@@ -189,6 +184,20 @@ export const swaggerDocs = {
         security: [{ 'JWT-auth': [] }],
       },
     },
+    '/report/shop': {
+      post: {
+        ...reportSwaggerDocs.reportShop,
+        tags: ['Report'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
+    '/report/review': {
+      post: {
+        ...reportSwaggerDocs.reportReview,
+        tags: ['Report'],
+        security: [{ 'JWT-auth': [] }],
+      },
+    },
   },
   tags: [
     {
@@ -217,6 +226,9 @@ export const swaggerDocs = {
     },
     {
       name: 'RecentSearch',
+    },
+    {
+      name: 'Report',
     },
   ],
 };
