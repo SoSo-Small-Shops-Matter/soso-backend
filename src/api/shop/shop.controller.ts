@@ -14,13 +14,6 @@ export class ShopController {
     return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(lat, lng, sorting));
   }
 
-  @Patch('/')
-  @UseGuards(AuthGuard('jwt'))
-  async updateShopProduct(@Body() updateShopProductsDto: UpdateShopProductsDto, @Req() req: any) {
-    const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.shopService.updateShopProduct(updateShopProductsDto, uuid));
-  }
-
   @Get('/search')
   async getSearchPageShop(@Query('page') page: number, @Query('limit') limit: number, @Query('keyword') keyword: string) {
     return new SuccessResponseDTO(await this.shopService.findShopsByKeyword(keyword, page, limit));
