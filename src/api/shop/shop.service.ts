@@ -99,26 +99,6 @@ export class ShopService {
     };
   }
 
-  async updateShopProduct(updateShopProductsDto: UpdateShopProductsDto, uuid: string) {
-    const { shopId, products } = updateShopProductsDto;
-    const shop = await this.shopRepository.findShopByShopId(shopId);
-    if (!shop) {
-      throw new NotFoundException('NOT_FOUND_SHOP');
-    }
-
-    const productMappings = products.map((mapping) => {
-      const product = new Product();
-      product.id = mapping.id;
-      return product;
-    });
-
-    shop.products = productMappings;
-
-    await this.shopRepository.saveShopProduct(shop);
-
-    return await this.submitRepository.createSubmitUserRecordByUpdateProducts(uuid, shop.id);
-  }
-
   async findAllShopRegion() {
     const regionList = await this.regionRepository.findAllRegions();
     const result = regionList.map((region) => {

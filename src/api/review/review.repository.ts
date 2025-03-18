@@ -14,7 +14,14 @@ export class ReviewRepository {
     private imageRepository: Repository<Image>,
     private readonly loggerService: LoggerService,
   ) {}
-
+  async findOneReviewById(reviewId: number) {
+    try {
+      return await this.reviewRepository.findOne({ where: { id: reviewId } });
+    } catch (err) {
+      this.loggerService.warn(`Review/ createReview Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
   async createReview(uuid, shopId, content) {
     try {
       return await this.reviewRepository.create({

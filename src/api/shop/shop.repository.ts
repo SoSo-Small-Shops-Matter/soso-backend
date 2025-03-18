@@ -72,15 +72,6 @@ export class ShopRepository {
     }
   }
 
-  async saveShopProduct(shop: any) {
-    try {
-      await this.shopRepository.save(shop);
-      return shop;
-    } catch (err) {
-      this.loggerService.warn(`Shop/ saveShopProduct Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
   async findShopsWithin1Km(lat: number, lng: number, distanceLimit: number, radius: number, sortByReviewCount = false) {
     try {
       let query = this.shopRepository
