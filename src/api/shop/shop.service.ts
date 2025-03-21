@@ -73,7 +73,7 @@ export class ShopService {
     };
     delete transformedShop.productMappings; // 기존 productMappings 제거
 
-    const { userReviews, otherReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
+    const { userReviews, otherReviews, deletedUserReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
 
     const wishlist = !!(await this.wishlistRepository.isShopInUserWishlist(shopId, uuid));
 
@@ -95,6 +95,7 @@ export class ShopService {
       shop: transformedShop,
       userReviews,
       otherReviews,
+      deletedUserReviews,
       wishlist,
     };
   }

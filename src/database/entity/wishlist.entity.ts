@@ -8,7 +8,7 @@ export class Wishlist {
   @PrimaryGeneratedColumn()
   id: number; // 고유 ID
 
-  @ManyToOne(() => User, (user) => user.wishlists, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.wishlists, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   user: User; // 위시리스트를 소유한 사용자
 
   @ManyToOne(() => Shop, { onDelete: 'CASCADE' })

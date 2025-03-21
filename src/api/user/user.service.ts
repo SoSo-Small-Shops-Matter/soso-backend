@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { UserRepository } from './user.repository';
 import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
@@ -107,10 +108,18 @@ export class UserService {
   }
 
   async deleteUser(uuid: string, deleteType: number) {
+    const newUUID = uuidv4();
     const user = await this.userRepository.findUserByUUID(uuid);
     if (!user) throw new NotFoundException();
-    user.deleteType = deleteType;
-    await this.userRepository.saveUser(user);
-    await this.userRepository.deleteUser(user);
+    // 유저 이미지 제거
+
+    // 유저 찜 데이터 제거
+
+    // submit_user_record 데이터 제거 -> 전부
+
+    await this.userRepository.saveDeleteUser(uuid, deleteType, newUUID);
+
+    const deleteUser = await this.userRepository.findUserByUUID(newUUID);
+    await this.userRepository.deleteUser(deleteUser);
   }
 }

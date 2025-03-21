@@ -11,7 +11,7 @@ export class Review {
   @Column()
   content: string;
 
-  @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   user: User;
 
   @ManyToOne(() => Shop, (shop) => shop.reviews, { onDelete: 'CASCADE' })

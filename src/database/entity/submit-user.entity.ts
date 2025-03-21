@@ -16,7 +16,7 @@ export class SubmitUserRecord {
   @Column({ default: null }) // 거절시 메시지
   rejectMessage: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   user: User;
 
   @ManyToOne(() => Shop, { onDelete: 'CASCADE' })

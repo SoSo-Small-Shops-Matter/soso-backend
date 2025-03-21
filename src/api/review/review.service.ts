@@ -99,11 +99,14 @@ export class ReviewService {
 
   async findShopReviewsByShopId(shopId: number, uuid: string) {
     const reviews = await this.reviewRepository.findShopReviewsByShopId(shopId);
-    const userReviews = reviews.filter((review) => review.user.uuid === uuid);
-    const otherReviews = reviews.filter((review) => review.user.uuid != uuid);
+    console.log(reviews);
+    const userReviews = reviews.filter((review) => review.user?.uuid === uuid);
+    const otherReviews = reviews.filter((review) => review.user?.uuid != uuid);
+    const deletedUserReviews = reviews.filter((review) => review.user == null);
     return {
       userReviews,
       otherReviews,
+      deletedUserReviews,
     };
   }
 }
