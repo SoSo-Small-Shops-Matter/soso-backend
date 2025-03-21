@@ -2,10 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReviewRepository } from './review.repository';
 import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
 import { AwsService } from '../aws/aws.service';
+import { ImageRepository } from '../image/image.repository';
 
 @Injectable()
 export class ReviewService {
   constructor(
+    private imageRepository: ImageRepository,
     private reviewRepository: ReviewRepository,
     private awsService: AwsService,
   ) {}
@@ -24,8 +26,8 @@ export class ReviewService {
       // Image 엔티티 생성 및 저장
       const images = await Promise.all(
         imageUrls.map(async (url) => {
-          const image = await this.reviewRepository.createImage(url);
-          await this.reviewRepository.saveImage(image);
+          const image = await this.imageRepository.createImage(url);
+          await this.imageRepository.saveImage(image);
           return image;
         }),
       );
@@ -48,7 +50,7 @@ export class ReviewService {
     if (deleteImages?.length > 0) {
       await Promise.all(
         deleteImages.map(async (data) => {
-          await this.reviewRepository.deleteImage(data);
+          await this.imageRepository.deleteImage(data);
         }),
       );
 
@@ -63,8 +65,8 @@ export class ReviewService {
 
       const images = await Promise.all(
         imageUrls.map(async (url) => {
-          const image = await this.reviewRepository.createImage(url);
-          await this.reviewRepository.saveImage(image);
+          const image = await this.imageRepository.createImage(url);
+          await this.imageRepository.saveImage(image);
           return image;
         }),
       );
@@ -90,7 +92,7 @@ export class ReviewService {
     if (review.images.length > 0) {
       await Promise.all(
         review.images.map(async (data) => {
-          await this.reviewRepository.deleteImage(data.id);
+          await this.imageRepository.deleteImage(data.id);
         }),
       );
     }
@@ -101,7 +103,7 @@ export class ReviewService {
     const reviews = await this.reviewRepository.findShopReviewsByShopId(shopId);
     console.log(reviews);
     const userReviews = reviews.filter((review) => review.user?.uuid === uuid);
-    const otherReviews = reviews.filter((review) => review.user?.uuid != uuid);
+    const otherReviews = reviews.filter((review) => review.user?.uuid != uuid && review.user !== null);
     const deletedUserReviews = reviews.filter((review) => review.user == null);
     return {
       userReviews,

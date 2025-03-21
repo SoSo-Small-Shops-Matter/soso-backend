@@ -92,12 +92,12 @@ export class AuthService {
 
   async test() {
     const accessToken = jwt.sign(
-      { uuid: '100696381122086866149' }, // ✅ 여기서 payload.uuid만 넣어야 함!
+      { uuid: '102784937796556996262' }, // ✅ 여기서 payload.uuid만 넣어야 함!
       jwtConfig.access_token_secret,
       { expiresIn: '24h' },
     );
     const refreshToken = jwt.sign(
-      { uuid: '100696381122086866149' }, // ✅ 여기서 payload.uuid만 넣어야 함!
+      { uuid: '102784937796556996262' }, // ✅ 여기서 payload.uuid만 넣어야 함!
       jwtConfig.refresh_token_secret,
       { expiresIn: jwtConfig.refresh_token_expiresIn },
     );

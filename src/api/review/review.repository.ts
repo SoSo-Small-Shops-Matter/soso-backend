@@ -9,9 +9,6 @@ export class ReviewRepository {
   constructor(
     @InjectRepository(Review)
     private reviewRepository: Repository<Review>,
-
-    @InjectRepository(Image)
-    private imageRepository: Repository<Image>,
     private readonly loggerService: LoggerService,
   ) {}
   async findOneReviewById(reviewId: number) {
@@ -77,35 +74,6 @@ export class ReviewRepository {
       throw new InternalServerErrorException();
     }
   }
-  async deleteImage(imageId) {
-    try {
-      return await this.imageRepository.delete({ id: imageId });
-    } catch (err) {
-      this.loggerService.warn(`Review/ deleteImage Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async createImage(url) {
-    try {
-      return this.imageRepository.create({
-        url,
-      });
-    } catch (err) {
-      this.loggerService.warn(`Review/ createImage Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async saveImage(image) {
-    try {
-      return await this.imageRepository.save(image);
-    } catch (err) {
-      this.loggerService.warn(`Review/ saveImage Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
   async findReviewByReviewId(uuid, reviewId) {
     try {
       return await this.reviewRepository.findOne({
