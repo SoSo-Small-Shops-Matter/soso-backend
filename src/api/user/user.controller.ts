@@ -1,4 +1,18 @@
-import { Body, Controller, Get, Param, Post, Patch, Req, UploadedFile, UseGuards, UseInterceptors, Delete, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+  Delete,
+  Query,
+  ConflictException,
+} from '@nestjs/common';
 import { NickNameDto, PageNationDto, ReviewPageNationDto, UpdateProfileDto, WishlistPageNationDto } from './dto/user.dto';
 import { UserService } from './user.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
@@ -11,7 +25,8 @@ export class UserController {
 
   @Delete('/:uuid')
   @UseGuards(AuthGuard('jwt'))
-  async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string) {
+  async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string, @Req() req: any) {
+    if (uuid !== req.user.uuid) throw new ConflictException('Not equal User UUID');
     return new Success204ResponseDTO(await this.userService.deleteUser(uuid, deleteType));
   }
 
