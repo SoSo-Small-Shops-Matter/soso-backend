@@ -38,6 +38,19 @@ export class WishlistRepository {
     }
   }
 
+  async deleteWishlistByUUID(uuid: string) {
+    try {
+      return await this.whishlistRepository.delete({
+        user: {
+          uuid,
+        },
+      });
+    } catch (err) {
+      this.loggerService.warn(`Wishlist/ deleteWishlistByWishlistId Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
   async addWishlistByShopIdAndUUID(shopId: number, uuid: string) {
     try {
       return await this.whishlistRepository.save({

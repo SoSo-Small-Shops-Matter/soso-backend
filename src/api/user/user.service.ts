@@ -5,6 +5,7 @@ import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
+import { ImageRepository } from '../image/image.repository';
 
 @Injectable()
 export class UserService {
@@ -14,6 +15,7 @@ export class UserService {
     private reviewRepository: ReviewRepository,
     private wishlistRepository: WishlistRepository,
     private submitRepository: SubmitRepository,
+    private imageRepository: ImageRepository,
   ) {}
 
   async findUserNickName(nickName: string) {
@@ -112,13 +114,13 @@ export class UserService {
     const user = await this.userRepository.findUserByUUID(uuid);
     if (!user) throw new NotFoundException();
     // 유저 이미지 제거
-
+    await this.imageRepository.deleteImageByUrl(user.photoUrl);
     // 유저 찜 데이터 제거
-
+    await this.wishlistRepository.deleteWishlistByUUID(user.uuid);
     // submit_user_record 데이터 제거 -> 전부
+    await this.submitRepository.deleteSubmitUserByUUID(user.uuid);
 
     await this.userRepository.saveDeleteUser(uuid, deleteType, newUUID);
-
     const deleteUser = await this.userRepository.findUserByUUID(newUUID);
     await this.userRepository.deleteUser(deleteUser);
   }

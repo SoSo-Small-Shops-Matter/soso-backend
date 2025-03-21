@@ -9,6 +9,7 @@ import { AwsModule } from '../aws/aws.module';
 import { ReviewModule } from '../review/review.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
 import { SubmitModule } from '../submit/submit.module';
+import { ImageModule } from '../image/image.module';
 
 @Module({
   imports: [
@@ -18,9 +19,10 @@ import { SubmitModule } from '../submit/submit.module';
     AwsModule,
     ReviewModule,
     WishlistModule,
+    ImageModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],
-  exports:[UserService,UserRepository],
+  exports: [UserService, UserRepository],
 })
 export class UserModule {}

@@ -112,4 +112,17 @@ export class SubmitRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteSubmitUserByUUID(uuid: string) {
+    try {
+      return await this.submitUserRecordRepository.delete({
+        user: {
+          uuid,
+        },
+      });
+    } catch (err) {
+      this.loggerService.warn(`Submit/ deleteSubmitUserByUUID Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
 }

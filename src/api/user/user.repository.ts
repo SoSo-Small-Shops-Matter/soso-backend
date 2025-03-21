@@ -90,7 +90,9 @@ export class UserRepository {
         .set({
           uuid: newUUID,
           deleteType,
+          photoUrl: null,
           nickName: null,
+          email: null,
         })
         .where('uuid = :uuid', { uuid })
         .execute();
