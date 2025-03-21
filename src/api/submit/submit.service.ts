@@ -25,7 +25,6 @@ export class SubmitService {
     }
 
     const createShop = await this.shopRepository.createNewShop(shop, region.id);
-
     if (!createShop) {
       throw new ConflictException();
     }
@@ -56,6 +55,9 @@ export class SubmitService {
       throw new ConflictException('없는 소풉샵입니다.');
     }
 
+    const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 1);
+    if (existData) throw new ConflictException('Exist Data');
+
     await this.operateRepository.validateAndCreateOperatingHours(shop.id, operatingHours);
 
     const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid, shop.id);
@@ -70,6 +72,10 @@ export class SubmitService {
     if (!shop) {
       throw new ConflictException('없는 소풉샵입니다.');
     }
+
+    const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 2);
+    if (existData) throw new ConflictException('Exist Data');
+
     const productMappings = products.map((product) => ({
       shop: { id: shopId },
       type: 1,

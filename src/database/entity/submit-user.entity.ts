@@ -1,11 +1,11 @@
-import { Entity, PrimaryColumn, ManyToOne, Column } from 'typeorm';
+import { Entity, PrimaryColumn, ManyToOne, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Shop } from './shop.entity';
 
 @Entity('submit_user_record')
 export class SubmitUserRecord {
-  @PrimaryColumn({ type: 'int' })
-  shopId: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ type: 'int' }) // 0: 최초 제보  1: 운영 정보 수정 2: 판매 정보 수정
   type: number;

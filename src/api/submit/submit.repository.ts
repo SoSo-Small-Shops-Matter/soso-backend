@@ -15,8 +15,6 @@ export class SubmitRepository {
   async createSubmitUserRecordByNewShop(uuid, shopId) {
     try {
       return await this.submitUserRecordRepository.save({
-        uuid,
-        shopId,
         status: 0,
         type: 0,
         user: {
@@ -35,8 +33,6 @@ export class SubmitRepository {
   async createSubmitUserRecordByUpdateOperatingInfo(uuid, shopId) {
     try {
       return await this.submitUserRecordRepository.save({
-        uuid,
-        shopId,
         status: 0,
         type: 1,
         user: {
@@ -55,8 +51,6 @@ export class SubmitRepository {
   async createSubmitUserRecordByUpdateProducts(uuid: string, shopId: number) {
     try {
       return await this.submitUserRecordRepository.save({
-        uuid,
-        shopId,
         status: 0,
         type: 2,
         user: {
@@ -68,6 +62,24 @@ export class SubmitRepository {
       });
     } catch (err) {
       this.loggerService.warn(`Submit/ createSubmitUserRecordByUpdateProducts Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findUserSubmitRecordByType(uuid: string, shopId: number, type: number): Promise<SubmitUserRecord> {
+    try {
+      return await this.submitUserRecordRepository.findOne({
+        where: {
+          user: { uuid },
+          shop: {
+            id: shopId,
+          },
+          type,
+          status: 0, // 확인중
+        },
+      });
+    } catch (err) {
+      this.loggerService.warn(`Submit/ findUserSubmitUserRecord Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
