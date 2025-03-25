@@ -1,7 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
-import { UpdateShopProductsDto } from './dto/submit.dto';
-import { Product } from 'src/database/entity/product.entity';
 import { ReviewService } from '../review/review.service';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
@@ -54,6 +52,12 @@ export class ShopService {
       pageInfo,
     };
   }
+  convertTimeToAmPm(timeStr: string) {
+    const [hourStr, minuteStr] = timeStr.split(':');
+    const hour = parseInt(hourStr, 10);
+    const period = hour < 12 ? '오전' : '오후';
+    return `${period} ${hourStr.padStart(2, '0')}:${minuteStr}`;
+  }
 
   async findShopByShopId(shopId: number, uuid: string) {
     const shop = await this.shopRepository.findShopByShopId(shopId);
@@ -65,13 +69,21 @@ export class ShopService {
       id: mapping.product.id,
       name: mapping.product.name,
     }));
+    const operatingHours = shop.operatingHours.map((operating) => ({
+      ...operating,
+      startTime: this.convertTimeToAmPm(operating.startTime),
+      endTime: this.convertTimeToAmPm(operating.endTime),
+    }));
+
+    delete shop.productMappings; // 기존 productMappings 제거
+    delete shop.operatingHours;
 
     // 기존 shop 객체에서 "productMappings" 제거 후 "products" 추가
     const transformedShop = {
       ...shop,
+      operatingHours,
       products, // 새로운 products 배열 추가
     };
-    delete transformedShop.productMappings; // 기존 productMappings 제거
 
     const { userReviews, otherReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
 
