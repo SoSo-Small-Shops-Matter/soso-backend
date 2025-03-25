@@ -6,6 +6,7 @@ import { ReviewRepository } from '../review/review.repository';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { ImageRepository } from '../image/image.repository';
+import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 
 @Injectable()
 export class UserService {
@@ -16,6 +17,7 @@ export class UserService {
     private wishlistRepository: WishlistRepository,
     private submitRepository: SubmitRepository,
     private imageRepository: ImageRepository,
+    private recentSearchRepository: RecentSearchRepository,
   ) {}
 
   async findUserNickName(nickName: string) {
@@ -119,6 +121,8 @@ export class UserService {
     await this.wishlistRepository.deleteWishlistByUUID(user.uuid);
     // submit_user_record 데이터 제거 -> 전부
     await this.submitRepository.deleteSubmitUserByUUID(user.uuid);
+    // 최근 검색 기록 지우기
+    await this.recentSearchRepository.deleteAllRecentSearch(user.uuid);
 
     await this.userRepository.saveDeleteUser(uuid, deleteType, newUUID);
     const deleteUser = await this.userRepository.findUserByUUID(newUUID);

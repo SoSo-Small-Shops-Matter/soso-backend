@@ -10,6 +10,7 @@ import { ReviewModule } from '../review/review.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
 import { SubmitModule } from '../submit/submit.module';
 import { ImageModule } from '../image/image.module';
+import { RecentSearchModule } from '../recent-search/recent-search.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ImageModule } from '../image/image.module';
     ReviewModule,
     WishlistModule,
     ImageModule,
+    RecentSearchModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],
