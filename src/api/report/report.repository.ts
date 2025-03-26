@@ -16,13 +16,12 @@ export class ReportRepository {
     private readonly loggerService: LoggerService,
   ) {}
 
-  async findReviewReport(uuid: string, reviewId: number, status: number) {
+  async findReviewReport(uuid: string, reviewId: number) {
     try {
       return await this.reviewReportRepository.findOne({
         where: {
           user: uuid,
           reviewId,
-          status,
         },
       });
     } catch (err) {
@@ -45,13 +44,12 @@ export class ReportRepository {
     }
   }
 
-  async findShopReport(uuid: string, shopId: number, status: number) {
+  async findShopReport(uuid: string, shopId: number) {
     try {
       return await this.shopReportRepository.findOne({
         where: {
           user: uuid,
           shopId,
-          status,
         },
       });
     } catch (err) {

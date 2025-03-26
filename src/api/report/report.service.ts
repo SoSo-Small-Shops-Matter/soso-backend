@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ReportRepository } from './report.repository';
 import { ReviewReportDto } from './dto/review-report.dto';
 import { ReviewRepository } from '../review/review.repository';
@@ -18,8 +18,8 @@ export class ReportService {
     const review = await this.reviewRepository.findOneReviewById(reviewId);
     if (!review) throw new NotFoundException('Not exist review');
 
-    const existData = await this.reportRepository.findReviewReport(uuid, review.id, status);
-    if (existData) return;
+    const existData = await this.reportRepository.findReviewReport(uuid, review.id);
+    if (existData) throw new ConflictException('Exist Review');
 
     return await this.reportRepository.saveReviewReport(uuid, review.id, status, message);
   }
@@ -29,8 +29,8 @@ export class ReportService {
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
     if (!shop) throw new NotFoundException('Not exist shop');
 
-    const existData = await this.reportRepository.findShopReport(uuid, shop.id, status);
-    if (existData) return;
+    const existData = await this.reportRepository.findShopReport(uuid, shop.id);
+    if (existData) throw new ConflictException('Exist Shop');
 
     return await this.reportRepository.saveShopReport(uuid, shop.id, status, message);
   }
