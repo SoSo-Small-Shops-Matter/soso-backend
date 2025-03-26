@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-export class SaveFeedbackDTO {
-  @IsString()
+export class DeleteRecentSearchDTO {
   @IsNotEmpty()
+  @IsString()
   @MaxLength(100)
-  feedback: string;
+  shopName: string;
 }

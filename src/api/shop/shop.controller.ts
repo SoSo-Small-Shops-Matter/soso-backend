@@ -2,25 +2,27 @@ import { Controller, Get, Param, ParseIntPipe, Query, Req, UseGuards } from '@ne
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
+import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 
 @Controller('shop')
 export class ShopController {
   constructor(private shopService: ShopService) {}
 
   @Get('/')
-  async getShopWithin1Km(@Query('lat') lat: number, @Query('lng') lng: number, @Query('sorting') sorting: string) {
-    return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(lat, lng, sorting));
+  async getShopWithin1Km(@Query() getShopWithin1KmDTO: GetShopWithin1KmDTO) {
+    return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(getShopWithin1KmDTO));
   }
 
   @Get('/search')
-  async getSearchPageShop(@Query('page') page: number, @Query('limit') limit: number, @Query('keyword') keyword: string) {
-    return new SuccessResponseDTO(await this.shopService.findShopsByKeyword(keyword, page, limit));
+  async getSearchPageShop(@Query() getSearchPageShopDTO: GetSearchPageShopDTO) {
+    return new SuccessResponseDTO(await this.shopService.findShopsByKeyword(getSearchPageShopDTO));
   }
 
   @Get('/region')
   async getAllShopRegion() {
     return new SuccessResponseDTO(await this.shopService.findAllShopRegion());
   }
+
   @Get('/:shopId')
   @UseGuards(OptionalAuthGuard)
   async getShopByShopId(

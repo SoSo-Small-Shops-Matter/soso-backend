@@ -12,7 +12,7 @@ export class RegionRepository {
     private readonly loggerService: LoggerService,
   ) {}
 
-  async findRegionByLocation(location) {
+  async findRegionByLocation(location: string) {
     try {
       const regionName = location[0] + location[1];
       return await this.regionRepository.findOne({

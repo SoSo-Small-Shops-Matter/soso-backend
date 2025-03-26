@@ -29,7 +29,7 @@ export class ImageRepository {
     }
   }
 
-  async createImage(url) {
+  async createImage(url: string) {
     try {
       return this.imageRepository.create({
         url,

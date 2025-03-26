@@ -7,6 +7,7 @@ import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { ImageRepository } from '../image/image.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
+import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -20,11 +21,13 @@ export class UserService {
     private recentSearchRepository: RecentSearchRepository,
   ) {}
 
-  async findUserNickName(nickName: string) {
+  async findUserNickName(nickNameDTO: NickNameDTO) {
+    const { nickName } = nickNameDTO;
     return !!(await this.userRepository.findUserByNickName(nickName));
   }
 
-  async findAndUpdateUserNickname(nickName: string, uuid: string) {
+  async findAndUpdateUserNickname(nickNameDTO: NickNameDTO, uuid: string) {
+    const { nickName } = nickNameDTO;
     const existNickName = await this.userRepository.findUserByNickName(nickName);
     if (existNickName) {
       throw new ConflictException('Nickname already exists.');
@@ -36,7 +39,8 @@ export class UserService {
     return await this.userRepository.findUserByUUID(uuid);
   }
 
-  async updateUserProfile(nickName: string, uuid: string, file: Express.Multer.File) {
+  async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, file: Express.Multer.File) {
+    const { nickName } = updateProfileDTO;
     if (nickName) {
       const existNickName = await this.userRepository.findUserByNickName(nickName);
       if (existNickName) {
@@ -58,7 +62,8 @@ export class UserService {
     return;
   }
 
-  async findSubmitRecord(uuid: string, page: number, limit: number) {
+  async findSubmitRecord(pageNation: PageNationDTO, uuid: string) {
+    const { page, limit } = pageNation;
     const userSubmits = await this.submitRepository.findUserSubmitUserRecord(uuid);
     const pageNationResult = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
     const totalPages = Math.ceil(userSubmits.length / limit);
@@ -75,7 +80,8 @@ export class UserService {
     };
   }
 
-  async findUserReviews(uuid: string, page: number, limit: number, sort: string) {
+  async findUserReviews(reviewPageNation: ReviewPageNationDTO, uuid: string) {
+    const { sort, page, limit } = reviewPageNation;
     const sortType = sort == 'ASC' ? 'ASC' : 'DESC';
     const userReviews = await this.reviewRepository.findUserReviewByUUID(uuid);
     const pageNationResult = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sortType);
@@ -93,7 +99,8 @@ export class UserService {
     };
   }
 
-  async getWishlist(uuid: string, page: number, limit: number, area: string) {
+  async getWishlist(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
+    const { page, limit, area } = wishlistPageNation;
     const userWishlists = await this.wishlistRepository.findUserWishlistByUUID(uuid, area);
     const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, area);
 

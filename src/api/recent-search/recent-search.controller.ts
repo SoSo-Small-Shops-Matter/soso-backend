@@ -3,6 +3,7 @@ import { RecentSearchService } from './recent-search.service';
 import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard';
 import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { DeleteRecentSearchDTO } from './dto/recent-search.dto';
 
 @Controller('recent-search')
 export class RecentSearchController {
@@ -10,15 +11,15 @@ export class RecentSearchController {
   @Get('/')
   @UseGuards(OptionalAuthGuard)
   async getRecentSearch(@Req() req: any) {
-    const uuid = req?.user?.uuid || null;
+    const uuid = req.user?.uuid || null;
     return new SuccessResponseDTO(await this.recentSearchService.getRecentSearch(uuid));
   }
 
   @Delete('/')
   @UseGuards(AuthGuard('jwt'))
-  async deleteRecentSearch(@Req() req: any, @Body('shopName') shopName: string) {
+  async deleteRecentSearch(@Req() req: any, @Body() deleteRecentSearchDTO: DeleteRecentSearchDTO) {
     const { uuid } = req.user;
-    await this.recentSearchService.deleteRecentSearch(uuid, shopName);
+    await this.recentSearchService.deleteRecentSearch(uuid, deleteRecentSearchDTO);
     return new Success204ResponseDTO();
   }
 

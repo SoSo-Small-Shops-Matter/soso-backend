@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RecentSearchRepository } from './recent-search.repository';
+import { DeleteRecentSearchDTO } from './dto/recent-search.dto';
 
 @Injectable()
 export class RecentSearchService {
@@ -9,7 +10,8 @@ export class RecentSearchService {
     return await this.recentSearchRepository.findRecentSearchListByUUID(uuid);
   }
 
-  async deleteRecentSearch(uuid: string, shopName: string) {
+  async deleteRecentSearch(uuid: string, deleteRecentSearchDTO: DeleteRecentSearchDTO) {
+    const { shopName } = deleteRecentSearchDTO;
     return await this.recentSearchRepository.deleteRecentSearch(uuid, shopName);
   }
 

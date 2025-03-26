@@ -13,7 +13,7 @@ import {
   Query,
   ConflictException,
 } from '@nestjs/common';
-import { NickNameDto, PageNationDto, ReviewPageNationDto, UpdateProfileDto, WishlistPageNationDto } from './dto/user.dto';
+import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
 import { UserService } from './user.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,17 +31,15 @@ export class UserController {
   }
 
   @Get('/nickname/:nickName')
-  async checkNickName(@Param() nickNameDto: NickNameDto) {
-    const { nickName } = nickNameDto;
-    return new SuccessResponseDTO(await this.userService.findUserNickName(nickName));
+  async checkNickName(@Param() nickNameDTO: NickNameDTO) {
+    return new SuccessResponseDTO(await this.userService.findUserNickName(nickNameDTO));
   }
 
   @Post('/nickname')
   @UseGuards(AuthGuard('jwt'))
-  async setNickName(@Body() nickNameDto: NickNameDto, @Req() req) {
-    const { nickName } = nickNameDto;
+  async setNickName(@Body() nickNameDTO: NickNameDTO, @Req() req) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickName, uuid));
+    return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid));
   }
   @Get('/profile')
   @UseGuards(AuthGuard('jwt'))
@@ -53,33 +51,29 @@ export class UserController {
   @Patch('/profile')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file'))
-  async updateProfile(@Req() req, @Body() updateProfileDto?: UpdateProfileDto, @UploadedFile() file?: Express.Multer.File) {
-    const { nickName } = updateProfileDto;
+  async updateProfile(@Req() req, @Body() updateProfileDTO?: UpdateProfileDTO, @UploadedFile() file?: Express.Multer.File) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.userService.updateUserProfile(nickName, uuid, file));
+    return new SuccessResponseDTO(await this.userService.updateUserProfile(updateProfileDTO, uuid, file));
   }
 
   @Get('/submit')
   @UseGuards(AuthGuard('jwt'))
-  async getSubmitShop(@Req() req, @Query() pageNation: PageNationDto) {
+  async getSubmitShop(@Req() req, @Query() pageNation: PageNationDTO) {
     const { uuid } = req.user;
-    const { page, limit } = pageNation;
-    return new SuccessResponseDTO(await this.userService.findSubmitRecord(uuid, page, limit));
+    return new SuccessResponseDTO(await this.userService.findSubmitRecord(pageNation, uuid));
   }
 
   @Get('/review')
   @UseGuards(AuthGuard('jwt'))
-  async getUserReview(@Req() req: any, @Query() pageNation: ReviewPageNationDto) {
+  async getUserReview(@Req() req: any, @Query() pageNation: ReviewPageNationDTO) {
     const { uuid } = req.user;
-    const { page, limit, sort } = pageNation;
-    return new SuccessResponseDTO(await this.userService.findUserReviews(uuid, page, limit, sort));
+    return new SuccessResponseDTO(await this.userService.findUserReviews(pageNation, uuid));
   }
 
   @Get('/wishlist')
   @UseGuards(AuthGuard('jwt'))
-  async getUserWishlist(@Req() req: any, @Query() pageNation: WishlistPageNationDto) {
+  async getUserWishlist(@Req() req: any, @Query() pageNation: WishlistPageNationDTO) {
     const { uuid } = req.user;
-    const { page, limit, area } = pageNation;
-    return new SuccessResponseDTO(await this.userService.getWishlist(uuid, page, limit, area));
+    return new SuccessResponseDTO(await this.userService.getWishlist(pageNation, uuid));
   }
 }

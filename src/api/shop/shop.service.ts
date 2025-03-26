@@ -5,6 +5,7 @@ import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
+import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 
 @Injectable()
 export class ShopService {
@@ -17,10 +18,11 @@ export class ShopService {
     private recentSearchRepository: RecentSearchRepository,
   ) {}
 
-  async findShopsWithin1Km(lat: number, lng: number, sorting: string) {
+  async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO) {
+    const { lat, lng, sorting } = getShopWithin1KmDTO;
     const radius = 6371; // 지구 반경 (km)
     const distanceLimit = 1; // 거리 제한 (1km)
-    const result = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != 'false');
+    const result = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
     // shop_ 프리픽스 제거 + 필요한 필드만 추출
     return result.map((shop) => ({
       id: shop.shop_id,
@@ -36,7 +38,8 @@ export class ShopService {
       ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}), // sorting이 true일 때만 포함
     }));
   }
-  async findShopsByKeyword(keyword: string, page: number, limit: number) {
+  async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
+    const { keyword, page, limit } = getSearchPageShopDTO;
     const result = await this.shopRepository.findShopsByKeyword(keyword, page, limit);
     const allShops = await this.shopRepository.findAllShopsByKeyword(keyword);
     const totalPages = Math.ceil(allShops.length / limit);

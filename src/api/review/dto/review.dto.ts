@@ -1,13 +1,13 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
 
 export class PostReviewDto {
-  // @IsInt()
+  @IsNumber()
   @IsNotEmpty()
   shopId: number;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   content: string;
 }
 
@@ -15,6 +15,7 @@ export class UpdateReviewDto {
   @IsNotEmpty()
   reviewId: number;
 
+  @MaxLength(100)
   content?: string;
 
   deleteImages?: number[];

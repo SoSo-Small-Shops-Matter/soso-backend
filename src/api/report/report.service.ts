@@ -19,7 +19,7 @@ export class ReportService {
     if (!review) throw new NotFoundException('Not exist review');
 
     const existData = await this.reportRepository.findReviewReport(uuid, review.id);
-    if (existData) throw new ConflictException('Exist Review');
+    if (existData) throw new ConflictException('Exist Report Review');
 
     return await this.reportRepository.saveReviewReport(uuid, review.id, status, message);
   }
@@ -30,7 +30,7 @@ export class ReportService {
     if (!shop) throw new NotFoundException('Not exist shop');
 
     const existData = await this.reportRepository.findShopReport(uuid, shop.id);
-    if (existData) throw new ConflictException('Exist Shop');
+    if (existData) throw new ConflictException('Exist Report Shop');
 
     return await this.reportRepository.saveShopReport(uuid, shop.id, status, message);
   }

@@ -71,11 +71,6 @@ export const swaggerDocs = {
         ...shopSwaggerDocs.getShopWithin1Km,
         tags: ['Shop'],
       },
-      patch: {
-        ...shopSwaggerDocs.updateShopProducts,
-        tags: ['Shop'],
-        security: [{ 'JWT-auth': [] }],
-      },
     },
     '/shop/region': {
       get: {
