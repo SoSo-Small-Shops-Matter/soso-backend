@@ -1,13 +1,16 @@
-import { Entity, PrimaryColumn, ManyToOne, Column, JoinColumn } from 'typeorm';
+import { Entity, ManyToOne, Column, JoinColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './product.entity';
 import { Shop } from './shop.entity';
 
 @Entity('product_mapping')
 export class ProductMapping {
-  @PrimaryColumn({ type: 'int' })
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
   productId: number;
 
-  @PrimaryColumn({ type: 'int' })
+  @Column()
   shopId: number;
 
   @Column({ type: 'int', default: 0 })

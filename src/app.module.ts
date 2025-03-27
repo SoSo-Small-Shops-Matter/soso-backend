@@ -18,6 +18,7 @@ import { RecentSearchModule } from './api/recent-search/recent-search.module';
 import { LoggerModule } from './api/logger/logger.module';
 import { ReportModule } from './api/report/report.module';
 import { ImageModule } from './api/image/image.module';
+import { AdminModule } from './api/admin/admin.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ImageModule } from './api/image/image.module';
     LoggerModule,
     ReportModule,
     ImageModule,
+    AdminModule,
   ],
   controllers: [AppController],
 })

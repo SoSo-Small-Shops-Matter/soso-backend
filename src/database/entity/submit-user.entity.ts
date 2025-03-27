@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, ManyToOne, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Shop } from './shop.entity';
 
@@ -15,6 +15,9 @@ export class SubmitUserRecord {
 
   @Column({ default: null }) // 거절시 메시지
   rejectMessage: string;
+
+  @Column({ default: null })
+  operatingId: number;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   user: User;

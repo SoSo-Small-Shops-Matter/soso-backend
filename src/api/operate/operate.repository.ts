@@ -15,7 +15,7 @@ export class OperateRepository {
     try {
       return await this.operatingRepository.save({
         shop: { id: shopId },
-        type: 1,
+        type: 0,
         ...operatingData,
       });
     } catch (err) {

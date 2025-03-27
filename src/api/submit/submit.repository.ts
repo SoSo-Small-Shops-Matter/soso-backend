@@ -30,7 +30,7 @@ export class SubmitRepository {
     }
   }
 
-  async createSubmitUserRecordByUpdateOperatingInfo(uuid, shopId) {
+  async createSubmitUserRecordByUpdateOperatingInfo(uuid, shopId, newOperatingId: number) {
     try {
       return await this.submitUserRecordRepository.save({
         status: 0,
@@ -41,6 +41,7 @@ export class SubmitRepository {
         shop: {
           id: shopId,
         },
+        operatingId: newOperatingId,
       });
     } catch (err) {
       this.loggerService.warn(`Submit/ createSubmitUserRecordByUpdateOperatingInfo Error: ${err}`);
@@ -109,6 +110,52 @@ export class SubmitRepository {
         .getMany();
     } catch (err) {
       this.loggerService.warn(`Submit/ findUserSubmitUserRecordByPageNation Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findAllSubmitProducts() {
+    try {
+      return await this.submitUserRecordRepository
+        .createQueryBuilder('submit')
+        .where('submit.type=2')
+        .leftJoinAndSelect('submit.shop', 'shop') // ✅ shop 관계 조인
+        .leftJoinAndSelect('shop.productMappings', 'productMappings')
+        .leftJoinAndSelect('submit.user', 'user') // ✅ shop 관계 조인
+        .getMany();
+    } catch (err) {
+      this.loggerService.warn(`Submit/ findAllSubmitProducts Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findAllSubmitOperatings() {
+    try {
+      return await this.submitUserRecordRepository
+        .createQueryBuilder('submit')
+        .where('submit.type=1')
+        .leftJoinAndSelect('submit.shop', 'shop') // ✅ shop 관계 조인
+        .leftJoinAndSelect('shop.operatingHours', 'operatingHours')
+        .leftJoinAndSelect('submit.user', 'user') // ✅ shop 관계 조인
+        .getMany();
+    } catch (err) {
+      this.loggerService.warn(`Submit/ findAllSubmitProducts Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findAllSubmitNewShops() {
+    try {
+      return await this.submitUserRecordRepository
+        .createQueryBuilder('submit')
+        .where('submit.type=0')
+        .leftJoinAndSelect('submit.shop', 'shop') // ✅ shop 관계 조인
+        .leftJoinAndSelect('shop.operatingHours', 'operatingHours')
+        .leftJoinAndSelect('shop.productMappings', 'productMappings')
+        .leftJoinAndSelect('submit.user', 'user') // ✅ shop 관계 조인
+        .getMany();
+    } catch (err) {
+      this.loggerService.warn(`Submit/ findAllSubmitProducts Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

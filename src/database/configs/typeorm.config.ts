@@ -11,5 +11,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   password: dbConfig.password,
   database: dbConfig.database,
   entities: [__dirname + '/../entity/*.entity.{js,ts}'], // 엔터티 경로 지정
-  synchronize: true,
+  synchronize: false,
 };

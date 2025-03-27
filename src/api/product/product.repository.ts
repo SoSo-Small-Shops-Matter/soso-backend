@@ -13,7 +13,8 @@ export class ProductRepository {
 
   async saveProducts(productMappings) {
     try {
-      return await this.productMappingRepository.save(productMappings);
+      const newProducts = await this.productMappingRepository.create(productMappings);
+      return await this.productMappingRepository.save(newProducts);
     } catch (err) {
       this.loggerService.warn(`Product/ saveProducts Error: ${err}`);
       throw new InternalServerErrorException();

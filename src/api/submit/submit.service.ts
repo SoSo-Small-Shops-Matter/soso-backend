@@ -20,14 +20,10 @@ export class SubmitService {
     const { shop, operatingHours, products } = newShopData;
 
     const region = await this.regionRepository.findRegionByLocation(shop.location);
-    if (!region) {
-      throw new NotFoundException('위치가 잘못됐습니다.');
-    }
+    if (!region) throw new NotFoundException('위치가 잘못됐습니다.');
 
     const createShop = await this.shopRepository.createNewShop(shop, region.id);
-    if (!createShop) {
-      throw new ConflictException();
-    }
+    if (!createShop) throw new ConflictException();
 
     if (operatingHours) {
       await this.operateRepository.saveOperatingByShopId(operatingHours, createShop.id);
@@ -51,16 +47,14 @@ export class SubmitService {
 
     // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
-    if (!shop) {
-      throw new ConflictException('없는 소풉샵입니다.');
-    }
+    if (!shop) throw new ConflictException('없는 소풉샵입니다.');
 
     const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 1);
     if (existData) throw new ConflictException('Exist Data');
 
-    await this.operateRepository.validateAndCreateOperatingHours(shop.id, operatingHours);
+    const newOperating = await this.operateRepository.validateAndCreateOperatingHours(shop.id, operatingHours);
 
-    const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid, shop.id);
+    const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid, shop.id, newOperating.id);
 
     return result;
   }
@@ -69,15 +63,15 @@ export class SubmitService {
     const { shopId, products } = prodcutsData;
 
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
-    if (!shop) {
-      throw new ConflictException('없는 소풉샵입니다.');
-    }
+    if (!shop) throw new ConflictException('없는 소풉샵입니다.');
 
     const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 2);
     if (existData) throw new ConflictException('Exist Data');
 
     const productMappings = products.map((product) => ({
       shop: { id: shopId },
+      shopId: shopId,
+      productId: product.id,
       type: 1,
       user: uuid,
       product: { id: product.id },
