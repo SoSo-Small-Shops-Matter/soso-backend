@@ -1,8 +1,10 @@
 import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PostReviewDto {
   @IsNumber()
   @IsNotEmpty()
+  @Type(() => Number)
   shopId: number;
 
   @IsString()
