@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class GetShopWithin1KmDTO {
   @IsNumber()
@@ -14,12 +14,6 @@ export class GetShopWithin1KmDTO {
 
   @IsBoolean()
   @IsNotEmpty()
-  @Matches(/^[^\x00-\x1F\x7F]*$/, {
-    message: '제어 문자를 포함할 수 없습니다.',
-  })
-  @Matches(/^(?!.*(<script|<\/script>|<iframe|on\w+=|javascript:|eval\()).*$/i, {
-    message: '스크립트 또는 악성 코드를 포함할 수 없습니다.',
-  })
   @Type(() => Boolean) // 'true'/'false' → boolean 변환
   sorting: boolean;
 }
@@ -37,11 +31,5 @@ export class GetSearchPageShopDTO {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[^\x00-\x1F\x7F]*$/, {
-    message: '제어 문자를 포함할 수 없습니다.',
-  })
-  @Matches(/^(?!.*(<script|<\/script>|<iframe|on\w+=|javascript:|eval\()).*$/i, {
-    message: '스크립트 또는 악성 코드를 포함할 수 없습니다.',
-  })
   keyword: string;
 }
