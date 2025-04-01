@@ -1,4 +1,4 @@
-export class UpdateSubmitProducts {
+export class AllowSubmitProducts {
   submitId: number;
 
   userUUID: string;
@@ -14,4 +14,11 @@ export class RejectSubmitProducts {
   shopId: number;
 
   rejectMessage: string;
+}
+
+export class AllowSubmitOperatingInfo {
+  submitId: number;
+  userUUID: string;
+  shopId: number;
+  operatingId: number;
 }

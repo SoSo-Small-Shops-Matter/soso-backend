@@ -36,4 +36,27 @@ export class OperateRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteUsingOperatingByShopId(shopId: number) {
+    try {
+      return await this.operatingRepository.delete({
+        shop: {
+          id: shopId,
+        },
+        type: 0,
+      });
+    } catch (err) {
+      this.loggerService.warn(`Operating/deleteOperatingByShopId Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async updateToUsingOperating(operatingId: number) {
+    try {
+      return await this.operatingRepository.update({ id: operatingId }, { type: 0 });
+    } catch (err) {
+      this.loggerService.warn(`Operating/updateToUsingOperatingByShopId Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
 }

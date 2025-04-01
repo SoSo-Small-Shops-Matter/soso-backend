@@ -1,13 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SubmitRepository } from '../submit/submit.repository';
-import { RejectSubmitProducts, UpdateSubmitProducts } from './dto/admin.dto';
+import { RejectSubmitProducts, AllowSubmitProducts, AllowSubmitOperatingInfo } from './dto/admin.dto';
 import { ProductRepository } from '../product/product.repository';
+import { OperateRepository } from '../operate/operate.repository';
 
 @Injectable()
 export class AdminService {
   constructor(
     private submitRepository: SubmitRepository,
     private productRepository: ProductRepository,
+    private operateRepository: OperateRepository,
   ) {}
 
   async getAllSubmitProducts() {
@@ -26,11 +28,11 @@ export class AdminService {
     }));
   }
 
-  async allowSubmitProduct(updateSubmitProducts: UpdateSubmitProducts) {
-    const { submitId, userUUID, shopId } = updateSubmitProducts;
-
+  async allowSubmitProduct(allowSubmitProducts: AllowSubmitProducts) {
+    const { submitId, userUUID, shopId } = allowSubmitProducts;
+    const PRODUCTS_TYPE = 0;
     // 해당 유저가 제출한 submit status를 완료로 바꾸기 (status:1)
-    const userSubmitData = await this.submitRepository.findSubmitProductsBySubmitId(submitId, userUUID);
+    const userSubmitData = await this.submitRepository.findSubmitBySubmitIdAndType(submitId, PRODUCTS_TYPE, userUUID);
     if (!userSubmitData) throw new NotFoundException('Not Found User Submit Record');
     userSubmitData.status = 1; // success;
     await this.submitRepository.saveSubmit(userSubmitData);
@@ -53,11 +55,11 @@ export class AdminService {
 
   async rejectSubmitProduct(rejectSubmitProducts: RejectSubmitProducts) {
     const { submitId, userUUID, shopId, rejectMessage } = rejectSubmitProducts;
-
+    const PRODUCTS_TYPE = 0;
     // 해당 유저가 제출한 submit status를 거절로 바꾸기 (status:2)
-    const userSubmitData = await this.submitRepository.findSubmitProductsBySubmitId(submitId, userUUID);
+    const userSubmitData = await this.submitRepository.findSubmitBySubmitIdAndType(submitId, PRODUCTS_TYPE, userUUID);
     if (!userSubmitData) throw new NotFoundException('Not Found User Submit Record');
-    userSubmitData.status = 2; // success;
+    userSubmitData.status = 2; // reject;
     userSubmitData.rejectMessage = rejectMessage;
     await this.submitRepository.saveSubmit(userSubmitData);
 
@@ -80,6 +82,23 @@ export class AdminService {
       originalOperating: submit.shop?.operatingHours?.filter((p) => p.type === 0) || null,
       newOperating: submit.shop?.operatingHours?.filter((p) => p.type === 1 && p.id === submit.operatingId) || null,
     }));
+  }
+
+  async allowSubmitOperatingInfo(allowSubmitOperatingInfo: AllowSubmitOperatingInfo) {
+    const { submitId, userUUID, shopId, operatingId } = allowSubmitOperatingInfo;
+    const OPERATING_INFO_TYPE = 1;
+
+    // 해당 유저가 제출한 submit status를 완료로 바꾸기 (status:1)
+    const userSubmitData = await this.submitRepository.findSubmitBySubmitIdAndType(submitId, OPERATING_INFO_TYPE, userUUID);
+    if (!userSubmitData) throw new NotFoundException('Not Found User Submit Record');
+    userSubmitData.status = 1; // success
+    await this.submitRepository.saveSubmit(userSubmitData);
+
+    // shopId로 operatingHours 테이블을 서칭해서 현재 type:0 인 정보 delete하기
+    await this.operateRepository.deleteUsingOperatingByShopId(shopId);
+
+    // 유저의 uuid와 shopId로 operatingHours 테이블을 서칭해서 유저가 제안한 operatingHours의 type 0으로 업데이트하기
+    await this.operateRepository.updateToUsingOperating(operatingId);
   }
 
   async getAllNewShops() {

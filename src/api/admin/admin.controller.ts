@@ -3,7 +3,7 @@ import { AdminService } from './admin.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as config from 'config';
-import { RejectSubmitProducts, UpdateSubmitProducts } from './dto/admin.dto';
+import { RejectSubmitProducts, AllowSubmitProducts, AllowSubmitOperatingInfo } from './dto/admin.dto';
 
 const adminConfig = config.get('admin');
 
@@ -21,10 +21,10 @@ export class AdminController {
   }
 
   @Put('/products')
-  async allowSubmitProducts(@Req() req: any, @Body() updateSubmitProducts: UpdateSubmitProducts) {
+  async allowSubmitProducts(@Req() req: any, @Body() allowSubmitProducts: AllowSubmitProducts) {
     const { uuid } = req.user;
     if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
-    return new Success204ResponseDTO(await this.adminService.allowSubmitProduct(updateSubmitProducts));
+    return new Success204ResponseDTO(await this.adminService.allowSubmitProduct(allowSubmitProducts));
   }
 
   @Delete('/products')
@@ -39,6 +39,13 @@ export class AdminController {
     const { uuid } = req.user;
     if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
     return new SuccessResponseDTO(await this.adminService.getAllSubmitOperatings());
+  }
+
+  @Put('/operatings')
+  async allowSubmitOperating(@Req() req: any, @Body() allowSubmitOperatingInfo: AllowSubmitOperatingInfo) {
+    const { uuid } = req.user;
+    if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
+    return new Success204ResponseDTO(await this.adminService.allowSubmitOperatingInfo(allowSubmitOperatingInfo));
   }
 
   @Get('/shops')

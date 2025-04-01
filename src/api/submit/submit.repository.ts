@@ -160,13 +160,13 @@ export class SubmitRepository {
     }
   }
 
-  async findSubmitProductsBySubmitId(submitId: number, userUUID: string) {
+  async findSubmitBySubmitIdAndType(submitId: number, type: number, userUUID: string) {
     try {
       return await this.submitUserRecordRepository.findOne({
         where: {
           id: submitId,
           status: 0,
-          type: 2,
+          type: type,
           user: {
             uuid: userUUID,
           },
