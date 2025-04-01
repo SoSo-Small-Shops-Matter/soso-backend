@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as config from 'config';
-import { UpdateSubmitProducts } from './dto/admin.dto';
+import { RejectSubmitProducts, UpdateSubmitProducts } from './dto/admin.dto';
 
 const adminConfig = config.get('admin');
 
@@ -25,6 +25,13 @@ export class AdminController {
     const { uuid } = req.user;
     if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
     return new Success204ResponseDTO(await this.adminService.allowSubmitProduct(updateSubmitProducts));
+  }
+
+  @Delete('/products')
+  async rejectSubmitProducts(@Req() req: any, @Body() rejectSubmitProducts: RejectSubmitProducts) {
+    const { uuid } = req.user;
+    if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
+    return new Success204ResponseDTO(await this.adminService.rejectSubmitProduct(rejectSubmitProducts));
   }
 
   @Get('/operatings')

@@ -5,3 +5,11 @@ export class UpdateSubmitProducts {
 
   shopId: number;
 }
+
+export class RejectSubmitProducts {
+  submitId: number;
+
+  userUUID: string;
+
+  shopId: number;
+}

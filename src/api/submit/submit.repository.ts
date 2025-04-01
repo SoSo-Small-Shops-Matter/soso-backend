@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
 import { LoggerService } from '../logger/logger.service';
-import { SubmitShop } from './dto/submit.dto';
 
 @Injectable()
 export class SubmitRepository {
@@ -161,9 +160,18 @@ export class SubmitRepository {
     }
   }
 
-  async findSubmitProductsBySubmitId(submitId: number) {
+  async findSubmitProductsBySubmitId(submitId: number, userUUID: string) {
     try {
-      return await this.submitUserRecordRepository.findOne({ where: { id: submitId } });
+      return await this.submitUserRecordRepository.findOne({
+        where: {
+          id: submitId,
+          status: 0,
+          type: 1,
+          user: {
+            uuid: userUUID,
+          },
+        },
+      });
     } catch (err) {
       this.loggerService.warn(`Submit/ findSubmitProductsBySubmitId Error: ${err}`);
       throw new InternalServerErrorException();

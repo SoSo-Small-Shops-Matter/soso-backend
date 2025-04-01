@@ -67,4 +67,13 @@ export class ProductRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteAllSubmitProductMappingsByShopIdAndUUID(shopId: number, uuid: string) {
+    try {
+      return await this.productMappingRepository.delete({ shopId: shopId, user: uuid, type: 1 });
+    } catch (err) {
+      this.loggerService.warn(`Product/deleteAllSubmitProductMappingsByShopId Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
 }
