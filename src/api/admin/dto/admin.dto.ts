@@ -22,3 +22,10 @@ export class AllowSubmitOperatingInfo {
   shopId: number;
   operatingId: number;
 }
+
+export class RejectSubmitOperatingInfo {
+  submitId: number;
+  userUUID: string;
+  operatingId: number;
+  rejectedMessage: string;
+}

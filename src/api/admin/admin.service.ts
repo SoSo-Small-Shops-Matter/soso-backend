@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SubmitRepository } from '../submit/submit.repository';
-import { RejectSubmitProducts, AllowSubmitProducts, AllowSubmitOperatingInfo } from './dto/admin.dto';
+import { RejectSubmitProducts, AllowSubmitProducts, AllowSubmitOperatingInfo, RejectSubmitOperatingInfo } from './dto/admin.dto';
 import { ProductRepository } from '../product/product.repository';
 import { OperateRepository } from '../operate/operate.repository';
 
@@ -99,6 +99,21 @@ export class AdminService {
 
     // 유저의 uuid와 shopId로 operatingHours 테이블을 서칭해서 유저가 제안한 operatingHours의 type 0으로 업데이트하기
     await this.operateRepository.updateToUsingOperating(operatingId);
+  }
+
+  async rejectSubmitOperatingInfo(rejctSubmitOperatingInfo: RejectSubmitOperatingInfo) {
+    const { submitId, userUUID, operatingId, rejectedMessage } = rejctSubmitOperatingInfo;
+    const OPERATING_INFO_TYPE = 1;
+
+    // 해당 유저가 제출한 submit status를 완료로 바꾸기 (status:1)
+    const userSubmitData = await this.submitRepository.findSubmitBySubmitIdAndType(submitId, OPERATING_INFO_TYPE, userUUID);
+    if (!userSubmitData) throw new NotFoundException('Not Found User Submit Record');
+    userSubmitData.status = 2; // reject
+    userSubmitData.rejectMessage = rejectedMessage;
+    await this.submitRepository.saveSubmit(userSubmitData);
+
+    // operatingId 데이터를 통해 사용자가 제안한 운영정보 데이터 삭제하기
+    await this.operateRepository.deleteSubmitOperatingByOperatingId(operatingId);
   }
 
   async getAllNewShops() {

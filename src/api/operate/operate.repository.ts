@@ -59,4 +59,16 @@ export class OperateRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteSubmitOperatingByOperatingId(operatingId: number) {
+    try {
+      return await this.operatingRepository.delete({
+        id: operatingId,
+        type: 1,
+      });
+    } catch (err) {
+      this.loggerService.warn(`Operating/deleteOperatingByShopId Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
 }
