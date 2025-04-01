@@ -1,23 +1,43 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { SuccessResponseDTO } from '../../common/response/response.dto';
+import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
+import { AuthGuard } from '@nestjs/passport';
+import * as config from 'config';
+import { UpdateSubmitProducts } from './dto/admin.dto';
+
+const adminConfig = config.get('admin');
 
 @Controller('admin')
+@UseGuards(AuthGuard('jwt'))
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Get('/products')
-  async getSubmitProducts() {
+  async getSubmitProducts(@Req() req: any) {
+    // 임시로 씀 -> 나중에 Role 추가해서 사용할 예정
+    const { uuid } = req.user;
+    if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
     return new SuccessResponseDTO(await this.adminService.getAllSubmitProducts());
   }
 
+  @Put('/products')
+  async allowSubmitProducts(@Req() req: any, @Body() updateSubmitProducts: UpdateSubmitProducts) {
+    const { uuid } = req.user;
+    if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
+    return new Success204ResponseDTO(await this.adminService.allowSubmitProduct(updateSubmitProducts));
+  }
+
   @Get('/operatings')
-  async getSubmitOperatings() {
+  async getSubmitOperatings(@Req() req: any) {
+    const { uuid } = req.user;
+    if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
     return new SuccessResponseDTO(await this.adminService.getAllSubmitOperatings());
   }
 
   @Get('/shops')
-  async getSubmitNewShops() {
+  async getSubmitNewShops(@Req() req: any) {
+    const { uuid } = req.user;
+    if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
     return new SuccessResponseDTO(await this.adminService.getAllNewShops());
   }
 }

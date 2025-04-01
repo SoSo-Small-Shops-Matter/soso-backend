@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
 import { LoggerService } from '../logger/logger.service';
+import { SubmitShop } from './dto/submit.dto';
 
 @Injectable()
 export class SubmitRepository {
@@ -156,6 +157,24 @@ export class SubmitRepository {
         .getMany();
     } catch (err) {
       this.loggerService.warn(`Submit/ findAllSubmitProducts Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findSubmitProductsBySubmitId(submitId: number) {
+    try {
+      return await this.submitUserRecordRepository.findOne({ where: { id: submitId } });
+    } catch (err) {
+      this.loggerService.warn(`Submit/ findSubmitProductsBySubmitId Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async saveSubmit(submit) {
+    try {
+      return await this.submitUserRecordRepository.save(submit);
+    } catch (err) {
+      this.loggerService.warn(`Submit/ saveSubmit Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
