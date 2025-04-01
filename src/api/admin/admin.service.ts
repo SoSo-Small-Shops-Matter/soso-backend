@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SubmitRepository } from '../submit/submit.repository';
-import { RejectSubmitProducts, AllowSubmitProducts, AllowSubmitOperatingInfo, RejectSubmitOperatingInfo } from './dto/admin.dto';
+import { RejectSubmitProducts, AllowSubmitProducts, AllowSubmitOperatingInfo, RejectSubmitOperatingInfo, AllowSubmitNewShop } from './dto/admin.dto';
 import { ProductRepository } from '../product/product.repository';
 import { OperateRepository } from '../operate/operate.repository';
+import { ShopRepository } from '../shop/shop.repository';
 
 @Injectable()
 export class AdminService {
@@ -10,6 +11,7 @@ export class AdminService {
     private submitRepository: SubmitRepository,
     private productRepository: ProductRepository,
     private operateRepository: OperateRepository,
+    private shopRepository: ShopRepository,
   ) {}
 
   async getAllSubmitProducts() {
@@ -130,5 +132,17 @@ export class AdminService {
       operating: submit.shop.operatingHours,
       products: submit.shop?.productMappings,
     }));
+  }
+
+  async allowNewShop(allowSubmitNewShop: AllowSubmitNewShop) {
+    const { submitId, userUUID, newShopId } = allowSubmitNewShop;
+    const NEW_SHOP_TYPE = 0;
+    // 해당 유저가 제출한 submit status를 완료로 바꾸기 (status:1)
+    const userSubmitData = await this.submitRepository.findSubmitBySubmitIdAndType(submitId, NEW_SHOP_TYPE, userUUID);
+    if (!userSubmitData) throw new NotFoundException('Not Found User Submit Record');
+    userSubmitData.status = 1; // success
+    await this.submitRepository.saveSubmit(userSubmitData);
+    // 해당 shopId를 통해 shop 테이블의 type = 0으로 업데이트(사용한다는 뜻)
+    await this.shopRepository.updateToUsingShop(newShopId);
   }
 }

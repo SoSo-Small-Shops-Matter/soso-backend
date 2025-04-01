@@ -118,4 +118,13 @@ export class ShopRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async updateToUsingShop(shopId: number) {
+    try {
+      return await this.shopRepository.update({ id: shopId }, { type: 0 });
+    } catch (err) {
+      this.loggerService.warn(`Shop/ updateToUsingShop Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
 }
