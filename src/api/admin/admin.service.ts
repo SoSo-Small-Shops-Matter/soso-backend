@@ -52,12 +52,13 @@ export class AdminService {
   }
 
   async rejectSubmitProduct(rejectSubmitProducts: RejectSubmitProducts) {
-    const { submitId, userUUID, shopId } = rejectSubmitProducts;
+    const { submitId, userUUID, shopId, rejectMessage } = rejectSubmitProducts;
 
     // 해당 유저가 제출한 submit status를 거절로 바꾸기 (status:2)
     const userSubmitData = await this.submitRepository.findSubmitProductsBySubmitId(submitId, userUUID);
     if (!userSubmitData) throw new NotFoundException('Not Found User Submit Record');
     userSubmitData.status = 2; // success;
+    userSubmitData.rejectMessage = rejectMessage;
     await this.submitRepository.saveSubmit(userSubmitData);
 
     // shopId와 userUUID를 통해 유저가 제보한 판매목록 데이터 지우기

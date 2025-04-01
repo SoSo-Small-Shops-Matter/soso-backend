@@ -12,4 +12,6 @@ export class RejectSubmitProducts {
   userUUID: string;
 
   shopId: number;
+
+  rejectMessage: string;
 }

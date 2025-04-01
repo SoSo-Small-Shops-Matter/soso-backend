@@ -166,7 +166,7 @@ export class SubmitRepository {
         where: {
           id: submitId,
           status: 0,
-          type: 1,
+          type: 2,
           user: {
             uuid: userUUID,
           },
