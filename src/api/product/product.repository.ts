@@ -30,6 +30,15 @@ export class ProductRepository {
     }
   }
 
+  async deleteProductsByShopId(shopId: number) {
+    try {
+      return await this.productMappingRepository.delete({ shopId: shopId, type: 0 });
+    } catch (err) {
+      this.loggerService.warn(`Product/ deleteProducts Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
   async updateToUsingProduct(productMappingId: number) {
     try {
       return await this.productMappingRepository.update({ id: productMappingId }, { type: 0 });

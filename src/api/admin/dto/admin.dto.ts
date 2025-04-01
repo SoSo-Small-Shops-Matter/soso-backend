@@ -27,11 +27,18 @@ export class RejectSubmitOperatingInfo {
   submitId: number;
   userUUID: string;
   operatingId: number;
-  rejectedMessage: string;
+  rejectMessage: string;
 }
 
 export class AllowSubmitNewShop {
   submitId: number;
   userUUID: string;
   newShopId: number;
+}
+
+export class RejectSubmitNewShop {
+  submitId: number;
+  userUUID: string;
+  newShopId: number;
+  rejectMessage: string;
 }

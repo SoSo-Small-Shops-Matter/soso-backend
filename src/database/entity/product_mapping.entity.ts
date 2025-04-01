@@ -19,11 +19,11 @@ export class ProductMapping {
   @Column({ default: 'admin' })
   user: string;
 
-  @ManyToOne(() => Product, (product) => product.productMappings, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Product, (product) => product.productMappings)
   @JoinColumn({ name: 'productId' }) // productId를 Product의 id와 연결
   product: Product;
 
-  @ManyToOne(() => Shop, (shop) => shop.productMappings, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Shop, (shop) => shop.productMappings)
   @JoinColumn({ name: 'shopId' }) // shopId를 Shop의 id와 연결
   shop: Shop;
 }

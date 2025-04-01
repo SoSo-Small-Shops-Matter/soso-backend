@@ -127,4 +127,13 @@ export class ShopRepository {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteShop(shopId: number) {
+    try {
+      return await this.shopRepository.delete({ id: shopId });
+    } catch (err) {
+      this.loggerService.warn(`Shop/ deleteShop Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
 }

@@ -3,7 +3,14 @@ import { AdminService } from './admin.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as config from 'config';
-import { RejectSubmitProducts, AllowSubmitProducts, AllowSubmitOperatingInfo, RejectSubmitOperatingInfo, AllowSubmitNewShop } from './dto/admin.dto';
+import {
+  RejectSubmitProducts,
+  AllowSubmitProducts,
+  AllowSubmitOperatingInfo,
+  RejectSubmitOperatingInfo,
+  AllowSubmitNewShop,
+  RejectSubmitNewShop,
+} from './dto/admin.dto';
 
 const adminConfig = config.get('admin');
 
@@ -67,5 +74,12 @@ export class AdminController {
     const { uuid } = req.user;
     if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
     return new Success204ResponseDTO(await this.adminService.allowNewShop(allowSubmitNewShop));
+  }
+
+  @Delete('/shops')
+  async rejectSubmitNewShops(@Req() req: any, @Body() rejectSubmitShop: RejectSubmitNewShop) {
+    const { uuid } = req.user;
+    if (uuid !== adminConfig.ADMIN_UUID) throw UnauthorizedException;
+    return new Success204ResponseDTO(await this.adminService.rejectNewShop(rejectSubmitShop));
   }
 }

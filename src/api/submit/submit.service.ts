@@ -31,8 +31,10 @@ export class SubmitService {
 
     if (products) {
       const productMappings = products.map((product) => ({
-        shop: { id: createShop.id },
+        // shop: { id: createShop.id },
         product: { id: product.id },
+        shopId: createShop.id,
+        user: uuid,
       }));
       await this.productRepository.saveProducts(productMappings);
     }
