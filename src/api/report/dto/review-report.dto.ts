@@ -9,6 +9,6 @@ export class ReviewReportDto {
   @IsNumber()
   status: number;
 
-  @MaxLength(100)
+  // @MaxLength(100)
   message?: string;
 }

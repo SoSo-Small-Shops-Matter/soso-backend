@@ -6,7 +6,7 @@ import { CustomValidationPipe } from './common/pipe/validationPipe.pipe';
 import { setupSwagger } from './swagger/swagger';
 import { LoggerService } from './api/logger/logger.service';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
-import { SanitizePipe } from './common/pipe/sanitize.pipe';
+// import { SanitizePipe } from './common/pipe/sanitize.pipe';
 
 const serverConfig = config.get('server');
 
@@ -34,7 +34,7 @@ async function bootstrap() {
 
   const logger = app.get(LoggerService);
 
-  app.useGlobalPipes(new SanitizePipe(), new CustomValidationPipe());
+  app.useGlobalPipes(new CustomValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter(logger));
   app.enableCors({
     origin: (origin, callback) => {
