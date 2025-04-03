@@ -96,7 +96,7 @@ export class ShopService {
     if (uuid) {
       const checkRecentSearchByShopName = await this.recentSearchRepository.checkRecentSearchByShopName(uuid, shop.name);
       if (!checkRecentSearchByShopName) {
-        const newUserRecentSearch = await this.recentSearchRepository.createRecentSearch(uuid, shop.name);
+        const newUserRecentSearch = await this.recentSearchRepository.createRecentSearch(uuid, shop.name, shopId);
         if (userRecenSearchtList.length == 10) {
           const deleteData = userRecenSearchtList.pop();
           await this.recentSearchRepository.deleteRecentSearch(deleteData.uuid, deleteData.shopName);

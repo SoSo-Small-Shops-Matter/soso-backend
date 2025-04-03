@@ -23,9 +23,9 @@ export class RecentSearchRepository {
     }
   }
 
-  async createRecentSearch(uuid: string, shopName: string): Promise<RecentSearch> {
+  async createRecentSearch(uuid: string, shopName: string, shopId: number): Promise<RecentSearch> {
     try {
-      return await this.recentSearchRepository.create({ uuid, shopName });
+      return await this.recentSearchRepository.create({ uuid, shopName, shopId });
     } catch (err) {
       this.loggerService.warn(`Recent-Search/ createRecentSearch Error: ${err}`);
       throw new InternalServerErrorException();
