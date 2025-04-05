@@ -24,7 +24,9 @@ export class AdminService {
   async getAllSubmitProducts() {
     const result = await this.submitRepository.findAllSubmitProducts();
     return result.map((submit) => ({
+      submitId: submit.id,
       shop: {
+        id: submit.shop.id,
         name: submit.shop.name,
         location: submit.shop.location,
       },
@@ -80,7 +82,9 @@ export class AdminService {
   async getAllSubmitOperatings() {
     const result = await this.submitRepository.findAllSubmitOperatings();
     return result.map((submit) => ({
+      submitId: submit.id,
       shop: {
+        id: submit.shop.id,
         name: submit.shop.name,
         location: submit.shop.location,
       },
@@ -128,16 +132,18 @@ export class AdminService {
   async getAllNewShops() {
     const result = await this.submitRepository.findAllSubmitNewShops();
     return result.map((submit) => ({
+      submitId: submit?.id,
       shop: {
-        name: submit.shop.name,
-        location: submit.shop.location,
+        id: submit?.shop?.id,
+        name: submit?.shop?.name,
+        location: submit?.shop?.location,
       },
       user: {
-        uuid: submit.user.uuid,
-        name: submit.user.nickName,
+        uuid: submit?.user?.uuid,
+        name: submit?.user?.nickName,
       },
-      operating: submit.shop.operatingHours,
-      products: submit.shop?.productMappings,
+      operating: submit?.shop?.operatingHours,
+      products: submit?.shop?.productMappings,
     }));
   }
 
