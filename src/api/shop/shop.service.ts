@@ -63,6 +63,7 @@ export class ShopService {
   }
 
   async findShopByShopId(shopId: number, uuid: string) {
+    const imageList = [];
     const shop = await this.shopRepository.findShopByShopId(shopId);
     if (!shop) {
       throw new NotFoundException('NOT_FOUND_SHOP');
@@ -89,6 +90,13 @@ export class ShopService {
     };
 
     const { userReviews, otherReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
+    userReviews.forEach((review) => {
+      imageList.push(...review.images);
+    });
+
+    otherReviews.forEach((review) => {
+      imageList.push(...review.images);
+    });
 
     const wishlist = !!(await this.wishlistRepository.isShopInUserWishlist(shopId, uuid));
 
@@ -111,6 +119,7 @@ export class ShopService {
       userReviews,
       otherReviews,
       wishlist,
+      imageList,
     };
   }
 
