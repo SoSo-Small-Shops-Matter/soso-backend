@@ -1,14 +1,11 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import * as config from 'config';
 import * as qs from 'querystring';
 import { UserRepository } from '../user/user.repository';
 import axios from 'axios';
 import { LoggerService } from '../logger/logger.service';
 import { GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
-
-const jwtConfig = config.get('jwt');
-const googleConfig = config.get('google');
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +15,7 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private readonly loggerService: LoggerService,
+    private readonly configService: ConfigService,
   ) {}
 
   async googleAuthLogin(googleAuthLoginDTO: GoogleAuthLoginDTO) {
@@ -29,8 +27,8 @@ export class AuthService {
         this.googleTokenUrl,
         qs.stringify({
           code: code,
-          client_id: googleConfig.CLIENT_ID,
-          client_secret: googleConfig.CLIENT_SECRET,
+          client_id: this.configService.get<string>('GOOGLE_CLIENT_ID'),
+          client_secret: this.configService.get<string>('GOOGLE_CLIENT_SECRET'),
           redirect_uri: redirectUri,
           grant_type: 'authorization_code',
         }),
@@ -52,8 +50,12 @@ export class AuthService {
         await this.userRepository.createUser(userData.id, userData.picture, userData.name, userData.email);
       }
 
-      const accessToken = jwt.sign({ uuid: userData.id }, jwtConfig.access_token_secret, { expiresIn: jwtConfig.access_token_expiresIn });
-      const refreshToken = jwt.sign({ uuid: userData.id }, jwtConfig.refresh_token_secret, { expiresIn: jwtConfig.refresh_token_expiresIn });
+      const accessToken = jwt.sign({ uuid: userData.id }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
+        expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
+      });
+      const refreshToken = jwt.sign({ uuid: userData.id }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
+        expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
+      });
 
       return { accessToken, refreshToken };
     } catch (err) {
@@ -67,12 +69,14 @@ export class AuthService {
     try {
       if (!refreshToken) throw new UnauthorizedException('헤더에 Refresh Token이 포함되지 않았습니다.');
 
-      // ✅ refresh_token 검증
-      const payload = jwt.verify(refreshToken, jwtConfig.refresh_token_secret) as { uuid: string };
+      const payload = jwt.verify(refreshToken, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET')) as { uuid: string };
 
-      // ✅ 새로운 access_token 발급 (payload에서 uuid를 올바르게 추출)
-      const newAccessToken = jwt.sign({ uuid: payload.uuid }, jwtConfig.access_token_secret, { expiresIn: jwtConfig.access_token_expiresIn });
-      const newRefreshToken = jwt.sign({ uuid: payload.uuid }, jwtConfig.refresh_token_secret, { expiresIn: jwtConfig.refresh_token_expiresIn });
+      const newAccessToken = jwt.sign({ uuid: payload.uuid }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
+        expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
+      });
+      const newRefreshToken = jwt.sign({ uuid: payload.uuid }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
+        expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
+      });
 
       return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     } catch (err) {
@@ -82,10 +86,16 @@ export class AuthService {
   }
 
   async test() {
-    const accessToken = jwt.sign({ uuid: '102784937796556996262' }, jwtConfig.access_token_secret, { expiresIn: '24h' });
-    const refreshToken = jwt.sign({ uuid: '102784937796556996262' }, jwtConfig.refresh_token_secret, {
-      expiresIn: jwtConfig.refresh_token_expiresIn,
+    const accessToken = jwt.sign({ uuid: this.configService.get<string>('ADMIN_UUID') }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
+      expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
     });
+
+    const refreshToken = jwt.sign(
+      { uuid: this.configService.get<string>('ADMIN_UUID') },
+      this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      { expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN') },
+    );
+
     return { accessToken, refreshToken };
   }
 }

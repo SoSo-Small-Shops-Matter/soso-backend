@@ -1,21 +1,27 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import * as config from 'config';
+import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
-const awsConfig = config.get('aws');
 
 @Injectable()
 export class AwsService {
   s3Client: S3Client;
+  private readonly bucketName: string;
+  private readonly region: string;
 
-  constructor(private readonly loggerService: LoggerService) {
+  constructor(
+    private readonly loggerService: LoggerService,
+    private readonly configService: ConfigService,
+  ) {
     try {
-      // AWS S3 클라이언트 초기화
+      this.region = this.configService.get<string>('AWS_REGION');
+      this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME');
+
       this.s3Client = new S3Client({
-        region: awsConfig.REGION,
+        region: this.region,
         credentials: {
-          accessKeyId: awsConfig.ACCESS_KEY,
-          secretAccessKey: awsConfig.SECRET_ACCESS_KEY,
+          accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY'),
+          secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
         },
       });
     } catch (err) {
@@ -23,41 +29,30 @@ export class AwsService {
     }
   }
 
-  async uploadImagesToS3(
-    files: Express.Multer.File[] | Express.Multer.File | undefined, // 파일 배열, 단일 파일, 또는 undefined
-    ext: string, // 파일 확장자
-  ): Promise<string[]> {
+  async uploadImagesToS3(files: Express.Multer.File[] | Express.Multer.File | undefined, ext: string): Promise<string[]> {
     try {
-      // 파일이 없으면 빈 배열 반환
-      if (!files) {
-        return [];
-      }
+      if (!files) return [];
 
-      // 파일 배열로 변환 (단일 파일인 경우에도 배열로 처리)
       const fileArray = Array.isArray(files) ? files : [files];
 
-      // 파일 업로드 처리
       const uploadPromises = fileArray.map(async (file) => {
-        const fileName = `review/${Date.now()}-${file.originalname}`; // 고유 파일 이름 생성
+        const fileName = `review/${Date.now()}-${file.originalname}`;
 
         const command = new PutObjectCommand({
-          Bucket: awsConfig.BUCKET_NAME,
+          Bucket: this.bucketName,
           Key: fileName,
           Body: file.buffer,
           ContentType: `image/${ext}`,
         });
 
-        // S3에 파일 업로드
         await this.s3Client.send(command);
 
-        // 업로드된 이미지의 URL 반환
-        return `https://${awsConfig.BUCKET_NAME}.s3.${awsConfig.REGION}.amazonaws.com/${fileName}`;
+        return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${fileName}`;
       });
 
-      // 모든 업로드 작업 완료 후 결과 URL 배열 반환
       return Promise.all(uploadPromises);
     } catch (err) {
-      this.loggerService.warn(`S3/ 생성 Error: ${err}`);
+      this.loggerService.warn(`S3/ 업로드 에러: ${err}`);
       throw new InternalServerErrorException();
     }
   }

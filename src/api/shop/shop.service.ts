@@ -35,7 +35,8 @@ export class ShopService {
       location: shop.shop_location,
       regionId: shop.shop_regionId,
       distance: shop.distance,
-      ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}), // sorting이 true일 때만 포함
+      ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}),
+      ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}),
     }));
   }
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {

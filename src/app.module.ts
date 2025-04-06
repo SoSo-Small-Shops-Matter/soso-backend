@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './api/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from './database/configs/typeorm.config';
 import { UserModule } from './api/user/user.module';
 import { ShopModule } from './api/shop/shop.module';
 import { SubmitModule } from './api/submit/submit.module';
@@ -19,10 +18,27 @@ import { LoggerModule } from './api/logger/logger.module';
 import { ReportModule } from './api/report/report.module';
 import { ImageModule } from './api/image/image.module';
 import { AdminModule } from './api/admin/admin.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeORMConfig),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [__dirname + '/database/entity/*.entity.{ts,js}'],
+        synchronize: false,
+      }),
+    }),
     AuthModule,
     UserModule,
     ShopModule,

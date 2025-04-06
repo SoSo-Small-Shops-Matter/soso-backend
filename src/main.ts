@@ -1,35 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as config from 'config';
 import * as fs from 'fs';
 import { CustomValidationPipe } from './common/pipe/validationPipe.pipe';
 import { setupSwagger } from './swagger/swagger';
 import { LoggerService } from './api/logger/logger.service';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
-// import { SanitizePipe } from './common/pipe/sanitize.pipe';
-
-const serverConfig = config.get('server');
 
 async function bootstrap() {
-  let app;
-  const port = process.env.NODE_ENV == 'prd' ? serverConfig.port : 80;
+  let app = await NestFactory.create(AppModule);
+  const port = process.env.NODE_ENV == 'prd' ? 443 : 80;
   if (process.env.NODE_ENV === 'prd') {
-    // SSL 인증서 로드 (절대 경로로 설정)
-    const privateKey = fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key', 'utf8');
-    const certificate = fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt', 'utf8');
-    const ca = fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt', 'utf8');
-
     const httpsOptions = {
-      key: privateKey,
-      cert: certificate,
-      ca: ca,
+      key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key', 'utf8'),
+      cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt', 'utf8'),
+      ca: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt', 'utf8'),
     };
 
-    // NestJS에서 HTTPS 적용
+    // https 설정을 다시 반영한 앱 재생성
     app = await NestFactory.create(AppModule, { httpsOptions });
-  } else {
-    // 개발모드
-    app = await NestFactory.create(AppModule);
   }
 
   const logger = app.get(LoggerService);
