@@ -20,6 +20,8 @@ import { ImageModule } from './api/image/image.module';
 import { AdminModule } from './api/admin/admin.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from './api/jwt/jwt.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -39,6 +41,16 @@ import { JwtModule } from './api/jwt/jwt.module';
         entities: [__dirname + '/database/entity/*.entity.{ts,js}'],
         synchronize: false,
       }),
+    }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 10000,
+          limit: 10,
+          blockDuration: 60_000, // 제한 초과 시 1분간 차단
+          ignoreUserAgents: [/Googlebot/i], // 크롤러는 제외
+        },
+      ],
     }),
     AuthModule,
     UserModule,
@@ -60,5 +72,11 @@ import { JwtModule } from './api/jwt/jwt.module';
     JwtModule,
   ],
   controllers: [AppController],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
