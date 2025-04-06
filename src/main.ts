@@ -5,23 +5,42 @@ import { CustomValidationPipe } from './common/pipe/validationPipe.pipe';
 import { setupSwagger } from './swagger/swagger';
 import { LoggerService } from './api/logger/logger.service';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
+import helmet from 'helmet';
 
 async function bootstrap() {
-  let app = await NestFactory.create(AppModule);
   const port = process.env.NODE_ENV == 'prd' ? 443 : 80;
-  if (process.env.NODE_ENV === 'prd') {
-    const httpsOptions = {
-      key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key', 'utf8'),
-      cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt', 'utf8'),
-      ca: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt', 'utf8'),
-    };
+  const isProd = process.env.NODE_ENV === 'prd';
 
-    // https 설정을 다시 반영한 앱 재생성
-    app = await NestFactory.create(AppModule, { httpsOptions });
-  }
+  const httpsOptions = isProd
+    ? {
+        key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key', 'utf8'),
+        cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt', 'utf8'),
+        ca: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt', 'utf8'),
+      }
+    : undefined;
+
+  const app = await NestFactory.create(AppModule, isProd ? { httpsOptions } : undefined);
 
   const logger = app.get(LoggerService);
 
+  app.use(
+    helmet({
+      // contentSecurityPolicy: {
+      //   directives: {
+      //     defaultSrc: ["'none'"], // 기본적으로 아무 것도 허용하지 않음
+      //     connectSrc: ["'self'", 'https://soso-client-soso-web.vercel.app'], // 프론트에서 API 요청 가능
+      //     frameAncestors: ["'none'"], // iframe 안에 이 백엔드를 넣는 것 금지 (clickjacking 방지)
+      //   },
+      // },
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false, // 프론트 쪽 지도 등 리소스 사용에 영향 → off
+      crossOriginResourcePolicy: { policy: 'same-origin' },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    }),
+  );
+
+  // iframe 접근 제한
+  app.use(helmet.frameguard({ action: 'deny' }));
   app.useGlobalPipes(new CustomValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter(logger));
   app.enableCors({
@@ -34,7 +53,7 @@ async function bootstrap() {
       }
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // 인증 관련 요청 허용
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
   setupSwagger(app);
 
