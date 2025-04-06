@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, Req, UseGuards } from '@nestjs/common';
 import { RecentSearchService } from './recent-search.service';
 import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard';
 import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { DeleteRecentSearchDTO } from './dto/recent-search.dto';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
 @Controller('recent-search')
 export class RecentSearchController {
@@ -16,7 +16,7 @@ export class RecentSearchController {
   }
 
   @Delete('/')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async deleteRecentSearch(@Req() req: any, @Body() deleteRecentSearchDTO: DeleteRecentSearchDTO) {
     const { uuid } = req.user;
     await this.recentSearchService.deleteRecentSearch(uuid, deleteRecentSearchDTO);
@@ -24,7 +24,7 @@ export class RecentSearchController {
   }
 
   @Delete('/all')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async deleteAllRecentSearch(@Req() req: any) {
     const { uuid } = req.user;
     await this.recentSearchService.deleteAllRecentSearch(uuid);

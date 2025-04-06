@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Post, Patch, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Param } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
 @Controller('review')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 

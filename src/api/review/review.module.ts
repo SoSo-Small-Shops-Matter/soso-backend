@@ -10,7 +10,7 @@ import { Image } from 'src/database/entity/image.entity';
 import { ImageModule } from '../image/image.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Review, Image]), forwardRef(() => AuthModule), AwsModule, ImageModule],
+  imports: [TypeOrmModule.forFeature([Review, Image]), AwsModule, ImageModule],
   controllers: [ReviewController],
   providers: [ReviewService, ReviewRepository],
   exports: [ReviewService, ReviewRepository],

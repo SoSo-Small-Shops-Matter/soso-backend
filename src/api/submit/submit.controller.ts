@@ -1,11 +1,11 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { SubmitService } from './submit.service';
 import { Success201ResponseDTO } from 'src/common/response/response.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
 @Controller('submit')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 export class SubmitController {
   constructor(private submitService: SubmitService) {}
 

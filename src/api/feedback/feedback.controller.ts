@@ -1,11 +1,11 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
 import { Success201ResponseDTO } from '../../common/response/response.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { SaveFeedbackDTO } from './dto/feedback.dto';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
 @Controller('feedback')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 export class FeedbackController {
   constructor(private feedbackService: FeedbackService) {}
 

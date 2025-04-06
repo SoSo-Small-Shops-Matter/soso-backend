@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import {
   RejectSubmitProducts,
@@ -11,9 +10,10 @@ import {
   AllowSubmitNewShop,
   RejectSubmitNewShop,
 } from './dto/admin.dto';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
 @Controller('admin')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 export class AdminController {
   constructor(
     private readonly adminService: AdminService,

@@ -19,6 +19,7 @@ import { ReportModule } from './api/report/report.module';
 import { ImageModule } from './api/image/image.module';
 import { AdminModule } from './api/admin/admin.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from './api/jwt/jwt.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ReportModule,
     ImageModule,
     AdminModule,
+    JwtModule,
   ],
   controllers: [AppController],
 })

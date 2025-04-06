@@ -1,7 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { AuthModule } from '../auth/auth.module';
 import { User } from 'src/database/entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
@@ -14,7 +13,6 @@ import { RecentSearchModule } from '../recent-search/recent-search.module';
 
 @Module({
   imports: [
-    forwardRef(() => AuthModule),
     forwardRef(() => SubmitModule),
     TypeOrmModule.forFeature([User]),
     AwsModule,
