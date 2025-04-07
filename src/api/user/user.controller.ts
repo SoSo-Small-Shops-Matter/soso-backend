@@ -5,7 +5,6 @@ import {
   Param,
   Post,
   Patch,
-  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -20,6 +19,7 @@ import { UserService } from './user.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
+import { GetUUID } from '../../common/deco/get-user.deco';
 
 @Controller('user')
 export class UserController {
@@ -28,8 +28,8 @@ export class UserController {
   @Delete('/:uuid')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string, @Req() req: any) {
-    if (uuid !== req.user.uuid) throw new ConflictException('Not equal User UUID');
+  async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string, @GetUUID() currentUUID: string) {
+    if (uuid !== currentUUID) throw new ConflictException('Not equal User UUID');
     await this.userService.deleteUser(uuid, deleteType);
   }
 
@@ -41,15 +41,13 @@ export class UserController {
   @Post('/nickname')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async setNickName(@Body() nickNameDTO: NickNameDTO, @Req() req) {
-    const { uuid } = req.user;
+  async setNickName(@Body() nickNameDTO: NickNameDTO, @GetUUID() uuid: string) {
     await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid);
   }
 
   @Get('/profile')
   @UseGuards(JwtAuthGuard)
-  async getProfile(@Req() req) {
-    const { uuid } = req.user;
+  async getProfile(@GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.userService.getUserProfile(uuid));
   }
 
@@ -57,29 +55,25 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FileInterceptor('file'))
-  async updateProfile(@Req() req, @Body() updateProfileDTO?: UpdateProfileDTO, @UploadedFile() file?: Express.Multer.File) {
-    const { uuid } = req.user;
+  async updateProfile(@GetUUID() uuid: string, @Body() updateProfileDTO?: UpdateProfileDTO, @UploadedFile() file?: Express.Multer.File) {
     await this.userService.updateUserProfile(updateProfileDTO, uuid, file);
   }
 
   @Get('/submit')
   @UseGuards(JwtAuthGuard)
-  async getSubmitShop(@Req() req, @Query() pageNation: PageNationDTO) {
-    const { uuid } = req.user;
+  async getSubmitShop(@GetUUID() uuid: string, @Query() pageNation: PageNationDTO) {
     return new SuccessResponseDTO(await this.userService.findSubmitRecord(pageNation, uuid));
   }
 
   @Get('/review')
   @UseGuards(JwtAuthGuard)
-  async getUserReview(@Req() req: any, @Query() pageNation: ReviewPageNationDTO) {
-    const { uuid } = req.user;
+  async getUserReview(@GetUUID() uuid: string, @Query() pageNation: ReviewPageNationDTO) {
     return new SuccessResponseDTO(await this.userService.findUserReviews(pageNation, uuid));
   }
 
   @Get('/wishlist')
   @UseGuards(JwtAuthGuard)
-  async getUserWishlist(@Req() req: any, @Query() pageNation: WishlistPageNationDTO) {
-    const { uuid } = req.user;
+  async getUserWishlist(@GetUUID() uuid: string, @Query() pageNation: WishlistPageNationDTO) {
     return new SuccessResponseDTO(await this.userService.getWishlist(pageNation, uuid));
   }
 }

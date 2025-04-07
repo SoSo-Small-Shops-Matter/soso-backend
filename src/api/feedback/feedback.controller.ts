@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@n
 import { FeedbackService } from './feedback.service';
 import { SaveFeedbackDTO } from './dto/feedback.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
+import { GetUUID } from '../../common/deco/get-user.deco';
 
 @Controller('feedback')
 @UseGuards(JwtAuthGuard)
@@ -10,8 +11,7 @@ export class FeedbackController {
 
   @Post('/')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async saveFeedback(@Req() req, @Body() saveFeedbackDTO: SaveFeedbackDTO) {
-    const { uuid } = req.user;
+  async saveFeedback(@GetUUID() uuid: string, @Body() saveFeedbackDTO: SaveFeedbackDTO) {
     await this.feedbackService.saveFeedback(uuid, saveFeedbackDTO);
   }
 }

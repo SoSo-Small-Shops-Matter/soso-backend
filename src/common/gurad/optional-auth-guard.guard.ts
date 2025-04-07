@@ -26,7 +26,6 @@ export class OptionalAuthGuard implements CanActivate {
       const decoded = jwt.verify(token, secret);
       request.user = decoded;
     } catch (err) {
-      console.log(err);
       request.user = null;
       if (err.name === 'TokenExpiredError') {
         throw new UnauthorizedException('토큰이 만료되었습니다.');

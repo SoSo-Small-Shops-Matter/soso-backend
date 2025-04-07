@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@n
 import { WishlistService } from './wishlist.service';
 import { SaveWishListDTO } from './dto/wishlist.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
+import { GetUUID } from '../../common/deco/get-user.deco';
 
 @Controller('wishlist')
 @UseGuards(JwtAuthGuard)
@@ -10,8 +11,7 @@ export class WishlistController {
 
   @Post('/')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async addWishlist(@Req() req: any, @Body() saveWishListDto: SaveWishListDTO) {
-    const { uuid } = req.user;
+  async addWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: SaveWishListDTO) {
     await this.wishlistService.addWishlistByShopIdAndUUID(saveWishListDto, uuid);
   }
 }

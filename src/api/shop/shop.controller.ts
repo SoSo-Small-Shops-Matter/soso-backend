@@ -3,6 +3,7 @@ import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
+import { GetUUID } from '../../common/deco/get-user.deco';
 
 @Controller('shop')
 export class ShopController {
@@ -28,9 +29,8 @@ export class ShopController {
   async getShopByShopId(
     // 파라미터로 들어오는 shopId는 String 타입인데, 이를 Number로 사용하기 위해 강제 형변환을 시킴
     @Param('shopId', ParseIntPipe) shopId: number,
-    @Req() req: any,
+    @GetUUID() uuid: string,
   ) {
-    const uuid = req.user ? req.user.uuid : null; // 유저 정보가 있으면 uuid를 사용'
     return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId, uuid));
   }
 }
