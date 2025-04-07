@@ -16,7 +16,7 @@ export class SubmitService {
     private shopRepository: ShopRepository,
   ) {}
 
-  async createNewShop(newShopData: SubmitNewShopDto, uuid: string) {
+  async createNewShop(newShopData: SubmitNewShopDto, uuid: string): Promise<void> {
     const { shop, operatingHours, products } = newShopData;
 
     const region = await this.regionRepository.findRegionByLocation(shop.location);
@@ -39,12 +39,10 @@ export class SubmitService {
       await this.productRepository.saveProducts(productMappings);
     }
 
-    const result = await this.submitRepository.createSubmitUserRecordByNewShop(uuid, createShop.id);
-
-    return result;
+    await this.submitRepository.createSubmitUserRecordByNewShop(uuid, createShop.id);
   }
 
-  async validateAndUpdateOperatingHours(operatingData: SubmitShopOperatingHoursDto, uuid: string) {
+  async validateAndUpdateOperatingHours(operatingData: SubmitShopOperatingHoursDto, uuid: string): Promise<void> {
     const { shopId, operatingHours } = operatingData;
 
     // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크
@@ -56,12 +54,10 @@ export class SubmitService {
 
     const newOperating = await this.operateRepository.validateAndCreateOperatingHours(shop.id, operatingHours);
 
-    const result = await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid, shop.id, newOperating.id);
-
-    return result;
+    await this.submitRepository.createSubmitUserRecordByUpdateOperatingInfo(uuid, shop.id, newOperating.id);
   }
 
-  async validateAndUpdateProducts(prodcutsData, uuid: string) {
+  async validateAndUpdateProducts(prodcutsData, uuid: string): Promise<void> {
     const { shopId, products } = prodcutsData;
 
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
@@ -78,7 +74,6 @@ export class SubmitService {
       user: uuid,
       product: { id: product.id },
     }));
-
     await this.productRepository.saveProducts(productMappings);
 
     await this.submitRepository.createSubmitUserRecordByUpdateProducts(uuid, shop.id);

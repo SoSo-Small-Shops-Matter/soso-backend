@@ -1,18 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
 import { ReviewService } from '../review/review.service';
-import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
+import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
+import { Shop } from '../../database/entity/shop.entity';
+import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
 
 @Injectable()
 export class ShopService {
   constructor(
     private shopRepository: ShopRepository,
     private reviewService: ReviewService,
-    private submitRepository: SubmitRepository,
     private wishlistRepository: WishlistRepository,
     private regionRepository: RegionRepository,
     private recentSearchRepository: RecentSearchRepository,
@@ -36,31 +37,16 @@ export class ShopService {
       regionId: shop.shop_regionId,
       distance: shop.distance,
       ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}),
-      ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}),
     }));
   }
+
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
     const { keyword, page, limit } = getSearchPageShopDTO;
-    const result = await this.shopRepository.findShopsByKeyword(keyword, page, limit);
+    const pageNationResult = await this.shopRepository.findShopsByKeyword(keyword, page, limit);
     const allShops = await this.shopRepository.findAllShopsByKeyword(keyword);
     const totalPages = Math.ceil(allShops.length / limit);
-    const pageInfo = {
-      page: Number(page),
-      limit: Number(limit),
-      totalElements: allShops.length,
-      totalPages: totalPages,
-      nextPage: page >= totalPages ? false : true,
-    };
-    return {
-      data: result,
-      pageInfo,
-    };
-  }
-  convertTimeToAmPm(timeStr: string) {
-    const [hourStr, minuteStr] = timeStr.split(':');
-    const hour = parseInt(hourStr, 10);
-    const period = hour < 12 ? '오전' : '오후';
-    return `${period} ${hourStr.padStart(2, '0')}:${minuteStr}`;
+    const pageInfoDTO = new Paging(page, limit, allShops.length, totalPages, page < totalPages);
+    return new ResponsePageNationDTO<Shop>(pageNationResult, pageInfoDTO);
   }
 
   async findShopByShopId(shopId: number, uuid: string) {
@@ -76,8 +62,8 @@ export class ShopService {
     }));
     const operatingHours = shop.operatingHours.map((operating) => ({
       ...operating,
-      startTime: this.convertTimeToAmPm(operating.startTime),
-      endTime: this.convertTimeToAmPm(operating.endTime),
+      startTime: convertTimeToAmPm(operating.startTime),
+      endTime: convertTimeToAmPm(operating.endTime),
     }));
 
     delete shop.productMappings; // 기존 productMappings 제거
@@ -117,8 +103,20 @@ export class ShopService {
 
     return {
       shop: transformedShop,
-      userReviews,
-      otherReviews,
+      userReviews: userReviews.map((review) => ({
+        ...review,
+        user: {
+          photoUrl: review.user.photoUrl,
+          nickName: review.user.nickName,
+        },
+      })),
+      otherReviews: otherReviews.map((review) => ({
+        ...review,
+        user: {
+          photoUrl: review.user.photoUrl,
+          nickName: review.user.nickName,
+        },
+      })),
       wishlist,
       imageList,
     };

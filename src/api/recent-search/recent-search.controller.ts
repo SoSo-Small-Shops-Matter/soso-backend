@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Req, UseGuards } from '@nestjs/common';
 import { RecentSearchService } from './recent-search.service';
 import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard';
-import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
+import { SuccessResponseDTO } from '../../common/response/response.dto';
 import { DeleteRecentSearchDTO } from './dto/recent-search.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
@@ -17,17 +17,17 @@ export class RecentSearchController {
 
   @Delete('/')
   @UseGuards(JwtAuthGuard)
-  async deleteRecentSearch(@Req() req: any, @Body() deleteRecentSearchDTO: DeleteRecentSearchDTO) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteRecentSearch(@Req() req: any, @Body() deleteRecentSearchDTO: DeleteRecentSearchDTO): Promise<void> {
     const { uuid } = req.user;
     await this.recentSearchService.deleteRecentSearch(uuid, deleteRecentSearchDTO);
-    return new Success204ResponseDTO();
   }
 
   @Delete('/all')
   @UseGuards(JwtAuthGuard)
-  async deleteAllRecentSearch(@Req() req: any) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteAllRecentSearch(@Req() req: any): Promise<void> {
     const { uuid } = req.user;
     await this.recentSearchService.deleteAllRecentSearch(uuid);
-    return new Success204ResponseDTO();
   }
 }

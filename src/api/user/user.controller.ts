@@ -12,10 +12,12 @@ import {
   Delete,
   Query,
   ConflictException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
 import { UserService } from './user.service';
-import { Success204ResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
+import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 
@@ -25,9 +27,10 @@ export class UserController {
 
   @Delete('/:uuid')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string, @Req() req: any) {
     if (uuid !== req.user.uuid) throw new ConflictException('Not equal User UUID');
-    return new Success204ResponseDTO(await this.userService.deleteUser(uuid, deleteType));
+    await this.userService.deleteUser(uuid, deleteType);
   }
 
   @Get('/nickname/:nickName')
@@ -37,10 +40,12 @@ export class UserController {
 
   @Post('/nickname')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async setNickName(@Body() nickNameDTO: NickNameDTO, @Req() req) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid));
+    await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid);
   }
+
   @Get('/profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@Req() req) {
@@ -50,10 +55,11 @@ export class UserController {
 
   @Patch('/profile')
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FileInterceptor('file'))
   async updateProfile(@Req() req, @Body() updateProfileDTO?: UpdateProfileDTO, @UploadedFile() file?: Express.Multer.File) {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.userService.updateUserProfile(updateProfileDTO, uuid, file));
+    await this.userService.updateUserProfile(updateProfileDTO, uuid, file);
   }
 
   @Get('/submit')

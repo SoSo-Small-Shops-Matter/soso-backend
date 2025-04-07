@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Post, Patch, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Post,
+  Patch,
+  Req,
+  UploadedFile,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+  Param,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
@@ -11,16 +25,11 @@ export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
   @Post('/')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FilesInterceptor('files', 10)) // 최대 10개의 파일 허용
-  async postReview(
-    @Body() postReviewDto: PostReviewDto,
-    @Req() req: any,
-    @UploadedFiles() files?: Express.Multer.File[],
-    @UploadedFile() file?: Express.Multer.File, // 단일 파일 처리
-  ) {
+  async postReview(@Body() postReviewDto: PostReviewDto, @Req() req: any, @UploadedFiles() files?: Express.Multer.File[]): Promise<void> {
     const { uuid } = req.user;
-
-    return new SuccessResponseDTO(await this.reviewService.createReview(uuid, postReviewDto, files || file));
+    await this.reviewService.createReview(uuid, postReviewDto, files);
   }
 
   @Patch('/')
@@ -31,8 +40,9 @@ export class ReviewController {
   }
 
   @Delete('/:reviewId')
-  async deleteReview(@Param() deleteReviewDto: DeleteReviewDto, @Req() req: any) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteReview(@Param() deleteReviewDto: DeleteReviewDto, @Req() req: any): Promise<void> {
     const { uuid } = req.user;
-    return new SuccessResponseDTO(await this.reviewService.deleteReviewByUUID(uuid, deleteReviewDto));
+    await this.reviewService.deleteReviewByUUID(uuid, deleteReviewDto);
   }
 }

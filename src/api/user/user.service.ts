@@ -8,6 +8,11 @@ import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { ImageRepository } from '../image/image.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
+import { ResponseUserProfileDTO } from './dto/user-response.dto';
+import { PagingDto, ResponsePageNationDTO } from './dto/paging.dto';
+import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
+import { Review } from '../../database/entity/review.entity';
+import { Wishlist } from '../../database/entity/wishlist.entity';
 
 @Injectable()
 export class UserService {
@@ -21,22 +26,24 @@ export class UserService {
     private recentSearchRepository: RecentSearchRepository,
   ) {}
 
-  async findUserNickName(nickNameDTO: NickNameDTO) {
+  async findUserNickName(nickNameDTO: NickNameDTO): Promise<boolean> {
     const { nickName } = nickNameDTO;
     return !!(await this.userRepository.findUserByNickName(nickName));
   }
 
-  async findAndUpdateUserNickname(nickNameDTO: NickNameDTO, uuid: string) {
+  async findAndUpdateUserNickname(nickNameDTO: NickNameDTO, uuid: string): Promise<void> {
     const { nickName } = nickNameDTO;
     const existNickName = await this.userRepository.findUserByNickName(nickName);
-    if (existNickName) {
-      throw new ConflictException('Nickname already exists.');
-    }
+    if (existNickName) throw new ConflictException('Nickname already exists.');
+
     await this.userRepository.updateNickName(uuid, nickName);
   }
 
-  async getUserProfile(uuid: string) {
-    return await this.userRepository.findUserByUUID(uuid);
+  async getUserProfile(uuid: string): Promise<ResponseUserProfileDTO> {
+    const userProfile = await this.userRepository.findUserByUUID(uuid);
+    if (!userProfile) throw new NotFoundException('Not Found User');
+
+    return new ResponseUserProfileDTO(userProfile);
   }
 
   async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, file: Express.Multer.File) {
@@ -59,7 +66,6 @@ export class UserService {
         throw new InternalServerErrorException();
       }
     }
-    return;
   }
 
   async findSubmitRecord(pageNation: PageNationDTO, uuid: string) {
@@ -67,17 +73,8 @@ export class UserService {
     const userSubmits = await this.submitRepository.findUserSubmitUserRecord(uuid);
     const pageNationResult = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
     const totalPages = Math.ceil(userSubmits.length / limit);
-    const pageInfo = {
-      page: Number(page),
-      limit: Number(limit),
-      totalElements: userSubmits.length,
-      totalPages: totalPages,
-      nextPage: page < totalPages,
-    };
-    return {
-      data: pageNationResult,
-      pageInfo,
-    };
+    const pageInfoDTO = new PagingDto(page, limit, userSubmits.length, totalPages, page < totalPages);
+    return new ResponsePageNationDTO<SubmitUserRecord>(pageNationResult, pageInfoDTO);
   }
 
   async findUserReviews(reviewPageNation: ReviewPageNationDTO, uuid: string) {
@@ -86,36 +83,17 @@ export class UserService {
     const userReviews = await this.reviewRepository.findUserReviewByUUID(uuid);
     const pageNationResult = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sortType);
     const totalPages = Math.ceil(userReviews.length / limit);
-    const pageInfo = {
-      page: Number(page),
-      limit: Number(limit),
-      totalElements: userReviews.length,
-      totalPages: totalPages,
-      nextPage: page < totalPages,
-    };
-    return {
-      data: pageNationResult,
-      pageInfo,
-    };
+    const pageInfoDTO = new PagingDto(page, limit, userReviews.length, totalPages, page < totalPages);
+    return new ResponsePageNationDTO<Review>(pageNationResult, pageInfoDTO);
   }
 
   async getWishlist(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
     const { page, limit, area } = wishlistPageNation;
     const userWishlists = await this.wishlistRepository.findUserWishlistByUUID(uuid, area);
     const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, area);
-
     const totalPages = Math.ceil(userWishlists.length / limit);
-    const pageInfo = {
-      page: Number(page),
-      limit: Number(limit),
-      totalElements: userWishlists.length,
-      totalPages: totalPages,
-      nextPage: page < totalPages,
-    };
-    return {
-      data: pageNationResult,
-      pageInfo,
-    };
+    const pageInfoDTO = new PagingDto(page, limit, userWishlists.length, totalPages, page < totalPages);
+    return new ResponsePageNationDTO<Wishlist>(pageNationResult, pageInfoDTO);
   }
 
   async deleteUser(uuid: string, deleteType: number) {

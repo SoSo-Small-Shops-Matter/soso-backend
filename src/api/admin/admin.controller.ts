@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { Success204ResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
+import { SuccessResponseDTO } from '../../common/response/response.dto';
 import { ConfigService } from '@nestjs/config';
 import {
   RejectSubmitProducts,
@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 export class AdminController {
   constructor(
     private readonly adminService: AdminService,
-    private readonly configService: ConfigService, // ✅ ConfigService 주입
+    private readonly configService: ConfigService,
   ) {}
 
   private isNotAdmin(uuid: string): boolean {
@@ -32,17 +32,19 @@ export class AdminController {
   }
 
   @Put('/products')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async allowSubmitProducts(@Req() req: any, @Body() allowSubmitProducts: AllowSubmitProducts) {
     const { uuid } = req.user;
     if (this.isNotAdmin(uuid)) throw new UnauthorizedException();
-    return new Success204ResponseDTO(await this.adminService.allowSubmitProduct(allowSubmitProducts));
+    await this.adminService.allowSubmitProduct(allowSubmitProducts);
   }
 
   @Delete('/products')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async rejectSubmitProducts(@Req() req: any, @Body() rejectSubmitProducts: RejectSubmitProducts) {
     const { uuid } = req.user;
     if (this.isNotAdmin(uuid)) throw new UnauthorizedException();
-    return new Success204ResponseDTO(await this.adminService.rejectSubmitProduct(rejectSubmitProducts));
+    await this.adminService.rejectSubmitProduct(rejectSubmitProducts);
   }
 
   @Get('/operatings')
@@ -53,17 +55,19 @@ export class AdminController {
   }
 
   @Put('/operatings')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async allowSubmitOperating(@Req() req: any, @Body() allowSubmitOperatingInfo: AllowSubmitOperatingInfo) {
     const { uuid } = req.user;
     if (this.isNotAdmin(uuid)) throw new UnauthorizedException();
-    return new Success204ResponseDTO(await this.adminService.allowSubmitOperatingInfo(allowSubmitOperatingInfo));
+    await this.adminService.allowSubmitOperatingInfo(allowSubmitOperatingInfo);
   }
 
   @Delete('/operatings')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async rejectSubmitOperating(@Req() req: any, @Body() rejectSubmitOperatingInfo: RejectSubmitOperatingInfo) {
     const { uuid } = req.user;
     if (this.isNotAdmin(uuid)) throw new UnauthorizedException();
-    return new Success204ResponseDTO(await this.adminService.rejectSubmitOperatingInfo(rejectSubmitOperatingInfo));
+    await this.adminService.rejectSubmitOperatingInfo(rejectSubmitOperatingInfo);
   }
 
   @Get('/shops')
@@ -74,16 +78,18 @@ export class AdminController {
   }
 
   @Put('/shops')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async allowSubmitNewShops(@Req() req: any, @Body() allowSubmitNewShop: AllowSubmitNewShop) {
     const { uuid } = req.user;
     if (this.isNotAdmin(uuid)) throw new UnauthorizedException();
-    return new Success204ResponseDTO(await this.adminService.allowNewShop(allowSubmitNewShop));
+    await this.adminService.allowNewShop(allowSubmitNewShop);
   }
 
   @Delete('/shops')
-  async rejectSubmitNewShops(@Req() req: any, @Body() rejectSubmitShop: RejectSubmitNewShop) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async rejectSubmitNewShops(@Req() req: any, @Body() rejectSubmitShop: RejectSubmitNewShop): Promise<void> {
     const { uuid } = req.user;
     if (this.isNotAdmin(uuid)) throw new UnauthorizedException();
-    return new Success204ResponseDTO(await this.adminService.rejectNewShop(rejectSubmitShop));
+    await this.adminService.rejectNewShop(rejectSubmitShop);
   }
 }

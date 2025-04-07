@@ -12,7 +12,7 @@ export class ReviewService {
     private awsService: AwsService,
   ) {}
 
-  async createReview(uuid: string, postReviewDto: PostReviewDto, files?: Express.Multer.File[] | Express.Multer.File) {
+  async createReview(uuid: string, postReviewDto: PostReviewDto, files?: Express.Multer.File[]) {
     const { shopId, content } = postReviewDto;
 
     // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
