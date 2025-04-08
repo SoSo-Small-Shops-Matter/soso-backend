@@ -13,6 +13,9 @@ import {
   ConflictException,
   HttpCode,
   HttpStatus,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
 import { UserService } from './user.service';
@@ -55,7 +58,19 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FileInterceptor('file'))
-  async updateProfile(@GetUUID() uuid: string, @Body() updateProfileDTO?: UpdateProfileDTO, @UploadedFile() file?: Express.Multer.File) {
+  async updateProfile(
+    @GetUUID() uuid: string,
+    @Body() updateProfileDTO?: UpdateProfileDTO,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB 제한
+          new FileTypeValidator({ fileType: /image\/(jpg|jpeg|png)/ }), // ✅ jpg, jpeg, png 허용
+        ],
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
     await this.userService.updateUserProfile(updateProfileDTO, uuid, file);
   }
 

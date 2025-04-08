@@ -13,13 +13,29 @@ export class ReviewController {
 
   @Post('/')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseInterceptors(FilesInterceptor('files', 10)) // 최대 10개의 파일 허용
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      limits: { fileSize: 5 * 1024 * 1024 }, // 최대 5MB
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) cb(null, true);
+        else cb(new Error('Only images allowed!'), false);
+      },
+    }),
+  ) // 최대 10개의 파일 허용
   async postReview(@Body() postReviewDto: PostReviewDto, @GetUUID() uuid: string, @UploadedFiles() files?: Express.Multer.File[]): Promise<void> {
     await this.reviewService.createReview(uuid, postReviewDto, files);
   }
 
   @Patch('/')
-  @UseInterceptors(FilesInterceptor('files', 10)) // 최대 10개의 파일 허용
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      limits: { fileSize: 5 * 1024 * 1024 }, // 최대 5MB
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) cb(null, true);
+        else cb(new Error('Only images allowed!'), false);
+      },
+    }),
+  ) // 최대 10개의 파일 허용
   async updateReview(@Body() updateReviewDto: UpdateReviewDto, @GetUUID() uuid: string, @UploadedFiles() newFiles?: Express.Multer.File[]) {
     return new SuccessResponseDTO(await this.reviewService.updateReview(uuid, updateReviewDto, newFiles));
   }
