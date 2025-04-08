@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Post, Patch, UploadedFiles, UseGuards, UseInterceptors, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
@@ -12,7 +11,6 @@ export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
   @Post('/')
-  @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(
     FilesInterceptor('files', 10, {
       limits: { fileSize: 5 * 1024 * 1024 }, // 최대 5MB
@@ -21,7 +19,8 @@ export class ReviewController {
         else cb(new Error('Only images allowed!'), false);
       },
     }),
-  ) // 최대 10개의 파일 허용
+  )
+  @HttpCode(HttpStatus.NO_CONTENT)
   async postReview(@Body() postReviewDto: PostReviewDto, @GetUUID() uuid: string, @UploadedFiles() files?: Express.Multer.File[]): Promise<void> {
     await this.reviewService.createReview(uuid, postReviewDto, files);
   }
@@ -35,9 +34,10 @@ export class ReviewController {
         else cb(new Error('Only images allowed!'), false);
       },
     }),
-  ) // 최대 10개의 파일 허용
+  )
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updateReview(@Body() updateReviewDto: UpdateReviewDto, @GetUUID() uuid: string, @UploadedFiles() newFiles?: Express.Multer.File[]) {
-    return new SuccessResponseDTO(await this.reviewService.updateReview(uuid, updateReviewDto, newFiles));
+    await this.reviewService.updateReview(uuid, updateReviewDto, newFiles);
   }
 
   @Delete('/:reviewId')

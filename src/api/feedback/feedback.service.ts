@@ -6,8 +6,8 @@ import { SaveFeedbackDTO } from './dto/feedback.dto';
 export class FeedbackService {
   constructor(private feedbackRepository: FeedbackRepository) {}
 
-  async saveFeedback(uuid: string, saveFeedbackDTO: SaveFeedbackDTO) {
+  async saveFeedback(uuid: string, saveFeedbackDTO: SaveFeedbackDTO): Promise<void> {
     const { feedback } = saveFeedbackDTO;
-    return await this.feedbackRepository.saveFeedback(uuid, feedback);
+    await this.feedbackRepository.saveFeedback(uuid, feedback);
   }
 }

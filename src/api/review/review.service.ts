@@ -12,7 +12,7 @@ export class ReviewService {
     private awsService: AwsService,
   ) {}
 
-  async createReview(uuid: string, postReviewDto: PostReviewDto, files?: Express.Multer.File[]) {
+  async createReview(uuid: string, postReviewDto: PostReviewDto, files?: Express.Multer.File[]): Promise<void> {
     const { shopId, content } = postReviewDto;
 
     // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
@@ -38,7 +38,7 @@ export class ReviewService {
 
     await this.reviewRepository.saveReview(review);
   }
-  async updateReview(uuid: string, updateReviewDto: UpdateReviewDto, newFiles?: Express.Multer.File[]) {
+  async updateReview(uuid: string, updateReviewDto: UpdateReviewDto, newFiles?: Express.Multer.File[]): Promise<void> {
     const { reviewId, content, deleteImages } = updateReviewDto;
 
     // Review 찾기
@@ -80,10 +80,10 @@ export class ReviewService {
       review.content = content;
     }
 
-    return await this.reviewRepository.saveReview(review);
+    await this.reviewRepository.saveReview(review);
   }
 
-  async deleteReviewByUUID(uuid: string, deleteReviewDto: DeleteReviewDto) {
+  async deleteReviewByUUID(uuid: string, deleteReviewDto: DeleteReviewDto): Promise<void> {
     const { reviewId } = deleteReviewDto;
 
     const review = await this.reviewRepository.findReviewByReviewId(uuid, reviewId);

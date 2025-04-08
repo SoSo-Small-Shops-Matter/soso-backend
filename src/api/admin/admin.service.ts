@@ -11,6 +11,7 @@ import {
 import { ProductRepository } from '../product/product.repository';
 import { OperateRepository } from '../operate/operate.repository';
 import { ShopRepository } from '../shop/shop.repository';
+import { SubmitNewShopResponseDTO, SubmitOperatingsResponseDTO, SubmitProductsResponseDTO } from './dto/admin-response';
 
 @Injectable()
 export class AdminService {
@@ -22,21 +23,8 @@ export class AdminService {
   ) {}
 
   async getAllSubmitProducts() {
-    const result = await this.submitRepository.findAllSubmitProducts();
-    return result.map((submit) => ({
-      submitId: submit.id,
-      shop: {
-        id: submit.shop.id,
-        name: submit.shop.name,
-        location: submit.shop.location,
-      },
-      user: {
-        uuid: submit.user.uuid,
-        name: submit.user.nickName,
-      },
-      originalProductMappings: submit.shop?.productMappings?.filter((p) => p.type === 0) || [],
-      newProductMappings: submit.shop?.productMappings?.filter((p) => p.type === 1 && p.user === submit.user.uuid) || [],
-    }));
+    const submitUserProducts = await this.submitRepository.findAllSubmitProducts();
+    return submitUserProducts.map(SubmitProductsResponseDTO.fromEntity);
   }
 
   async allowSubmitProduct(allowSubmitProducts: AllowSubmitProducts) {
@@ -61,7 +49,6 @@ export class AdminService {
     submitProductMappings.map(async (data) => {
       await this.productRepository.updateToUsingProduct(data.id);
     });
-    return;
   }
 
   async rejectSubmitProduct(rejectSubmitProducts: RejectSubmitProducts) {
@@ -76,25 +63,11 @@ export class AdminService {
 
     // shopId와 userUUID를 통해 유저가 제보한 판매목록 데이터 지우기
     await this.productRepository.deleteAllSubmitProductMappingsByShopIdAndUUID(shopId, userUUID);
-    return;
   }
 
   async getAllSubmitOperatings() {
-    const result = await this.submitRepository.findAllSubmitOperatings();
-    return result.map((submit) => ({
-      submitId: submit.id,
-      shop: {
-        id: submit.shop.id,
-        name: submit.shop.name,
-        location: submit.shop.location,
-      },
-      user: {
-        uuid: submit.user.uuid,
-        name: submit.user.nickName,
-      },
-      originalOperating: submit.shop?.operatingHours?.filter((p) => p.type === 0) || null,
-      newOperating: submit.shop?.operatingHours?.filter((p) => p.type === 1 && p.id === submit.operatingId) || null,
-    }));
+    const submitUserOperatings = await this.submitRepository.findAllSubmitOperatings();
+    return submitUserOperatings.map(SubmitOperatingsResponseDTO.fromEntity);
   }
 
   async allowSubmitOperatingInfo(allowSubmitOperatingInfo: AllowSubmitOperatingInfo) {
@@ -130,21 +103,8 @@ export class AdminService {
   }
 
   async getAllNewShops() {
-    const result = await this.submitRepository.findAllSubmitNewShops();
-    return result.map((submit) => ({
-      submitId: submit?.id,
-      shop: {
-        id: submit?.shop?.id,
-        name: submit?.shop?.name,
-        location: submit?.shop?.location,
-      },
-      user: {
-        uuid: submit?.user?.uuid,
-        name: submit?.user?.nickName,
-      },
-      operating: submit?.shop?.operatingHours,
-      products: submit?.shop?.productMappings,
-    }));
+    const submitUserNewShops = await this.submitRepository.findAllSubmitNewShops();
+    return submitUserNewShops.map(SubmitNewShopResponseDTO.fromEntity);
   }
 
   async allowNewShop(allowSubmitNewShop: AllowSubmitNewShop) {

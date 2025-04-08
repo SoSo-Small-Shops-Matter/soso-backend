@@ -13,7 +13,7 @@ export class ReportService {
     private readonly shopRepository: ShopRepository,
   ) {}
 
-  async reportReview(uuid: string, reviewReportDto: ReviewReportDto) {
+  async reportReview(uuid: string, reviewReportDto: ReviewReportDto): Promise<void> {
     const { reviewId, status, message } = reviewReportDto;
     const review = await this.reviewRepository.findOneReviewById(reviewId);
     if (!review) throw new NotFoundException('Not exist review');
@@ -21,10 +21,10 @@ export class ReportService {
     const existData = await this.reportRepository.findReviewReport(uuid, review.id);
     if (existData) throw new ConflictException('Exist Report Review');
 
-    return await this.reportRepository.saveReviewReport(uuid, review.id, status, message);
+    await this.reportRepository.saveReviewReport(uuid, review.id, status, message);
   }
 
-  async reportShop(uuid: string, shopReportDto: ShopReportDto) {
+  async reportShop(uuid: string, shopReportDto: ShopReportDto): Promise<void> {
     const { shopId, status, message } = shopReportDto;
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
     if (!shop) throw new NotFoundException('Not exist shop');
@@ -32,6 +32,6 @@ export class ReportService {
     const existData = await this.reportRepository.findShopReport(uuid, shop.id);
     if (existData) throw new ConflictException('Exist Report Shop');
 
-    return await this.reportRepository.saveShopReport(uuid, shop.id, status, message);
+    await this.reportRepository.saveShopReport(uuid, shop.id, status, message);
   }
 }
