@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { RecentSearchService } from './recent-search.service';
 import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard';
 import { SuccessResponseDTO } from '../../common/response/response.dto';

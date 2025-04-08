@@ -23,7 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     // WARN 로그 저장
-    this.loggerService.warn(`[${request.method}] ${request.url} - Status: ${status}, Message: ${message}`);
+    this.loggerService.warn(`[${request.method}] |IP: ${request.ip}| ${request.url} - Status: ${status}, Message: ${message}`);
 
     response.status(status).json({
       status: status,

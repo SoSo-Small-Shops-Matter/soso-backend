@@ -22,7 +22,7 @@ export class AuthService {
   async googleAuthLogin(googleAuthLoginDTO: GoogleAuthLoginDTO) {
     try {
       const { code, redirectUri } = googleAuthLoginDTO;
-      if (!code || !redirectUri) throw new BadRequestException('code 또는 redirectUri 데이터가 없습니다.');
+      if (!code || !redirectUri) throw new BadRequestException('Not Found Code Or RedirectUri');
 
       const tokenResponse = await axios.post(
         this.googleTokenUrl,
@@ -70,7 +70,7 @@ export class AuthService {
   async refresh(refreshTokenDTO: RefreshTokenDTO) {
     const { refreshToken } = refreshTokenDTO;
     try {
-      if (!refreshToken) throw new UnauthorizedException('헤더에 Refresh Token이 포함되지 않았습니다.');
+      if (!refreshToken) throw new UnauthorizedException('Not Fount Refresh Token In Header');
 
       const payload = jwt.verify(refreshToken, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET')) as { uuid: string };
 
@@ -87,7 +87,7 @@ export class AuthService {
       return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     } catch (err) {
       this.loggerService.warn(`Auth/ Refresh Error: ${err}`);
-      throw new UnauthorizedException(`유효하지 않은 refresh 토큰: ${err.message}`);
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 

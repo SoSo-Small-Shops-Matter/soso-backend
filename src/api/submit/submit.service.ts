@@ -20,7 +20,7 @@ export class SubmitService {
     const { shop, operatingHours, products } = newShopData;
 
     const region = await this.regionRepository.findRegionByLocation(shop.location);
-    if (!region) throw new NotFoundException('위치가 잘못됐습니다.');
+    if (!region) throw new NotFoundException('check region location');
 
     const createShop = await this.shopRepository.createNewShop(shop, region.id);
     if (!createShop) throw new ConflictException();
@@ -47,7 +47,7 @@ export class SubmitService {
 
     // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
-    if (!shop) throw new ConflictException('없는 소풉샵입니다.');
+    if (!shop) throw new ConflictException('Not Exist Shop');
 
     const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 1);
     if (existData) throw new ConflictException('Exist Data');
@@ -61,7 +61,7 @@ export class SubmitService {
     const { shopId, products } = prodcutsData;
 
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
-    if (!shop) throw new ConflictException('없는 소풉샵입니다.');
+    if (!shop) throw new ConflictException('Not Exist Shop');
 
     const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 2);
     if (existData) throw new ConflictException('Exist Data');

@@ -44,7 +44,7 @@ export class ReviewService {
     // Review 찾기
     const review = await this.reviewRepository.findReviewByReviewId(uuid, reviewId);
     if (!review) {
-      throw new NotFoundException('찾을 수 없는 리뷰');
+      throw new NotFoundException('No Found Review');
     }
     // 제거할 이미지가 존재하면 삭제
     if (deleteImages?.length > 0) {
@@ -87,7 +87,7 @@ export class ReviewService {
     const { reviewId } = deleteReviewDto;
 
     const review = await this.reviewRepository.findReviewByReviewId(uuid, reviewId);
-    if (!review) throw new NotFoundException('존재하지 않는 리뷰ID 입니다.');
+    if (!review) throw new NotFoundException('Not Found ReviewId.');
 
     if (review.images.length > 0) {
       await Promise.all(
