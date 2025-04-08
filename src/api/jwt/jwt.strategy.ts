@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const { uuid, exp } = payload;
+    const { uuid, exp, role } = payload;
     if (exp && Date.now() >= exp * 1000) {
       throw new UnauthorizedException('토큰이 만료되었습니다.');
     }
@@ -33,6 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       this.loggerService.warn(`JWT/ 존재하지 않은 유저 로그인 : ${uuid}`);
       throw new NotFoundException('존재하지 않는 유저입니다.');
     }
-    return user;
+    return { uuid, role };
   }
 }

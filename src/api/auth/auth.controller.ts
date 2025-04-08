@@ -17,8 +17,8 @@ export class AuthController {
     return new SuccessResponseDTO(await this.authService.refresh(refreshTokenDTO));
   }
 
-  @Get('/test')
-  async test() {
-    return new SuccessResponseDTO(await this.authService.test());
-  }
+  // @Get('/test')
+  // async test() {
+  //   return new SuccessResponseDTO(await this.authService.test());
+  // }
 }

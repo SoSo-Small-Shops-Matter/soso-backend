@@ -6,6 +6,7 @@ import axios from 'axios';
 import { LoggerService } from '../logger/logger.service';
 import { GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
+import { Role } from '../../common/enum/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +40,6 @@ export class AuthService {
 
       const { access_token } = tokenResponse.data;
 
-      // 2️⃣ Access Token을 이용해 사용자 정보 요청
       const userResponse = await axios.get(this.googleUserInfoUrl, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
@@ -50,10 +50,13 @@ export class AuthService {
         await this.userRepository.createUser(userData.id, userData.picture, userData.name, userData.email);
       }
 
-      const accessToken = jwt.sign({ uuid: userData.id }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
+      const role = userData.id === this.configService.get<string>('ADMIN_UUID') ? Role.Admin : Role.User;
+
+      const accessToken = jwt.sign({ uuid: userData.id, role }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
         expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
       });
-      const refreshToken = jwt.sign({ uuid: userData.id }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
+
+      const refreshToken = jwt.sign({ uuid: userData.id, role }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
         expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
       });
 
@@ -71,10 +74,13 @@ export class AuthService {
 
       const payload = jwt.verify(refreshToken, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET')) as { uuid: string };
 
-      const newAccessToken = jwt.sign({ uuid: payload.uuid }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
+      const role = payload.uuid === this.configService.get<string>('ADMIN_UUID') ? Role.Admin : Role.User;
+
+      const newAccessToken = jwt.sign({ uuid: payload.uuid, role }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
         expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
       });
-      const newRefreshToken = jwt.sign({ uuid: payload.uuid }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
+
+      const newRefreshToken = jwt.sign({ uuid: payload.uuid, role }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
         expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
       });
 
@@ -85,17 +91,19 @@ export class AuthService {
     }
   }
 
-  async test() {
-    const accessToken = jwt.sign({ uuid: this.configService.get<string>('ADMIN_UUID') }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
-      expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
-    });
-
-    const refreshToken = jwt.sign(
-      { uuid: this.configService.get<string>('ADMIN_UUID') },
-      this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-      { expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN') },
-    );
-
-    return { accessToken, refreshToken };
-  }
+  // async test() {
+  //   const accessToken = jwt.sign(
+  //     { uuid: this.configService.get<string>('ADMIN_UUID'), role: Role.Admin },
+  //     this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+  //     { expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN') },
+  //   );
+  //
+  //   const refreshToken = jwt.sign(
+  //     { uuid: this.configService.get<string>('ADMIN_UUID'), role: Role.Admin },
+  //     this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+  //     { expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN') },
+  //   );
+  //
+  //   return { accessToken, refreshToken };
+  // }
 }
