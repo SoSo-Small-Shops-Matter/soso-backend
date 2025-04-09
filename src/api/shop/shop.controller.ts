@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';

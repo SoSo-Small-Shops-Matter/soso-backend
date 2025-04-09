@@ -21,16 +21,6 @@ export class Success201ResponseDTO {
   }
 }
 
-export class Success204ResponseDTO {
-  message: string;
-  statusCode: number;
-
-  constructor(result: any = null) {
-    this.message = 'Success'; // 기본 메시지 "Success"를 제공
-    this.statusCode = 204;
-  }
-}
-
 export class BadRequestResponseDTO {
   message: string;
   error: string;

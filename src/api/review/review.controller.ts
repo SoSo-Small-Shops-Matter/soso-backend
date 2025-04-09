@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Post, Patch, UploadedFiles, UseGuards, UseInterceptors, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Patch, UploadedFiles, UseGuards, UseInterceptors, Param } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
+import { SuccessResponseDTO } from '../../common/response/response.dto';
 
 @Controller('review')
 @UseGuards(JwtAuthGuard)
@@ -20,9 +21,9 @@ export class ReviewController {
       },
     }),
   )
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async postReview(@Body() postReviewDto: PostReviewDto, @GetUUID() uuid: string, @UploadedFiles() files?: Express.Multer.File[]): Promise<void> {
-    await this.reviewService.createReview(uuid, postReviewDto, files);
+  async postReview(@Body() postReviewDto: PostReviewDto, @GetUUID() uuid: string, @UploadedFiles() files?: Express.Multer.File[]) {
+    const result = await this.reviewService.createReview(uuid, postReviewDto, files);
+    return new SuccessResponseDTO(result);
   }
 
   @Patch('/')
@@ -35,14 +36,14 @@ export class ReviewController {
       },
     }),
   )
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updateReview(@Body() updateReviewDto: UpdateReviewDto, @GetUUID() uuid: string, @UploadedFiles() newFiles?: Express.Multer.File[]) {
-    await this.reviewService.updateReview(uuid, updateReviewDto, newFiles);
+    const result = await this.reviewService.updateReview(uuid, updateReviewDto, newFiles);
+    return new SuccessResponseDTO(result);
   }
 
   @Delete('/:reviewId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteReview(@Param() deleteReviewDto: DeleteReviewDto, @GetUUID() uuid: string): Promise<void> {
-    await this.reviewService.deleteReviewByUUID(uuid, deleteReviewDto);
+  async deleteReview(@Param() deleteReviewDto: DeleteReviewDto, @GetUUID() uuid: string) {
+    const result = await this.reviewService.deleteReviewByUUID(uuid, deleteReviewDto);
+    return new SuccessResponseDTO(result);
   }
 }

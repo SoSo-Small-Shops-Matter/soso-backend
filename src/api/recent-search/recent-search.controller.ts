@@ -17,15 +17,13 @@ export class RecentSearchController {
 
   @Delete('/')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteRecentSearch(@GetUUID() uuid: string, @Body() deleteRecentSearchDTO: DeleteRecentSearchDTO): Promise<void> {
-    await this.recentSearchService.deleteRecentSearch(uuid, deleteRecentSearchDTO);
+  async deleteRecentSearch(@GetUUID() uuid: string, @Body() deleteRecentSearchDTO: DeleteRecentSearchDTO) {
+    return new SuccessResponseDTO(await this.recentSearchService.deleteRecentSearch(uuid, deleteRecentSearchDTO));
   }
 
   @Delete('/all')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteAllRecentSearch(@GetUUID() uuid: string): Promise<void> {
-    await this.recentSearchService.deleteAllRecentSearch(uuid);
+  async deleteAllRecentSearch(@GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.recentSearchService.deleteAllRecentSearch(uuid));
   }
 }

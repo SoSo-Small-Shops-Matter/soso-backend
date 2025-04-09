@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { SuccessResponseDTO } from '../../common/response/response.dto';
 import { ConfigService } from '@nestjs/config';
@@ -35,17 +35,15 @@ export class AdminController {
   }
 
   @Put('/products')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async allowSubmitProducts(@GetUUID() uuid: string, @Body() allowSubmitProducts: AllowSubmitProducts) {
     this.checkAdmin(uuid);
-    await this.adminService.allowSubmitProduct(allowSubmitProducts);
+    return new SuccessResponseDTO(await this.adminService.allowSubmitProduct(allowSubmitProducts));
   }
 
   @Delete('/products')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async rejectSubmitProducts(@GetUUID() uuid: string, @Body() rejectSubmitProducts: RejectSubmitProducts) {
     this.checkAdmin(uuid);
-    await this.adminService.rejectSubmitProduct(rejectSubmitProducts);
+    return new SuccessResponseDTO(await this.adminService.rejectSubmitProduct(rejectSubmitProducts));
   }
 
   @Get('/operatings')
@@ -55,17 +53,15 @@ export class AdminController {
   }
 
   @Put('/operatings')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async allowSubmitOperating(@GetUUID() uuid: string, @Body() allowSubmitOperatingInfo: AllowSubmitOperatingInfo) {
     this.checkAdmin(uuid);
-    await this.adminService.allowSubmitOperatingInfo(allowSubmitOperatingInfo);
+    return new SuccessResponseDTO(await this.adminService.allowSubmitOperatingInfo(allowSubmitOperatingInfo));
   }
 
   @Delete('/operatings')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async rejectSubmitOperating(@GetUUID() uuid: string, @Body() rejectSubmitOperatingInfo: RejectSubmitOperatingInfo) {
     this.checkAdmin(uuid);
-    await this.adminService.rejectSubmitOperatingInfo(rejectSubmitOperatingInfo);
+    return new SuccessResponseDTO(await this.adminService.rejectSubmitOperatingInfo(rejectSubmitOperatingInfo));
   }
 
   @Get('/shops')
@@ -75,16 +71,14 @@ export class AdminController {
   }
 
   @Put('/shops')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async allowSubmitNewShops(@GetUUID() uuid: string, @Body() allowSubmitNewShop: AllowSubmitNewShop) {
     this.checkAdmin(uuid);
-    await this.adminService.allowNewShop(allowSubmitNewShop);
+    return new SuccessResponseDTO(await this.adminService.allowNewShop(allowSubmitNewShop));
   }
 
   @Delete('/shops')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async rejectSubmitNewShops(@GetUUID() uuid: string, @Body() rejectSubmitShop: RejectSubmitNewShop): Promise<void> {
+  async rejectSubmitNewShops(@GetUUID() uuid: string, @Body() rejectSubmitShop: RejectSubmitNewShop) {
     this.checkAdmin(uuid);
-    await this.adminService.rejectNewShop(rejectSubmitShop);
+    return new SuccessResponseDTO(await this.adminService.rejectNewShop(rejectSubmitShop));
   }
 }
