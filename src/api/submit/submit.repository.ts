@@ -1,10 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
 import { LoggerService } from '../logger/logger.service';
 
-@Injectable()
 export class SubmitRepository {
   constructor(
     @InjectRepository(SubmitUserRecord)
@@ -183,19 +182,6 @@ export class SubmitRepository {
       return await this.submitUserRecordRepository.save(submit);
     } catch (err) {
       this.loggerService.warn(`Submit/ saveSubmit Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async deleteSubmitUserByUUID(uuid: string) {
-    try {
-      return await this.submitUserRecordRepository.delete({
-        user: {
-          uuid,
-        },
-      });
-    } catch (err) {
-      this.loggerService.warn(`Submit/ deleteSubmitUserByUUID Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

@@ -7,10 +7,10 @@ export class User extends BaseEntity {
   @PrimaryColumn()
   uuid: string;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
-  @Column({ default: '' })
+  @Column({ default: '', nullable: true })
   photoUrl: string;
 
   @Column({

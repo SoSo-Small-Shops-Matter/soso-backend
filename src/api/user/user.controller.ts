@@ -30,7 +30,6 @@ export class UserController {
 
   @Delete('/:uuid')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string, @GetUUID() currentUUID: string) {
     if (uuid !== currentUUID) throw new ConflictException('Not equal User UUID');
     return new SuccessResponseDTO(await this.userService.deleteUser(uuid, deleteType));
@@ -43,7 +42,6 @@ export class UserController {
 
   @Post('/nickname')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   async setNickName(@Body() nickNameDTO: NickNameDTO, @GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid));
   }
@@ -56,7 +54,6 @@ export class UserController {
 
   @Patch('/profile')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FileInterceptor('file'))
   async updateProfile(
     @GetUUID() uuid: string,

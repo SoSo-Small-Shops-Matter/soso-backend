@@ -1,10 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from 'src/database/entity/wishlist.entity';
 import { Repository } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
 
-@Injectable()
 export class WishlistRepository {
   constructor(
     @InjectRepository(Wishlist)
