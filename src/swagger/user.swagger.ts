@@ -10,7 +10,6 @@ export const userSwaggerDocs = {
         required: true,
         schema: {
           type: 'string',
-          example: '102784937796556996262',
         },
       },
       {

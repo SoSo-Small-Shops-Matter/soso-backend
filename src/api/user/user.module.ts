@@ -10,6 +10,7 @@ import { WishlistModule } from '../wishlist/wishlist.module';
 import { SubmitModule } from '../submit/submit.module';
 import { ImageModule } from '../image/image.module';
 import { RecentSearchModule } from '../recent-search/recent-search.module';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RecentSearchModule } from '../recent-search/recent-search.module';
     WishlistModule,
     ImageModule,
     RecentSearchModule,
+    TransactionsModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],

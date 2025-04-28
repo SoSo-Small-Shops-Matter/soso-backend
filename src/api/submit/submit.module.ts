@@ -8,9 +8,17 @@ import { SubmitUserRecord } from 'src/database/entity/submit-user.entity';
 import { RegionModule } from '../region/region.module';
 import { ProductModule } from '../product/product.module';
 import { OperateModule } from '../operate/operate.module';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
-  imports: [forwardRef(() => ShopModule), TypeOrmModule.forFeature([SubmitUserRecord]), RegionModule, ProductModule, OperateModule],
+  imports: [
+    forwardRef(() => ShopModule),
+    TypeOrmModule.forFeature([SubmitUserRecord]),
+    RegionModule,
+    ProductModule,
+    OperateModule,
+    TransactionsModule,
+  ],
   controllers: [SubmitController],
   providers: [SubmitService, SubmitRepository],
   exports: [SubmitRepository],

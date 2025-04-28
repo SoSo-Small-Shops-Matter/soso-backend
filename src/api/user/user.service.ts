@@ -1,5 +1,4 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { UserRepository } from './user.repository';
 import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
@@ -13,6 +12,7 @@ import { PagingDto, ResponsePageNationDTO } from './dto/paging.dto';
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { Review } from '../../database/entity/review.entity';
 import { Wishlist } from '../../database/entity/wishlist.entity';
+import { DeleteUserTransactionsRepository } from '../transactions/delete-user.repository';
 
 @Injectable()
 export class UserService {
@@ -24,6 +24,7 @@ export class UserService {
     private submitRepository: SubmitRepository,
     private imageRepository: ImageRepository,
     private recentSearchRepository: RecentSearchRepository,
+    private deleteUserTransactionsRepository: DeleteUserTransactionsRepository,
   ) {}
 
   async findUserNickName(nickNameDTO: NickNameDTO): Promise<boolean> {
@@ -97,20 +98,9 @@ export class UserService {
   }
 
   async deleteUser(uuid: string, deleteType: number) {
-    const newUUID = uuidv4();
     const user = await this.userRepository.findUserByUUID(uuid);
     if (!user) throw new NotFoundException();
     // 유저 이미지 제거
-    await this.imageRepository.deleteImageByUrl(user.photoUrl);
-    // 유저 찜 데이터 제거
-    await this.wishlistRepository.deleteWishlistByUUID(user.uuid);
-    // submit_user_record 데이터 제거 -> 전부
-    await this.submitRepository.deleteSubmitUserByUUID(user.uuid);
-    // 최근 검색 기록 지우기
-    await this.recentSearchRepository.deleteAllRecentSearch(user.uuid);
-
-    await this.userRepository.saveDeleteUser(uuid, deleteType, newUUID);
-    const deleteUser = await this.userRepository.findUserByUUID(newUUID);
-    await this.userRepository.deleteUser(deleteUser);
+    await this.deleteUserTransactionsRepository.deleteUser(user, deleteType);
   }
 }

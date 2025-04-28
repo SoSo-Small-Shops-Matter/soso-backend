@@ -22,6 +22,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from './api/jwt/jwt.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { TransactionsModule } from './api/transactions/transactions.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { APP_GUARD } from '@nestjs/core';
     ImageModule,
     AdminModule,
     JwtModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [

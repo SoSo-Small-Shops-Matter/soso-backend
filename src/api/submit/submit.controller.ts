@@ -1,8 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { SubmitService } from './submit.service';
 import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
+import { SuccessResponseDTO } from '../../common/response/response.dto';
 
 @Controller('submit')
 @UseGuards(JwtAuthGuard)
@@ -10,20 +11,20 @@ export class SubmitController {
   constructor(private submitService: SubmitService) {}
 
   @Post('/')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async submitNewShop(@Body() newShopData: SubmitNewShopDto, @GetUUID() uuid: string) {
-    await this.submitService.createNewShop(newShopData, uuid);
+    const result = await this.submitService.createNewShop(newShopData, uuid);
+    return new SuccessResponseDTO(result);
   }
 
   @Post('/operating')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async submitShopOperatingHours(@Body() operatingData: SubmitShopOperatingHoursDto, @GetUUID() uuid: string) {
-    await this.submitService.validateAndUpdateOperatingHours(operatingData, uuid);
+    const result = await this.submitService.validateAndUpdateOperatingHours(operatingData, uuid);
+    return new SuccessResponseDTO(result);
   }
 
   @Post('/products')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async submitProducts(@Body() products: any, @GetUUID() uuid: string) {
-    await this.submitService.validateAndUpdateProducts(products, uuid);
+    const result = await this.submitService.validateAndUpdateProducts(products, uuid);
+    return new SuccessResponseDTO(result);
   }
 }

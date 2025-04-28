@@ -35,10 +35,9 @@ export class UserController {
   @ApiNoContentResponse()
   @ApiDefaultResponses()
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string, @GetUUID() currentUUID: string) {
     if (uuid !== currentUUID) throw new ConflictException('Not equal User UUID');
-    await this.userService.deleteUser(uuid, deleteType);
+    return new SuccessResponseDTO(await this.userService.deleteUser(uuid, deleteType));
   }
 
   @Get('/nickname/:nickName')
@@ -53,9 +52,8 @@ export class UserController {
   @ApiNoContentResponse()
   @ApiDefaultResponses()
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   async setNickName(@Body() nickNameDTO: NickNameDTO, @GetUUID() uuid: string) {
-    await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid);
+    return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid));
   }
 
   @Get('/profile')
@@ -69,7 +67,6 @@ export class UserController {
   @ApiNoContentResponse()
   @ApiDefaultResponses()
   @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FileInterceptor('file'))
   async updateProfile(
     @GetUUID() uuid: string,
@@ -84,7 +81,7 @@ export class UserController {
     )
     file?: Express.Multer.File,
   ) {
-    await this.userService.updateUserProfile(updateProfileDTO, uuid, file);
+    return new SuccessResponseDTO(await this.userService.updateUserProfile(updateProfileDTO, uuid, file));
   }
 
   @Get('/submit')
