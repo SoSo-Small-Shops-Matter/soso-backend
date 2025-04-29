@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class GetShopWithin1KmDTO {
   @IsNumber()
@@ -16,6 +16,10 @@ export class GetShopWithin1KmDTO {
   @IsNotEmpty()
   @Type(() => Boolean) // 'true'/'false' → boolean 변환
   sorting: boolean;
+
+  @IsString()
+  @IsOptional()
+  isWishlist?: string;
 }
 
 export class GetSearchPageShopDTO {

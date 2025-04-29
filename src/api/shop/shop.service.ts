@@ -19,13 +19,16 @@ export class ShopService {
     private recentSearchRepository: RecentSearchRepository,
   ) {}
 
-  async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO) {
-    const { lat, lng, sorting } = getShopWithin1KmDTO;
+  async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
+    const { lat, lng, sorting, isWishlist } = getShopWithin1KmDTO;
+    const wishlistBoolean = isWishlist == 'true' ? true : false;
     const radius = 6371; // 지구 반경 (km)
     const distanceLimit = 1; // 거리 제한 (1km)
-    const result = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
+    
+    let shops = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
+    
     // shop_ 프리픽스 제거 + 필요한 필드만 추출
-    return result.map((shop) => ({
+    shops = shops.map((shop) => ({
       id: shop.shop_id,
       name: shop.shop_name,
       type: shop.shop_type,
@@ -38,6 +41,14 @@ export class ShopService {
       distance: shop.distance,
       ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}),
     }));
+
+    if (wishlistBoolean && uuid) {
+      const wishlistShops = await this.wishlistRepository.findWishlistShopsByUser(uuid);
+      const wishlistShopIds = wishlistShops.map(wishlist => wishlist.shop.id);
+      shops = shops.filter(shop => wishlistShopIds.includes(shop.id));
+    }
+
+    return shops;
   }
 
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
@@ -106,15 +117,15 @@ export class ShopService {
       userReviews: userReviews.map((review) => ({
         ...review,
         user: {
-          photoUrl: review.user.photoUrl,
-          nickName: review.user.nickName,
+          photoUrl: review.user?.photoUrl,
+          nickName: review.user?.nickName,
         },
       })),
       otherReviews: otherReviews.map((review) => ({
         ...review,
         user: {
-          photoUrl: review.user.photoUrl,
-          nickName: review.user.nickName,
+          photoUrl: review.user?.photoUrl,
+          nickName: review.user?.nickName,
         },
       })),
       wishlist,

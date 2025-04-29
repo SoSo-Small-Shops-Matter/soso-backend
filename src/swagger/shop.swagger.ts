@@ -33,6 +33,16 @@ export const shopSwaggerDocs = {
           example: true,
         },
       },
+      {
+        name: 'isWishlist',
+        in: 'query',
+        required: true,
+        description: '찜 목록에 포함되어 있는지 여부',
+        schema: {
+          type: 'string',
+          example: 'true',
+        },
+      },
     ],
     responses: {
       200: {
