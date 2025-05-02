@@ -8,6 +8,8 @@ import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
+import { User } from '../../database/entity/user.entity';
+import { ProductMapping } from '../../database/entity/product_mapping.entity';
 
 @Injectable()
 export class ShopService {
@@ -20,7 +22,7 @@ export class ShopService {
   ) {}
 
   async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
-    const { lat, lng, sorting, isWishlist } = getShopWithin1KmDTO;
+    const { lat, lng, sorting, isWishlist, productIds } = getShopWithin1KmDTO;
     const wishlistBoolean = isWishlist == 'true' ? true : false;
     const radius = 6371; // 지구 반경 (km)
     const distanceLimit = 1; // 거리 제한 (1km)
@@ -46,6 +48,12 @@ export class ShopService {
       const wishlistShops = await this.wishlistRepository.findWishlistShopsByUser(uuid);
       const wishlistShopIds = wishlistShops.map(wishlist => wishlist.shop.id);
       shops = shops.filter(shop => wishlistShopIds.includes(shop.id));
+    }
+
+    if (productIds && productIds.length > 0) {
+      const shopsWithProducts = await this.shopRepository.findShopsByProductIds(productIds);
+      const shopIdsWithProducts = shopsWithProducts.map(shop => shop.id);
+      shops = shops.filter(shop => shopIdsWithProducts.includes(shop.id));
     }
 
     return shops;

@@ -3,13 +3,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Shop } from 'src/database/entity/shop.entity';
 import { Repository } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { ProductMapping } from '../../database/entity/product_mapping.entity';
 
-export class ShopRepository {
+@Injectable()
+export class ShopRepository extends Repository<Shop> {
   constructor(
     @InjectRepository(Shop)
     private shopRepository: Repository<Shop>,
     private readonly loggerService: LoggerService,
-  ) {}
+    private dataSource: DataSource
+  ) {
+    super(Shop, dataSource.createEntityManager());
+  }
 
   async findShopsByKeyword(keyword: string, page: number, limit: number) {
     try {
@@ -101,6 +108,12 @@ export class ShopRepository {
       this.loggerService.warn(`Shop/ findShopsWithin1Km Error: ${err}`);
       throw new InternalServerErrorException();
     }
+  }
+  async findShopsByProductIds(productIds: number[]) {
+    return this.createQueryBuilder('shop')
+      .innerJoin('shop.productMappings', 'productMapping')
+      .where('productMapping.product.id IN (:...productIds)', { productIds })
+      .getMany();
   }
 
   async createNewShop(shop, regionId: number) {

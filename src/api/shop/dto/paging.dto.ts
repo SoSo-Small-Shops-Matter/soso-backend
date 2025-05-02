@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsArray } from 'class-validator';
 
 export class GetShopWithin1KmDTO {
   @IsNumber()
@@ -20,6 +20,12 @@ export class GetShopWithin1KmDTO {
   @IsString()
   @IsOptional()
   isWishlist?: string;
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  @Type(() => Number)
+  productIds?: number[];
 }
 
 export class GetSearchPageShopDTO {

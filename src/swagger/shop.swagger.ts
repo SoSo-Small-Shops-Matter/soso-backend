@@ -43,6 +43,18 @@ export const shopSwaggerDocs = {
           example: 'true',
         },
       },
+      {
+        name: 'productIds',
+        in: 'query',
+        required: false,
+        description: '소품샵 상품 ID',
+        schema: {
+          type: 'array',
+          items: {
+            type: 'number',
+          },
+        },
+      },
     ],
     responses: {
       200: {
