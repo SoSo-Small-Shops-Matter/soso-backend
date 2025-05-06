@@ -62,9 +62,9 @@ export class ShopService {
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
     const { keyword, page, limit } = getSearchPageShopDTO;
     const pageNationResult = await this.shopRepository.findShopsByKeyword(keyword, page, limit);
-    const allShops = await this.shopRepository.findAllShopsByKeyword(keyword);
-    const totalPages = Math.ceil(allShops.length / limit);
-    const pageInfoDTO = new Paging(page, limit, allShops.length, totalPages, page < totalPages);
+    const allShopsCount = await this.shopRepository.findAllShopsCountByKeyword(keyword);
+    const totalPages = Math.ceil(allShopsCount / limit);
+    const pageInfoDTO = new Paging(page, limit, allShopsCount, totalPages, page < totalPages);
     return new ResponsePageNationDTO<Shop>(pageNationResult, pageInfoDTO);
   }
 

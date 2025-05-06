@@ -34,16 +34,16 @@ export class ShopRepository extends Repository<Shop> {
     }
   }
 
-  async findAllShopsByKeyword(keyword: string) {
+  async findAllShopsCountByKeyword(keyword: string) {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
         .where('shop.name LIKE :keyword', { keyword: `%${keyword}%` }) // 부분 검색
         .orWhere('shop.location LIKE :keyword', { keyword: `%${keyword}%` }) // 도로명 검색
         .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
-        .getMany();
+        .getCount();
     } catch (err) {
-      this.loggerService.warn(`Shop/ findAllShopsByKeyword Error: ${err}`);
+      this.loggerService.warn(`Shop/ findAllShopsCountByKeyword Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

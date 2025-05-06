@@ -71,29 +71,29 @@ export class UserService {
 
   async findSubmitRecord(pageNation: PageNationDTO, uuid: string) {
     const { page, limit } = pageNation;
-    const userSubmits = await this.submitRepository.findUserSubmitUserRecord(uuid);
+    const userSubmitsCount = await this.submitRepository.findUserSubmitUserRecord(uuid);
     const pageNationResult = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
-    const totalPages = Math.ceil(userSubmits.length / limit);
-    const pageInfoDTO = new PagingDto(page, limit, userSubmits.length, totalPages, page < totalPages);
+    const totalPages = Math.ceil(userSubmitsCount / limit);
+    const pageInfoDTO = new PagingDto(page, limit, userSubmitsCount, totalPages, page < totalPages);
     return new ResponsePageNationDTO<SubmitUserRecord>(pageNationResult, pageInfoDTO);
   }
 
   async findUserReviews(reviewPageNation: ReviewPageNationDTO, uuid: string) {
     const { sort, page, limit } = reviewPageNation;
     const sortType = sort == 'ASC' ? 'ASC' : 'DESC';
-    const userReviews = await this.reviewRepository.findUserReviewByUUID(uuid);
+    const userReviewsCount = await this.reviewRepository.findUserReviewByUUID(uuid);
     const pageNationResult = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sortType);
-    const totalPages = Math.ceil(userReviews.length / limit);
-    const pageInfoDTO = new PagingDto(page, limit, userReviews.length, totalPages, page < totalPages);
+    const totalPages = Math.ceil(userReviewsCount / limit);
+    const pageInfoDTO = new PagingDto(page, limit, userReviewsCount, totalPages, page < totalPages);
     return new ResponsePageNationDTO<Review>(pageNationResult, pageInfoDTO);
   }
 
   async getWishlist(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
     const { page, limit, area } = wishlistPageNation;
-    const userWishlists = await this.wishlistRepository.findUserWishlistByUUID(uuid, area);
+    const userWishlistsCount = await this.wishlistRepository.findUserWishlistByUUID(uuid, area);
     const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, area);
-    const totalPages = Math.ceil(userWishlists.length / limit);
-    const pageInfoDTO = new PagingDto(page, limit, userWishlists.length, totalPages, page < totalPages);
+    const totalPages = Math.ceil(userWishlistsCount / limit);
+    const pageInfoDTO = new PagingDto(page, limit, userWishlistsCount, totalPages, page < totalPages);
     return new ResponsePageNationDTO<Wishlist>(pageNationResult, pageInfoDTO);
   }
 

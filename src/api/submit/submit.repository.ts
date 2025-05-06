@@ -79,19 +79,17 @@ export class SubmitRepository {
         },
       });
     } catch (err) {
-      this.loggerService.warn(`Submit/ findUserSubmitUserRecord Error: ${err}`);
+      this.loggerService.warn(`Submit/ findUserSubmitRecordByType Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
 
   async findUserSubmitUserRecord(uuid: string) {
     try {
-      return await this.submitUserRecordRepository.find({
-        where: {
-          user: { uuid },
-        },
-        relations: ['shop'],
-      });
+      return await this.submitUserRecordRepository
+        .createQueryBuilder('submit') // ✅ 엔티티 별칭 수정
+        .where('submit.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
+        .getCount();
     } catch (err) {
       this.loggerService.warn(`Submit/ findUserSubmitUserRecord Error: ${err}`);
       throw new InternalServerErrorException();

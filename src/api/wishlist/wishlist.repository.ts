@@ -84,7 +84,7 @@ export class WishlistRepository extends Repository<Wishlist> {
         query.andWhere('region.name = :area', { area });
       }
 
-      return await query.getMany();
+      return await query.getCount();
     } catch (err) {
       this.loggerService.warn(`Wishlist/ findUserWishlistByUUID Error: ${err}`);
       throw new InternalServerErrorException();
