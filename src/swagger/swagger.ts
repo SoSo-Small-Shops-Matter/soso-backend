@@ -27,6 +27,15 @@ export function setupSwagger(app: INestApplication): void {
     ...swaggerDocs.paths,
   };
 
+  // admin 경로 제거
+  if (document.paths) {
+    Object.keys(document.paths).forEach(path => {
+      if (path.startsWith('/admin')) {
+        delete document.paths[path];
+      }
+    });
+  }
+
   // ✅ SwaggerModule.setup에 올바른 타입의 document 전달
   SwaggerModule.setup('api-docs', app, document);
 }
