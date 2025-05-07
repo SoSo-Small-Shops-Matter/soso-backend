@@ -3,12 +3,14 @@ import { DataSource } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
 import { Review } from '../../database/entity/review.entity';
 import { Image } from '../../database/entity/image.entity';
+import { AwsService } from '../aws/aws.service';
 
 @Injectable()
 export class ReviewTransactionsRepository {
   constructor(
     private dataSource: DataSource,
     private loggerService: LoggerService,
+    private awsService: AwsService,
   ) {}
 
   async createReview(uuid: string, shopId: number, content: string, imageUrls: string[]): Promise<void> {
@@ -73,6 +75,12 @@ export class ReviewTransactionsRepository {
 
       // 제거할 이미지가 존재하면 삭제
       if (deleteImages?.length > 0) {
+        // S3에서 이미지 삭제
+        const imagesToDelete = review.images.filter(image => deleteImages.includes(image.id));
+        for (const image of imagesToDelete) {
+          await this.awsService.deleteImageFromS3(image.url);
+        }
+        // DB에서 이미지 삭제
         await imageRepo.delete(deleteImages);
         review.images = review.images.filter((image) => !deleteImages.includes(image.id));
       }
@@ -126,8 +134,13 @@ export class ReviewTransactionsRepository {
         throw new NotFoundException('Not Found ReviewId');
       }
 
-      // 이미지가 존재하면 삭제
+      // 이미지가 존재하면 S3와 DB에서 삭제
       if (review.images.length > 0) {
+        // S3에서 이미지 삭제
+        for (const image of review.images) {
+          await this.awsService.deleteImageFromS3(image.url);
+        }
+        // DB에서 이미지 삭제
         await imageRepo.delete(review.images.map(image => image.id));
       }
 
