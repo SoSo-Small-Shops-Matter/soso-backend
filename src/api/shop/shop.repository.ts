@@ -148,4 +148,12 @@ export class ShopRepository extends Repository<Shop> {
       throw new InternalServerErrorException();
     }
   }
+
+  async findTemp() {
+    return await this.shopRepository.find({
+      where: {
+        type: 0,
+      },
+    });
+  }
 }

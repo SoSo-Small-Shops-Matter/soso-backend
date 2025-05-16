@@ -148,4 +148,14 @@ export class ShopService {
     });
     return result;
   }
+
+  async findTemp() {
+    const shop = await this.shopRepository.findTemp();
+    return shop.map((shop) => ({
+      id: shop.id,
+      name: shop.name,
+      image: shop.image,
+      location: shop.location,
+    }));
+  }
 }

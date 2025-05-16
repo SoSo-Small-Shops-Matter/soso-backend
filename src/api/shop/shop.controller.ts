@@ -11,10 +11,7 @@ export class ShopController {
 
   @Get('/')
   @UseGuards(OptionalAuthGuard)
-  async getShopWithin1Km(
-    @Query() getShopWithin1KmDTO: GetShopWithin1KmDTO,
-    @GetUUID() uuid: string,
-  ) {
+  async getShopWithin1Km(@Query() getShopWithin1KmDTO: GetShopWithin1KmDTO, @GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(getShopWithin1KmDTO, uuid));
   }
 
@@ -36,5 +33,10 @@ export class ShopController {
     @GetUUID() uuid: string,
   ) {
     return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId, uuid));
+  }
+
+  @Get('/temp')
+  async getTemp() {
+    return new SuccessResponseDTO(await this.shopService.findTemp());
   }
 }
