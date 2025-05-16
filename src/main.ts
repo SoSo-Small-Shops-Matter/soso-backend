@@ -11,9 +11,9 @@ async function bootstrap() {
 
   const httpsOptions = isProd
     ? {
-        key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key', 'utf8'),
-        cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt', 'utf8'),
-        ca: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt', 'utf8'),
+        key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/api.sosohan.shop.key', 'utf8'),
+        cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/api.sosohan.shop.crt', 'utf8'),
+        ca: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/api.sosohan.shop.issuer.crt', 'utf8'),
       }
     : undefined;
 
