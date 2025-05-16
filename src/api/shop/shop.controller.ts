@@ -25,6 +25,11 @@ export class ShopController {
     return new SuccessResponseDTO(await this.shopService.findAllShopRegion());
   }
 
+  @Get('/temp')
+  async getTemp() {
+    return new SuccessResponseDTO(await this.shopService.findTemp());
+  }
+
   @Get('/:shopId')
   @UseGuards(OptionalAuthGuard)
   async getShopByShopId(
@@ -33,10 +38,5 @@ export class ShopController {
     @GetUUID() uuid: string,
   ) {
     return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId, uuid));
-  }
-
-  @Get('/temp')
-  async getTemp() {
-    return new SuccessResponseDTO(await this.shopService.findTemp());
   }
 }
