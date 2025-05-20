@@ -4,7 +4,7 @@ import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
-import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
+import { Paging, ResponsePageNationDTO } from './dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
 import { ProductMapping } from '../../database/entity/product_mapping.entity';

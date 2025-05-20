@@ -13,6 +13,9 @@ import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { Review } from '../../database/entity/review.entity';
 import { Wishlist } from '../../database/entity/wishlist.entity';
 import { DeleteUserTransactionsRepository } from '../transactions/delete-user.repository';
+import { SaveWishListDTO } from '../wishlist/dto/wishlist.dto';
+import { RecentSearchDTO } from './dto/recent-search-response.dto';
+import { DeleteRecentSearchDTO } from './dto/recent-search.dto';
 
 @Injectable()
 export class UserService {
@@ -27,8 +30,7 @@ export class UserService {
     private deleteUserTransactionsRepository: DeleteUserTransactionsRepository,
   ) {}
 
-  async findUserNickName(nickNameDTO: NickNameDTO): Promise<boolean> {
-    const { nickName } = nickNameDTO;
+  async findUserNickName(nickName: string): Promise<boolean> {
     return !!(await this.userRepository.findUserByNickName(nickName));
   }
 
@@ -88,7 +90,7 @@ export class UserService {
     return new ResponsePageNationDTO<Review>(pageNationResult, pageInfoDTO);
   }
 
-  async getWishlist(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
+  async getUserWishlist(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
     const { page, limit, area } = wishlistPageNation;
     const userWishlistsCount = await this.wishlistRepository.findUserWishlistByUUID(uuid, area);
     const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, area);
@@ -97,10 +99,32 @@ export class UserService {
     return new ResponsePageNationDTO<Wishlist>(pageNationResult, pageInfoDTO);
   }
 
+  async addUserWishlist(saveWishListDto: SaveWishListDTO, uuid: string) {
+    const wishlist = await this.wishlistRepository.findWishlistByShopIdAndUUID(saveWishListDto.shopId, uuid);
+    if (wishlist) return await this.wishlistRepository.deleteWishlistByWishlistId(wishlist.id);
+
+    return await this.wishlistRepository.addWishlistByShopIdAndUUID(saveWishListDto.shopId, uuid);
+  }
+
   async deleteUser(uuid: string, deleteType: number) {
     const user = await this.userRepository.findUserByUUID(uuid);
     if (!user) throw new NotFoundException();
     // 유저 이미지 제거
     await this.deleteUserTransactionsRepository.deleteUser(user, deleteType);
+  }
+
+  async getRecentSearch(uuid: string | null) {
+    if (!uuid) return [];
+    const result = await this.recentSearchRepository.findRecentSearchListByUUID(uuid);
+    return result.map(RecentSearchDTO.fromEntity);
+  }
+
+  async deleteRecentSearch(uuid: string, deleteRecentSearchDTO: DeleteRecentSearchDTO) {
+    const { shopName } = deleteRecentSearchDTO;
+    await this.recentSearchRepository.deleteRecentSearch(uuid, shopName);
+  }
+
+  async deleteAllRecentSearch(uuid: string) {
+    await this.recentSearchRepository.deleteAllRecentSearch(uuid);
   }
 }

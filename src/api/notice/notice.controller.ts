@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { NoticeService } from './notice.service';
 import { SuccessResponseDTO } from '../../common/response/response.dto';
 
-@Controller('notice')
+@Controller('notices')
 export class NoticeController {
   constructor(private readonly noticeService: NoticeService) {}
   @Get('/')
