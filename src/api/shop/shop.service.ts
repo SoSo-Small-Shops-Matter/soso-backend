@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
-import { ReviewService } from '../review/review.service';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
@@ -8,17 +7,22 @@ import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
-import { User } from '../../database/entity/user.entity';
 import { ProductMapping } from '../../database/entity/product_mapping.entity';
+import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
+import { AwsService } from '../aws/aws.service';
+import { ReviewTransactionsRepository } from '../transactions/review.repository';
+import { ReviewRepository } from '../review/review.repository';
 
 @Injectable()
 export class ShopService {
   constructor(
     private shopRepository: ShopRepository,
-    private reviewService: ReviewService,
     private wishlistRepository: WishlistRepository,
     private regionRepository: RegionRepository,
+    private awsService: AwsService,
     private recentSearchRepository: RecentSearchRepository,
+    private reviewTransactionsRepository: ReviewTransactionsRepository,
+    private reviewRepository: ReviewRepository,
   ) {}
 
   async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
@@ -95,7 +99,10 @@ export class ShopService {
       products, // 새로운 products 배열 추가
     };
 
-    const { userReviews, otherReviews } = await this.reviewService.findShopReviewsByShopId(shopId, uuid);
+    const reviews = await this.reviewRepository.findShopReviewsByShopId(shopId);
+    const userReviews = reviews.filter((review) => review.user?.uuid === uuid);
+    const otherReviews = reviews.filter((review) => review.user?.uuid != uuid);
+
     userReviews.forEach((review) => {
       imageList.push(...review.images);
     });
@@ -141,14 +148,6 @@ export class ShopService {
     };
   }
 
-  async findAllShopRegion() {
-    const regionList = await this.regionRepository.findAllRegions();
-    const result = regionList.map((region) => {
-      return region.name;
-    });
-    return result;
-  }
-
   async findTemp() {
     const shop = await this.shopRepository.findTemp();
     return shop.map((shop) => ({
@@ -157,5 +156,29 @@ export class ShopService {
       image: shop.image,
       location: shop.location,
     }));
+  }
+
+  async createReview(uuid: string, postReviewDto: PostReviewDto, files?: Express.Multer.File[]): Promise<void> {
+    const { shopId, content } = postReviewDto;
+
+    // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
+    const imageUrls = files ? await this.awsService.uploadImagesToS3(files, 'jpg') : [];
+
+    // 트랜잭션을 사용하여 Review 생성
+    await this.reviewTransactionsRepository.createReview(uuid, Number(shopId), content, imageUrls);
+  }
+
+  async updateReview(uuid: string, reviewId: number, shopId: number, updateReviewDto: UpdateReviewDto, newFiles?: Express.Multer.File[]): Promise<void> {
+    const { content, deleteImages } = updateReviewDto;
+
+    // 새 파일이 존재하면 업로드
+    const newImageUrls = newFiles?.length > 0 ? await this.awsService.uploadImagesToS3(newFiles, 'jpg') : [];
+
+    // 트랜잭션을 사용하여 Review 업데이트
+    await this.reviewTransactionsRepository.updateReview(uuid, reviewId, content, deleteImages || [], newImageUrls);
+  }
+
+  async deleteReviewByUUID(uuid: string, reviewId: number, shopId: number): Promise<void> {
+    await this.reviewTransactionsRepository.deleteReview(uuid, reviewId);
   }
 }

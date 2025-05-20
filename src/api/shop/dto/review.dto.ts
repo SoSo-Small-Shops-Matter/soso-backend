@@ -13,8 +13,6 @@ export class PostReviewDto {
 }
 
 export class UpdateReviewDto {
-  @IsNotEmpty()
-  reviewId: number;
 
   @MaxLength(100)
   content?: string;
