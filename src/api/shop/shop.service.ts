@@ -12,6 +12,10 @@ import { ReviewTransactionsRepository } from '../transactions/review.repository'
 import { ReviewRepository } from '../review/review.repository';
 import { ShopReportDto } from './dto/shop-report.dto';
 import { ReportRepository } from '../report/report.repository';
+import { RegionRepository } from '../region/region.repository';
+import { SubmitTransactionsRepository } from '../transactions/submit.repository';
+import { SubmitRepository } from '../submit/submit.repository';
+import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 
 @Injectable()
 export class ShopService {
@@ -23,6 +27,9 @@ export class ShopService {
     private reviewTransactionsRepository: ReviewTransactionsRepository,
     private reviewRepository: ReviewRepository,
     private reportRepository: ReportRepository,
+    private regionRepository: RegionRepository,
+    private submitTransactionsRepository: SubmitTransactionsRepository,
+    private submitRepository: SubmitRepository,
   ) {}
 
   async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
@@ -61,6 +68,33 @@ export class ShopService {
     }
 
     return shops;
+  }
+
+  async createNewShop(newShopData: SubmitNewShopDto, uuid: string): Promise<void> {
+    const region = await this.regionRepository.findRegionByLocation(newShopData.shop.location);
+    if (!region) throw new NotFoundException('check region location');
+    await this.submitTransactionsRepository.createNewShop(newShopData, region.id, uuid);
+  }
+
+  async validateAndUpdateOperatingHours(operatingData: SubmitShopOperatingHoursDto, uuid: string): Promise<void> {
+    // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크
+    const shop = await this.shopRepository.findOnlyShopByShopId(operatingData.shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
+    const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, operatingData.shopId, 1);
+    if (existData) throw new ConflictException('Exist Data');
+
+    await this.submitTransactionsRepository.createOperatingHours(operatingData, uuid);
+  }
+
+  async validateAndUpdateProducts(prodcutsData: SubmitNewProductsDto, uuid: string): Promise<void> {
+    const shop = await this.shopRepository.findOnlyShopByShopId(prodcutsData.shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
+    const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, prodcutsData.shopId, 2);
+    if (existData) throw new ConflictException('Exist Data');
+
+    await this.submitTransactionsRepository.createProducts(prodcutsData, uuid);
   }
 
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {

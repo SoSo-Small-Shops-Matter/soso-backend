@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
-import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from '../submit/dto/submit.dto';
+import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from '../shop/dto/submit.dto';
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { Shop } from '../../database/entity/shop.entity';
 import { OperatingHours } from '../../database/entity/operating-hours.entity';

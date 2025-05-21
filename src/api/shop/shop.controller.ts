@@ -7,6 +7,7 @@ import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { PostReviewDto, UpdateReviewDto } from './dto/review.dto';
 import { ShopReportDto } from './dto/shop-report.dto';
+import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 
 @Controller('shops')
 export class ShopController {
@@ -16,6 +17,11 @@ export class ShopController {
   @UseGuards(OptionalAuthGuard)
   async getShopWithin1Km(@Query() getShopWithin1KmDTO: GetShopWithin1KmDTO, @GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(getShopWithin1KmDTO, uuid));
+  }
+
+  @Post('/')
+  async submitNewShop(@Body() newShopData: SubmitNewShopDto, @GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.shopService.createNewShop(newShopData, uuid));
   }
 
   @Get('/search')
@@ -55,6 +61,16 @@ export class ShopController {
   @Post('/:shopId/reports')
   async shopReport(@GetUUID() uuid: string, @Body() shopReportDto: ShopReportDto) {
     return new SuccessResponseDTO(await this.shopService.reportShop(uuid, shopReportDto));
+  }
+
+  @Post('/:shopId/operating')
+  async submitShopOperatingHours(@Body() operatingData: SubmitShopOperatingHoursDto, @GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.shopService.validateAndUpdateOperatingHours(operatingData, uuid));
+  }
+
+  @Post('/:shopId/products')
+  async submitProducts(@Body() products: any, @GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.shopService.validateAndUpdateProducts(products, uuid));
   }
 
   @Patch('/:shopId/reviews/:reviewId')

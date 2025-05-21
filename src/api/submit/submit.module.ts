@@ -1,6 +1,4 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { SubmitController } from './submit.controller';
-import { SubmitService } from './submit.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubmitRepository } from './submit.repository';
 import { ShopModule } from '../shop/shop.module';
@@ -21,8 +19,7 @@ import { UserModule } from '../user/user.module';
     OperateModule,
     TransactionsModule,
   ],
-  controllers: [SubmitController],
-  providers: [SubmitService, SubmitRepository],
+  providers: [SubmitRepository],
   exports: [SubmitRepository],
 })
 export class SubmitModule {}
