@@ -24,7 +24,6 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { TransactionsModule } from './api/transactions/transactions.module';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
-
 @Module({
   imports: [
     ConfigModule.forRoot({

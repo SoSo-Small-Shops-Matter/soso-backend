@@ -25,7 +25,6 @@ export class UserService {
     private reviewRepository: ReviewRepository,
     private wishlistRepository: WishlistRepository,
     private submitRepository: SubmitRepository,
-    private imageRepository: ImageRepository,
     private recentSearchRepository: RecentSearchRepository,
     private deleteUserTransactionsRepository: DeleteUserTransactionsRepository,
   ) {}

@@ -1,28 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
-import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 import { Paging, ResponsePageNationDTO } from './dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
-import { ProductMapping } from '../../database/entity/product_mapping.entity';
-import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
+import { PostReviewDto, UpdateReviewDto } from './dto/review.dto';
 import { AwsService } from '../aws/aws.service';
 import { ReviewTransactionsRepository } from '../transactions/review.repository';
 import { ReviewRepository } from '../review/review.repository';
+import { ShopReportDto } from './dto/shop-report.dto';
+import { ReportRepository } from '../report/report.repository';
 
 @Injectable()
 export class ShopService {
   constructor(
     private shopRepository: ShopRepository,
     private wishlistRepository: WishlistRepository,
-    private regionRepository: RegionRepository,
     private awsService: AwsService,
     private recentSearchRepository: RecentSearchRepository,
     private reviewTransactionsRepository: ReviewTransactionsRepository,
     private reviewRepository: ReviewRepository,
+    private reportRepository: ReportRepository,
   ) {}
 
   async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
@@ -30,9 +30,9 @@ export class ShopService {
     const wishlistBoolean = isWishlist == 'true' ? true : false;
     const radius = 6371; // 지구 반경 (km)
     const distanceLimit = 1; // 거리 제한 (1km)
-    
+
     let shops = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
-    
+
     // shop_ 프리픽스 제거 + 필요한 필드만 추출
     shops = shops.map((shop) => ({
       id: shop.shop_id,
@@ -50,14 +50,14 @@ export class ShopService {
 
     if (wishlistBoolean && uuid) {
       const wishlistShops = await this.wishlistRepository.findWishlistShopsByUser(uuid);
-      const wishlistShopIds = wishlistShops.map(wishlist => wishlist.shop.id);
-      shops = shops.filter(shop => wishlistShopIds.includes(shop.id));
+      const wishlistShopIds = wishlistShops.map((wishlist) => wishlist.shop.id);
+      shops = shops.filter((shop) => wishlistShopIds.includes(shop.id));
     }
 
     if (productIds && productIds.length > 0) {
       const shopsWithProducts = await this.shopRepository.findShopsByProductIds(productIds);
-      const shopIdsWithProducts = shopsWithProducts.map(shop => shop.id);
-      shops = shops.filter(shop => shopIdsWithProducts.includes(shop.id));
+      const shopIdsWithProducts = shopsWithProducts.map((shop) => shop.id);
+      shops = shops.filter((shop) => shopIdsWithProducts.includes(shop.id));
     }
 
     return shops;
@@ -168,7 +168,13 @@ export class ShopService {
     await this.reviewTransactionsRepository.createReview(uuid, Number(shopId), content, imageUrls);
   }
 
-  async updateReview(uuid: string, reviewId: number, shopId: number, updateReviewDto: UpdateReviewDto, newFiles?: Express.Multer.File[]): Promise<void> {
+  async updateReview(
+    uuid: string,
+    reviewId: number,
+    shopId: number,
+    updateReviewDto: UpdateReviewDto,
+    newFiles?: Express.Multer.File[],
+  ): Promise<void> {
     const { content, deleteImages } = updateReviewDto;
 
     // 새 파일이 존재하면 업로드
@@ -180,5 +186,16 @@ export class ShopService {
 
   async deleteReviewByUUID(uuid: string, reviewId: number, shopId: number): Promise<void> {
     await this.reviewTransactionsRepository.deleteReview(uuid, reviewId);
+  }
+
+  async reportShop(uuid: string, shopReportDto: ShopReportDto): Promise<void> {
+    const { shopId, status, message } = shopReportDto;
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new NotFoundException('Not exist shop');
+
+    const existData = await this.reportRepository.findShopReport(uuid, shop.id);
+    if (existData) throw new ConflictException('Exist Report Shop');
+
+    await this.reportRepository.saveShopReport(uuid, shop.id, status, message);
   }
 }

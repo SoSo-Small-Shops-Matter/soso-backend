@@ -11,9 +11,20 @@ import { RegionModule } from '../region/region.module';
 import { RecentSearchModule } from '../recent-search/recent-search.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { AwsModule } from '../aws/aws.module';
+import { ReportModule } from '../report/report.module';
 
 @Module({
-  imports: [forwardRef(() => SubmitModule), TypeOrmModule.forFeature([Shop]), ReviewModule, WishlistModule, RegionModule, RecentSearchModule, TransactionsModule, AwsModule],
+  imports: [
+    forwardRef(() => SubmitModule),
+    TypeOrmModule.forFeature([Shop]),
+    ReviewModule,
+    ReportModule,
+    WishlistModule,
+    RegionModule,
+    RecentSearchModule,
+    TransactionsModule,
+    AwsModule,
+  ],
   controllers: [ShopController],
   providers: [ShopService, ShopRepository],
   exports: [ShopRepository],

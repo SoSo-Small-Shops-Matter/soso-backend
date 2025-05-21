@@ -9,10 +9,12 @@ import { RegionModule } from '../region/region.module';
 import { ProductModule } from '../product/product.module';
 import { OperateModule } from '../operate/operate.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     forwardRef(() => ShopModule),
+    forwardRef(() => UserModule),
     TypeOrmModule.forFeature([SubmitUserRecord]),
     RegionModule,
     ProductModule,

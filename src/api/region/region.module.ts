@@ -7,8 +7,8 @@ import { RegionService } from './region.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Region])],
+  controllers: [RegionController],
   providers: [RegionRepository, RegionService],
   exports: [RegionRepository],
-  controllers: [RegionController],
 })
 export class RegionModule {}

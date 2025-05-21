@@ -5,8 +5,8 @@ import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 import { GetUUID } from '../../common/deco/get-user.deco';
 import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dto';
-
+import { PostReviewDto, UpdateReviewDto } from './dto/review.dto';
+import { ShopReportDto } from './dto/shop-report.dto';
 
 @Controller('shops')
 export class ShopController {
@@ -52,6 +52,11 @@ export class ShopController {
     return new SuccessResponseDTO(await this.shopService.createReview(uuid, postReviewDto, files));
   }
 
+  @Post('/:shopId/reports')
+  async shopReport(@GetUUID() uuid: string, @Body() shopReportDto: ShopReportDto) {
+    return new SuccessResponseDTO(await this.shopService.reportShop(uuid, shopReportDto));
+  }
+
   @Patch('/:shopId/reviews/:reviewId')
   @UseInterceptors(
     FilesInterceptor('files', 10, {
@@ -62,7 +67,13 @@ export class ShopController {
       },
     }),
   )
-  async updateReview(@Param('reviewId') reviewId: number, @Param('shopId') shopId: number, @Body() updateReviewDto: UpdateReviewDto, @GetUUID() uuid: string, @UploadedFiles() newFiles?: Express.Multer.File[]) {
+  async updateReview(
+    @Param('reviewId') reviewId: number,
+    @Param('shopId') shopId: number,
+    @Body() updateReviewDto: UpdateReviewDto,
+    @GetUUID() uuid: string,
+    @UploadedFiles() newFiles?: Express.Multer.File[],
+  ) {
     return new SuccessResponseDTO(await this.shopService.updateReview(uuid, reviewId, shopId, updateReviewDto, newFiles));
   }
 
