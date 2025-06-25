@@ -47,7 +47,7 @@ export class UserService {
     return new ResponseUserProfileDTO(userProfile);
   }
 
-  async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, file: Express.Multer.File) {
+  async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, file?: Express.Multer.File) {
     const { nickName } = updateProfileDTO;
     if (nickName) {
       const existNickName = await this.userRepository.findUserByNickName(nickName);
