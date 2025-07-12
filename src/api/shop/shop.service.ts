@@ -8,8 +8,8 @@ import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
-import { User } from '../../database/entity/user.entity';
 import { ProductMapping } from '../../database/entity/product_mapping.entity';
+import { getLastSegment } from 'src/common/function/get-insta-id';
 
 @Injectable()
 export class ShopService {
@@ -91,6 +91,7 @@ export class ShopService {
     // 기존 shop 객체에서 "productMappings" 제거 후 "products" 추가
     const transformedShop = {
       ...shop,
+      instagramId: getLastSegment(shop.instagram),
       operatingHours,
       products, // 새로운 products 배열 추가
     };
