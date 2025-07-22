@@ -32,12 +32,11 @@ export class UserRepository {
       throw new InternalServerErrorException();
     }
   }
-  async createUser(uuid: string, photoUrl: string, nickName: string, email: string) {
+  async createUser(uuid: string, photoUrl: string, email: string) {
     try {
       return await this.userRepository.save({
         uuid,
         photoUrl,
-        nickName,
         email,
       });
     } catch (err) {

@@ -47,7 +47,7 @@ export class AuthService {
       const userData = userResponse.data;
       const existUser = await this.userRepository.findUserByUUID(userData.id);
       if (!existUser) {
-        await this.userRepository.createUser(userData.id, userData.picture, userData.name, userData.email);
+        await this.userRepository.createUser(userData.id, userData.picture, userData.email);
       }
 
       const role = userData.id === this.configService.get<string>('ADMIN_UUID') ? Role.Admin : Role.User;
