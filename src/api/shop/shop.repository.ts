@@ -13,7 +13,7 @@ export class ShopRepository extends Repository<Shop> {
     @InjectRepository(Shop)
     private shopRepository: Repository<Shop>,
     private readonly loggerService: LoggerService,
-    private dataSource: DataSource
+    private dataSource: DataSource,
   ) {
     super(Shop, dataSource.createEntityManager());
   }
@@ -78,7 +78,13 @@ export class ShopRepository extends Repository<Shop> {
     }
   }
 
-  async findShopsWithin1Km(lat: number, lng: number, distanceLimit: number, radius: number, sortByReviewCount = false) {
+  async findShopsWithin1Km(
+    lat: number,
+    lng: number,
+    distanceLimit: number,
+    radius: number,
+    sortByDistance = false, // 파라미터 이름 변경
+  ) {
     try {
       let query = this.shopRepository
         .createQueryBuilder('shop')
@@ -91,24 +97,21 @@ export class ShopRepository extends Repository<Shop> {
         ))`,
           'distance',
         )
-        .where('shop.type = :type', { type: 0 }) // 특정 타입 필터링
-        .having('distance < :distanceLimit', { distanceLimit }) // 거리 필터링
+        .where('shop.type = :type', { type: 0 })
+        .having('distance < :distanceLimit', { distanceLimit })
         .setParameters({ lat, lng });
 
-      if (sortByReviewCount) {
-        query = query
-          .leftJoin('review', 'review', 'review.shopId = shop.id') // 리뷰 테이블 조인 (필요할 때만)
-          .addSelect('COUNT(review.id)', 'reviewCount') // 리뷰 개수 추가
-          .groupBy('shop.id') // 그룹화
-          .orderBy('reviewCount', 'DESC'); // 리뷰 개수 기준 정렬
+      if (sortByDistance) {
+        query = query.orderBy('distance', 'ASC');
       }
 
-      return await query.getRawMany(); // getRawMany() 사용하여 깔끔한 데이터 가져오기
+      return await query.getRawMany();
     } catch (err) {
       this.loggerService.warn(`Shop/ findShopsWithin1Km Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
+
   async findShopsByProductIds(productIds: number[]) {
     return this.createQueryBuilder('shop')
       .innerJoin('shop.productMappings', 'productMapping')
