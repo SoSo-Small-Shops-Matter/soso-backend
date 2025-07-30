@@ -9,6 +9,12 @@ export class GoogleAuthLoginDTO {
   redirectUri: string;
 }
 
+export class AppleAuthLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  idToken: string;
+}
+
 export class RefreshTokenDTO {
   @IsNotEmpty()
   @IsString()

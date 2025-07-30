@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import * as qs from 'querystring';
+import * as appleSignin from 'apple-signin-auth';
 import { UserRepository } from '../user/user.repository';
 import axios from 'axios';
 import { LoggerService } from '../logger/logger.service';
-import { GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
+import { AppleAuthLoginDto, GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { Role } from '../../common/enum/role.enum';
 
@@ -64,6 +65,30 @@ export class AuthService {
     } catch (err) {
       this.loggerService.warn(`Auth/ GoogleAuthLogin Error: ${err}`);
       throw new InternalServerErrorException();
+    }
+  }
+
+  async appleAuthLogin(appleAuthLoginDTO: AppleAuthLoginDto) {
+    const payload = await this.validateAppleToken(appleAuthLoginDTO.idToken);
+
+    const appleId = payload.sub;
+    const email = payload.email;
+
+    return {
+      appleId,
+      email,
+    };
+  }
+
+  async validateAppleToken(idToken: string) {
+    try {
+      const payload = await appleSignin.verifyIdToken(idToken, {
+        audience: 'com.soso.sosoapp',
+      });
+      return payload;
+    } catch (err) {
+      this.loggerService.warn(`Auth/ GoogleAuthLogin Error: ${err}`);
+      throw new UnauthorizedException('Apple ID Token 검증 실패');
     }
   }
 
