@@ -7,7 +7,7 @@ import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { ImageRepository } from '../image/image.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
-import { ResponseUserProfileDTO } from './dto/user-response.dto';
+import { ResponseSubmitUserRecordDTO, ResponseUserProfileDTO } from './dto/user-response.dto';
 import { PagingDto, ResponsePageNationDTO } from './dto/paging.dto';
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { Review } from '../../database/entity/review.entity';
@@ -72,10 +72,11 @@ export class UserService {
   async findSubmitRecord(pageNation: PageNationDTO, uuid: string) {
     const { page, limit } = pageNation;
     const userSubmitsCount = await this.submitRepository.findUserSubmitUserRecord(uuid);
-    const pageNationResult = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
+    const pageNationResult: SubmitUserRecord[] = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
+    const mappedResult: ResponseSubmitUserRecordDTO[] = pageNationResult.map((record) => new ResponseSubmitUserRecordDTO(record));
     const totalPages = Math.ceil(userSubmitsCount / limit);
     const pageInfoDTO = new PagingDto(page, limit, userSubmitsCount, totalPages, page < totalPages);
-    return new ResponsePageNationDTO<SubmitUserRecord>(pageNationResult, pageInfoDTO);
+    return new ResponsePageNationDTO<ResponseSubmitUserRecordDTO>(mappedResult, pageInfoDTO);
   }
 
   async findUserReviews(reviewPageNation: ReviewPageNationDTO, uuid: string) {
