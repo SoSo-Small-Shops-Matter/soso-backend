@@ -4,7 +4,7 @@ import { ReviewService } from '../review/review.service';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
-import { GetSearchPageShopDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
+import { GetSearchPageShopDTO, GetShopByShopIdDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
 import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
@@ -26,9 +26,9 @@ export class ShopService {
     const wishlistBoolean = isWishlist == 'true' ? true : false;
     const radius = 6371; // 지구 반경 (km)
     const distanceLimit = 1; // 거리 제한 (1km)
-    
+
     let shops = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
-    
+
     // shop_ 프리픽스 제거 + 필요한 필드만 추출
     shops = shops.map((shop) => ({
       id: shop.shop_id,
@@ -40,19 +40,19 @@ export class ShopService {
       lng: shop.shop_lng,
       location: shop.shop_location,
       regionId: shop.shop_regionId,
-      distance: shop.distance
+      distance: shop.distance,
     }));
 
     if (wishlistBoolean && uuid) {
       const wishlistShops = await this.wishlistRepository.findWishlistShopsByUser(uuid);
-      const wishlistShopIds = wishlistShops.map(wishlist => wishlist.shop.id);
-      shops = shops.filter(shop => wishlistShopIds.includes(shop.id));
+      const wishlistShopIds = wishlistShops.map((wishlist) => wishlist.shop.id);
+      shops = shops.filter((shop) => wishlistShopIds.includes(shop.id));
     }
 
     if (productIds && productIds.length > 0) {
       const shopsWithProducts = await this.shopRepository.findShopsByProductIds(productIds);
-      const shopIdsWithProducts = shopsWithProducts.map(shop => shop.id);
-      shops = shops.filter(shop => shopIdsWithProducts.includes(shop.id));
+      const shopIdsWithProducts = shopsWithProducts.map((shop) => shop.id);
+      shops = shops.filter((shop) => shopIdsWithProducts.includes(shop.id));
     }
 
     return shops;
@@ -61,21 +61,21 @@ export class ShopService {
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
     const { keyword, page, limit, lat, lng } = getSearchPageShopDTO;
     const radius = 6371; // 지구 반경 (km)
-  
+
     const rawResults = await this.shopRepository.findShopsByKeyword(keyword, page, limit, lat, lng, radius);
-  
-    const mappedResults = rawResults.map(shop => ({
+
+    const mappedResults = rawResults.map((shop) => ({
       id: shop.shop_id,
       name: shop.shop_name,
       image: shop.shop_image,
       location: shop.shop_location,
-      distance: shop.distance
+      distance: shop.distance,
     }));
 
     const allShopsCount = await this.shopRepository.findAllShopsCountByKeyword(keyword);
     const totalPages = Math.ceil(allShopsCount / limit);
     const pageInfoDTO = new Paging(page, limit, allShopsCount, totalPages, page < totalPages);
-  
+
     return new ShopSearchPageNationResultDTO(mappedResults, pageInfoDTO);
   }
 
@@ -96,7 +96,9 @@ export class ShopService {
     }));
   }
 
-  async findShopByShopId(shopId: number, uuid: string) {
+  async findShopByShopId(getShopByShopIdDTO: GetShopByShopIdDTO, uuid: string) {
+    const { shopId } = getShopByShopIdDTO;
+
     const imageList = [];
     const shop = await this.shopRepository.findShopByShopId(shopId);
     if (!shop) {

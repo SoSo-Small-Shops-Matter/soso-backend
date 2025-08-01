@@ -10,7 +10,7 @@ export class GetShopWithin1KmDTO {
   @Type(() => Number)
   lat: number;
 
-  @ApiProperty({ description: '경도', example: 126.9780 })
+  @ApiProperty({ description: '경도', example: 126.978 })
   @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
@@ -42,7 +42,7 @@ export class GetSearchPageShopDTO {
   @Type(() => Number)
   lat: number;
 
-  @ApiProperty({ description: '경도', example: 126.9780 })
+  @ApiProperty({ description: '경도', example: 126.978 })
   @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
@@ -69,16 +69,16 @@ export class GetSearchPageShopDTO {
 export class Paging {
   @ApiProperty({ description: '현재 페이지', example: 1 })
   page: number;
-  
+
   @ApiProperty({ description: '페이지당 항목 수', example: 10 })
   limit: number;
-  
+
   @ApiProperty({ description: '전체 항목 수', example: 100 })
   totalElements: number;
-  
+
   @ApiProperty({ description: '전체 페이지 수', example: 10 })
   totalPages: number;
-  
+
   @ApiProperty({ description: '다음 페이지 존재 여부', example: true })
   nextPage: boolean;
 
@@ -94,7 +94,7 @@ export class Paging {
 export class ResponsePageNationDTO<T> {
   @ApiProperty({ description: '데이터 배열' })
   data: T[];
-  
+
   @ApiProperty({ description: '페이지 정보', type: Paging })
   pageInfo: Paging;
 
@@ -110,4 +110,12 @@ export class ShopSearchPageNationResultDTO extends ResponsePageNationDTO<ShopSea
 
   @ApiProperty({ type: Paging })
   pageInfo: Paging;
+}
+
+export class GetShopByShopIdDTO {
+  @ApiProperty({ description: '소품샵 Id', example: 132 })
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
+  shopId: number;
 }
