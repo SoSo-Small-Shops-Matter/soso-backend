@@ -4,7 +4,7 @@ import { ReviewService } from '../review/review.service';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
-import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
+import { GetSearchPageShopDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
 import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
@@ -40,8 +40,7 @@ export class ShopService {
       lng: shop.shop_lng,
       location: shop.shop_location,
       regionId: shop.shop_regionId,
-      distance: shop.distance,
-      ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}),
+      distance: shop.distance
     }));
 
     if (wishlistBoolean && uuid) {
@@ -60,12 +59,41 @@ export class ShopService {
   }
 
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
-    const { keyword, page, limit } = getSearchPageShopDTO;
-    const pageNationResult = await this.shopRepository.findShopsByKeyword(keyword, page, limit);
+    const { keyword, page, limit, lat, lng } = getSearchPageShopDTO;
+    const radius = 6371; // 지구 반경 (km)
+  
+    const rawResults = await this.shopRepository.findShopsByKeyword(keyword, page, limit, lat, lng, radius);
+  
+    const mappedResults = rawResults.map(shop => ({
+      id: shop.shop_id,
+      name: shop.shop_name,
+      image: shop.shop_image,
+      location: shop.shop_location,
+      distance: shop.distance
+    }));
+
     const allShopsCount = await this.shopRepository.findAllShopsCountByKeyword(keyword);
     const totalPages = Math.ceil(allShopsCount / limit);
     const pageInfoDTO = new Paging(page, limit, allShopsCount, totalPages, page < totalPages);
-    return new ResponsePageNationDTO<Shop>(pageNationResult, pageInfoDTO);
+  
+    return new ShopSearchPageNationResultDTO(mappedResults, pageInfoDTO);
+  }
+
+  async findAllShopRegion() {
+    const regionList = await this.regionRepository.findAllRegions();
+    return regionList.map((region) => ({
+      name: region.name,
+    }));
+  }
+
+  async findTemp() {
+    const shop = await this.shopRepository.findTemp();
+    return shop.map((shop) => ({
+      id: shop.id,
+      name: shop.name,
+      image: shop.image,
+      location: shop.location,
+    }));
   }
 
   async findShopByShopId(shopId: number, uuid: string) {
@@ -140,23 +168,5 @@ export class ShopService {
       wishlist,
       imageList,
     };
-  }
-
-  async findAllShopRegion() {
-    const regionList = await this.regionRepository.findAllRegions();
-    const result = regionList.map((region) => {
-      return region.name;
-    });
-    return result;
-  }
-
-  async findTemp() {
-    const shop = await this.shopRepository.findTemp();
-    return shop.map((shop) => ({
-      id: shop.id,
-      name: shop.name,
-      image: shop.image,
-      location: shop.location,
-    }));
   }
 }

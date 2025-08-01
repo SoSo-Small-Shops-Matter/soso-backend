@@ -1,6 +1,5 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
-import { swaggerDocs } from './index.swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
@@ -18,14 +17,8 @@ export function setupSwagger(app: INestApplication): void {
     .addServer('/v1/api') 
     .build();
 
-  // SwaggerModule.createDocument를 사용해 직접 병합
+  // SwaggerModule.createDocument를 사용해 자동 생성된 문서 생성
   const document = SwaggerModule.createDocument(app, config);
-
-  // SwaggerDocument 타입 유지하면서 paths를 병합하는 방식
-  (document as any).paths = {
-    ...document.paths,
-    ...swaggerDocs.paths,
-  };
 
   // admin 경로 제거
   if (document.paths) {
@@ -36,6 +29,6 @@ export function setupSwagger(app: INestApplication): void {
     });
   }
 
-  // ✅ SwaggerModule.setup에 올바른 타입의 document 전달
+  // SwaggerModule.setup에 병합된 document 전달
   SwaggerModule.setup('api-docs', app, document);
 }
