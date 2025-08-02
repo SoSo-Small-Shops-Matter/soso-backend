@@ -110,8 +110,8 @@ export class UserService {
   }
 
   async deleteRecentSearch(uuid: string, deleteRecentSearchDTO: DeleteRecentSearchDTO) {
-    const { shopName } = deleteRecentSearchDTO;
-    await this.recentSearchRepository.deleteRecentSearch(uuid, shopName);
+    const { recentSearchId } = deleteRecentSearchDTO;
+    await this.recentSearchRepository.deleteRecentSearch(uuid, recentSearchId);
   }
 
   async deleteAllRecentSearch(uuid: string) {

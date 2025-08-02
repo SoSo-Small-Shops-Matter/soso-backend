@@ -12,6 +12,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Param,
 } from '@nestjs/common';
 import { PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
 import { UserService } from './user.service';
@@ -99,9 +100,9 @@ export class UserController {
     return new SuccessResponseDTO(await this.userService.deleteAllRecentSearch(uuid));
   }
 
-  @Delete('/me/recent-searches/:recentSearchId') // 추후에 name이 아닌 id를 이용하여 삭제하는 방식으로 변경
+  @Delete('/me/recent-searches/:recentSearchId')
   @UseGuards(JwtAuthGuard)
-  async deleteRecentSearch(@GetUUID() uuid: string, @Body() deleteRecentSearchDTO: DeleteRecentSearchDTO) {
+  async deleteRecentSearch(@GetUUID() uuid: string, @Param() deleteRecentSearchDTO: DeleteRecentSearchDTO) {
     return new SuccessResponseDTO(await this.userService.deleteRecentSearch(uuid, deleteRecentSearchDTO));
   }
 }
