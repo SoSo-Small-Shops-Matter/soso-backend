@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Patch,
   UploadedFile,
@@ -10,14 +9,11 @@ import {
   UseInterceptors,
   Delete,
   Query,
-  ConflictException,
-  HttpCode,
-  HttpStatus,
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
 } from '@nestjs/common';
-import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
+import { PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
 import { UserService } from './user.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -37,15 +33,9 @@ export class UserController {
     return new SuccessResponseDTO(await this.userService.deleteUser(currentUUID, deleteType));
   }
 
-  @Get('/check-nickname')
+  @Get('/duplicate-check')
   async checkNickName(@Query('nickName') nickName: string) {
     return new SuccessResponseDTO(await this.userService.findUserNickName(nickName));
-  }
-
-  @Post('/me/nickname')
-  @UseGuards(JwtAuthGuard)
-  async setNickName(@Body() nickNameDTO: NickNameDTO, @GetUUID() uuid: string) {
-    return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid));
   }
 
   @Get('/me')
@@ -73,7 +63,7 @@ export class UserController {
     return new SuccessResponseDTO(await this.userService.updateUserProfile(updateProfileDTO, uuid, file));
   }
 
-  @Get('/me/submit')
+  @Get('/me/shop-submissions')
   @UseGuards(JwtAuthGuard)
   async getSubmitShop(@GetUUID() uuid: string, @Query() pageNation: PageNationDTO) {
     return new SuccessResponseDTO(await this.userService.findSubmitRecord(pageNation, uuid));
@@ -90,6 +80,7 @@ export class UserController {
   async getUserWishlist(@GetUUID() uuid: string, @Query() pageNation: WishlistPageNationDTO) {
     return new SuccessResponseDTO(await this.userService.getUserWishlist(pageNation, uuid));
   }
+
   @Post('/me/wishlist')
   @UseGuards(JwtAuthGuard)
   async addUserWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: SaveWishListDTO) {

@@ -4,9 +4,8 @@ import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
-import { ImageRepository } from '../image/image.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
-import { NickNameDTO, PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
+import { PageNationDTO, ReviewPageNationDTO, UpdateProfileDTO, WishlistPageNationDTO } from './dto/user.dto';
 import { ResponseUserProfileDTO } from './dto/user-response.dto';
 import { PagingDto, ResponsePageNationDTO } from './dto/paging.dto';
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
@@ -31,14 +30,6 @@ export class UserService {
 
   async findUserNickName(nickName: string): Promise<boolean> {
     return !!(await this.userRepository.findUserByNickName(nickName));
-  }
-
-  async findAndUpdateUserNickname(nickNameDTO: NickNameDTO, uuid: string): Promise<void> {
-    const { nickName } = nickNameDTO;
-    const existNickName = await this.userRepository.findUserByNickName(nickName);
-    if (existNickName) throw new ConflictException('Nickname already exists.');
-
-    await this.userRepository.updateNickName(uuid, nickName);
   }
 
   async getUserProfile(uuid: string): Promise<ResponseUserProfileDTO> {
