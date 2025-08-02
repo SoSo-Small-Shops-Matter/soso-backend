@@ -32,6 +32,16 @@ export class GetSearchPageShopDTO {
   @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
+  lat: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
+  lng: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
   limit: number;
 
   @IsNumber()
@@ -68,4 +78,17 @@ export class ResponsePageNationDTO<T> {
     this.data = data;
     this.pageInfo = pageInfo;
   }
+}
+
+export class ShopSearchResultItemDTO {
+  id: number;
+  name: string;
+  image: string;
+  location: string;
+  distance: number;
+}
+
+export class ShopSearchPageNationResultDTO extends ResponsePageNationDTO<ShopSearchResultItemDTO> {
+  data: ShopSearchResultItemDTO[];
+  pageInfo: Paging;
 }

@@ -372,6 +372,26 @@ export const shopSwaggerDocs = {
     description: '검색 페이지에서 사용자가 소품샵 이름 또는 도로명으로 검색할 때 사용',
     parameters: [
       {
+        name: 'lat',
+        in: 'query',
+        required: true,
+        description: '사용자의 위도 (latitude)',
+        schema: {
+          type: 'number',
+          example: 37.5665,
+        },
+      },
+      {
+        name: 'lng',
+        in: 'query',
+        required: true,
+        description: '사용자의 경도 (longitude)',
+        schema: {
+          type: 'number',
+          example: 126.978,
+        },
+      },
+      {
         name: 'keyword',
         in: 'query',
         required: true,
