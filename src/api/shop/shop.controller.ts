@@ -63,7 +63,7 @@ export class ShopController {
     return new SuccessResponseDTO(await this.shopService.reportShop(uuid, shopReportDto));
   }
 
-  @Post('/:shopId/operating')
+  @Post('/:shopId/operating-info')
   async submitShopOperatingHours(@Body() operatingData: SubmitShopOperatingHoursDto, @GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.shopService.validateAndUpdateOperatingHours(operatingData, uuid));
   }
