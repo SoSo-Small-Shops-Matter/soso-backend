@@ -20,6 +20,7 @@ export class SubmitRepository {
             uuid,
           },
         },
+        relations: ['shop'],
       });
     } catch (err) {
       this.loggerService.warn(`Submit/ cfindSubmitRecordById Error: ${err}`);
