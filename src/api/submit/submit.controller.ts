@@ -1,10 +1,13 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { SubmitService } from './submit.service';
 import { SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
 import { SuccessResponseDTO } from '../../common/response/response.dto';
 
+@ApiTags('Submit')
+@ApiBearerAuth('JWT-auth')
 @Controller('submit')
 @UseGuards(JwtAuthGuard)
 export class SubmitController {
@@ -25,6 +28,12 @@ export class SubmitController {
   @Post('/products')
   async submitProducts(@Body() products: any, @GetUUID() uuid: string) {
     const result = await this.submitService.validateAndUpdateProducts(products, uuid);
+    return new SuccessResponseDTO(result);
+  }
+
+  @Delete('/:submitId')
+  async deleteSubmitRecord(@Param('submitId') submitId: number, @GetUUID() uuid: string) {
+    const result = await this.submitService.deleteSubmitRecord(submitId, uuid);
     return new SuccessResponseDTO(result);
   }
 }

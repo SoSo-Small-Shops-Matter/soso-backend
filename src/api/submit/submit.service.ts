@@ -3,9 +3,8 @@ import { SubmitRepository } from './submit.repository';
 import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { ShopRepository } from '../shop/shop.repository';
 import { RegionRepository } from '../region/region.repository';
-import { ProductRepository } from '../product/product.repository';
-import { OperateRepository } from '../operate/operate.repository';
 import { SubmitTransactionsRepository } from '../transactions/submit.repository';
+import { SubmitType } from 'src/common/enum/role.enum';
 
 @Injectable()
 export class SubmitService {
@@ -41,5 +40,23 @@ export class SubmitService {
     if (existData) throw new ConflictException('Exist Data');
 
     await this.submitTransactionsRepository.createProducts(prodcutsData, uuid);
+  }
+
+  async deleteSubmitRecord(submitId: number, uuid: string): Promise<void> {
+    const submitRecord = await this.submitRepository.findSubmitRecordById(submitId, uuid);
+    
+    switch (submitRecord.type) {
+      case SubmitType.NewShop: // 최초 제보
+        await this.submitTransactionsRepository.deleteShopSubmission(submitRecord.shop.id);
+        break;
+      case SubmitType.NewOperating: // 운영 정보 수정
+        await this.submitTransactionsRepository.deleteOperatingHoursSubmission(submitId, submitRecord.operatingId);
+        break;
+      case SubmitType.NewProduct: // 판매 정보 수정
+        await this.submitTransactionsRepository.deleteProductSubmission(submitRecord.shop.id, uuid);
+        break;
+      default:
+        throw new NotFoundException('Invalid submit type');
+    }
   }
 }
