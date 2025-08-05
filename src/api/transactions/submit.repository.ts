@@ -84,12 +84,14 @@ export class SubmitTransactionsRepository {
     try {
       const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
       const operatingRepo = queryRunner.manager.getRepository(OperatingHours);
+      const { id, type, ...filteredOperatingHours } = operatingHours;
 
       const newOperatingHours = await operatingRepo.save({
         shop: { id: shopId },
         type: UsingType.Verifying,
-        ...operatingHours,
+        ...filteredOperatingHours,
       });
+
       await submitRepo.save({
         status: SubmitStatus.Pending,
         type: SubmitType.NewOperating,
