@@ -5,11 +5,12 @@ import { SuccessNoResultResponseDTO, SuccessResponseDTO } from '../../common/res
 import { DeleteRecentSearchDTO } from './dto/recent-search.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
-import { ApiBearerAuth, ApiExtraModels, ApiOkResponse, ApiOperation, getSchemaPath } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { RecentSearchDTO } from './dto/recent-search-response.dto';
 
-@Controller('recent-search')
+@ApiTags('Recent-Search')
 @ApiBearerAuth('JWT-auth')
+@Controller('recent-search')
 export class RecentSearchController {
   constructor(private readonly recentSearchService: RecentSearchService) {}
 

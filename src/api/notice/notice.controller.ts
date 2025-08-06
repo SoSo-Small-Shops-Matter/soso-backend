@@ -1,9 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 import { NoticeService } from './notice.service';
 import { SuccessResponseDTO } from '../../common/response/response.dto';
-import { ApiExtraModels, ApiOkResponse, ApiOperation, getSchemaPath } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { NoticeDTO } from './dto/notice-response.dto';
 
+@ApiTags('Notice')
 @Controller('notice')
 export class NoticeController {
   constructor(private readonly noticeService: NoticeService) {}

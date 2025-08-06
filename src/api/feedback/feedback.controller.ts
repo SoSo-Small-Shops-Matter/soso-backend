@@ -4,11 +4,12 @@ import { SaveFeedbackDTO } from './dto/feedback.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
 import { SuccessNoResultResponseDTO } from '../../common/response/response.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Feedback')
+@ApiBearerAuth('JWT-auth')
 @Controller('feedback')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth('JWT-auth')
 export class FeedbackController {
   constructor(private feedbackService: FeedbackService) {}
 

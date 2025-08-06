@@ -5,11 +5,12 @@ import { ShopReportDto } from './dto/shop-report.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
 import { SuccessNoResultResponseDTO, SuccessResponseDTO } from '../../common/response/response.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Report')
+@ApiBearerAuth('JWT-auth')
 @Controller('report')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth('JWT-auth')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 

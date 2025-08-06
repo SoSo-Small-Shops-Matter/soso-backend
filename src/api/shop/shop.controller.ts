@@ -13,6 +13,7 @@ export class ShopController {
   constructor(private shopService: ShopService) {}
 
   @Get('/')
+  @UseGuards(OptionalAuthGuard)
   @ApiOperation({
     summary: '1km 반경 내 소품샵 조회',
     description: '사용자 위치 기준 1km 반경 내의 소품샵들을 조회합니다. 거리순 또는 인기순으로 정렬할 수 있습니다.',
@@ -34,7 +35,6 @@ export class ShopController {
       ],
     },
   })
-  @UseGuards(OptionalAuthGuard)
   async getShopWithin1Km(@Query() getShopWithin1KmDTO: GetShopWithin1KmDTO, @GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(getShopWithin1KmDTO, uuid));
   }
@@ -99,8 +99,8 @@ export class ShopController {
     return new SuccessResponseDTO(await this.shopService.findTemp());
   }
 
-  @ApiBearerAuth('JWT-auth')
   @Get('/:shopId')
+  @UseGuards(OptionalAuthGuard)
   @ApiOperation({
     summary: '소품샵 상세 정보 조회',
     description: '특정 소품샵의 상세 정보를 조회합니다.',
@@ -119,7 +119,7 @@ export class ShopController {
       ],
     },
   })
-  @UseGuards(OptionalAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   async getShopByShopId(@Param() getShopByShopIdDTO: GetShopByShopIdDTO, @GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.shopService.findShopByShopId(getShopByShopIdDTO, uuid));
   }

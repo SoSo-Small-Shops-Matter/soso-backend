@@ -5,11 +5,12 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
 import { SuccessNoResultResponseDTO } from '../../common/response/response.dto';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Shop')
+@ApiBearerAuth('JWT-auth')
 @Controller('review')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth('JWT-auth')
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
