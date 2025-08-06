@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { SubmitRepository } from './submit.repository';
-import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
+import { DeleteSubmitRecordParamDto, SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { ShopRepository } from '../shop/shop.repository';
 import { RegionRepository } from '../region/region.repository';
 import { SubmitTransactionsRepository } from '../transactions/submit.repository';
@@ -42,9 +42,10 @@ export class SubmitService {
     await this.submitTransactionsRepository.createProducts(prodcutsData, uuid);
   }
 
-  async deleteSubmitRecord(submitId: number, uuid: string): Promise<void> {
+  async deleteSubmitRecord(deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, uuid: string): Promise<void> {
+    const { submitId } = deleteSubmitRecordParamDto;
     const submitRecord = await this.submitRepository.findSubmitRecordById(submitId, uuid);
-    
+
     switch (submitRecord.type) {
       case SubmitType.NewShop: // 최초 제보
         await this.submitTransactionsRepository.deleteShopSubmission(submitRecord.shop.id);
