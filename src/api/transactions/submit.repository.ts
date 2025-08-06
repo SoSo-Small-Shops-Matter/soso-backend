@@ -29,7 +29,7 @@ export class SubmitTransactionsRepository {
 
       const createShop = await shopRepo.save({
         ...shop,
-        type: SubmitType.NewShop,
+        type: 1,
         region: {
           id: regionId,
         },
@@ -154,7 +154,6 @@ export class SubmitTransactionsRepository {
     try {
       const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
       const operatingRepo = queryRunner.manager.getRepository(OperatingHours);
-
 
       await operatingRepo.delete({
         id: operatingId,
