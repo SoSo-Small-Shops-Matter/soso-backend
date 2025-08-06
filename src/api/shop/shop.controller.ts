@@ -1,5 +1,15 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiOkResponse, getSchemaPath, ApiExtraModels } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiOkResponse,
+  getSchemaPath,
+  ApiExtraModels,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { ShopService } from './shop.service';
 import { SuccessNoResultResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
 import { GetSearchPageShopDTO, ParamShopIdDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
@@ -8,6 +18,8 @@ import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 import { ShopDetailResponseDTO, ShopWithin1KmResponseItemDTO } from './dto/response.dto';
 import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { DeleteReviewDto, PostReviewDto, ShopIdAndReviewIdParamDTO, UpdateReviewDto } from './dto/review.dto';
 
 @ApiTags('Shops')
 @Controller('shops')
@@ -147,6 +159,77 @@ export class ShopController {
   })
   async submitProducts(@Param() paramShopIdDTO: ParamShopIdDTO, @Body() products: SubmitNewProductsDto, @GetUUID() uuid: string) {
     await this.shopService.validateAndUpdateProducts(paramShopIdDTO, products, uuid);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Post('/:shopId/reviews')
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      limits: { fileSize: 5 * 1024 * 1024 }, // 최대 5MB
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) cb(null, true);
+        else cb(new Error('Only images allowed!'), false);
+      },
+    }),
+  )
+  @ApiOperation({ summary: '리뷰 작성', description: '리뷰를 작성합니다.' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '리뷰 데이터 및 이미지 파일',
+    type: PostReviewDto,
+  })
+  @ApiOkResponse({
+    description: '리뷰 작성 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async postReview(
+    @Param() paramShopIdDTO: ParamShopIdDTO,
+    @Body() postReviewDto: PostReviewDto,
+    @GetUUID() uuid: string,
+    @UploadedFiles() files?: Express.Multer.File[],
+  ) {
+    await this.shopService.createReview(uuid, postReviewDto, paramShopIdDTO, files);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Patch('/:shopId/reviews/:reviewId')
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      limits: { fileSize: 5 * 1024 * 1024 }, // 최대 5MB
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) cb(null, true);
+        else cb(new Error('Only images allowed!'), false);
+      },
+    }),
+  )
+  @ApiOperation({ summary: '리뷰 수정', description: '리뷰를 수정합니다.' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '리뷰 데이터 및 이미지 파일',
+    type: UpdateReviewDto,
+  })
+  @ApiOkResponse({
+    description: '리뷰 수정 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async updateReview(
+    @Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO,
+    @Body() updateReviewDto: UpdateReviewDto,
+    @GetUUID() uuid: string,
+    @UploadedFiles() newFiles?: Express.Multer.File[],
+  ) {
+    await this.shopService.updateReview(uuid, updateReviewDto, shopIdAndReviewIdParamDTO, newFiles);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Delete('/:shopId/reviews/:reviewId')
+  @ApiOperation({ summary: '리뷰 삭제', description: '리뷰를 삭제합니다.' })
+  @ApiOkResponse({
+    description: '리뷰 삭제 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async deleteReview(@Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO, @GetUUID() uuid: string) {
+    await this.shopService.deleteReviewByUUID(uuid, shopIdAndReviewIdParamDTO);
     return new SuccessNoResultResponseDTO();
   }
 }

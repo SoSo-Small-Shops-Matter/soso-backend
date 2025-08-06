@@ -10,6 +10,8 @@ import { WishlistModule } from '../wishlist/wishlist.module';
 import { RegionModule } from '../region/region.module';
 import { RecentSearchModule } from '../recent-search/recent-search.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { AwsModule } from '../aws/aws.module';
+import { ImageModule } from '../image/image.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { TransactionsModule } from '../transactions/transactions.module';
     RegionModule,
     RecentSearchModule,
     TransactionsModule,
+    AwsModule,
+    ImageModule,
   ],
   controllers: [ShopController],
   providers: [ShopService, ShopRepository],
