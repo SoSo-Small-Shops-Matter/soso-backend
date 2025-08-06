@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -127,4 +127,10 @@ export class SaveWishListDTO {
   @IsNumber()
   @IsNotEmpty()
   shopId: number;
+}
+
+export class DeleteSubmitRecordParamDto {
+  @ApiProperty({ description: '제보 ID', example: 123 })
+  @Type(() => Number)
+  submitId: number;
 }

@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import {
   CheckNickNameDTO,
+  DeleteSubmitRecordParamDto,
   DeleteTypeDTO,
   DeleteUuidDTO,
   PageNationDTO,
@@ -186,6 +187,21 @@ export class UserController {
   })
   async getSubmitShop(@GetUUID() uuid: string, @Query() pageNation: PageNationDTO) {
     return new SuccessResponseDTO(await this.userService.findSubmitRecord(pageNation, uuid));
+  }
+
+  @Delete('/me/shop-submissions/:submitId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '제보한 데이터 제거',
+  })
+  @ApiOkResponse({
+    description: '제보한 데이터 제거 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async deleteSubmitRecord(@Param() deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, @GetUUID() uuid: string) {
+    await this.userService.deleteSubmitRecord(deleteSubmitRecordParamDto, uuid);
+    return new SuccessNoResultResponseDTO();
   }
 
   @Get('/me/reviews')

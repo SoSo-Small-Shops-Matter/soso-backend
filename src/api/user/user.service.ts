@@ -6,6 +6,7 @@ import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import {
   CheckNickNameDTO,
+  DeleteSubmitRecordParamDto,
   DeleteTypeDTO,
   DeleteUuidDTO,
   PageNationDTO,
@@ -21,6 +22,8 @@ import { DeleteUserTransactionsRepository } from '../transactions/delete-user.re
 import { RecentSearchDTO } from '../recent-search/dto/recent-search-response.dto';
 import { DeleteRecentSearchDTO } from '../recent-search/dto/recent-search.dto';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
+import { SubmitType } from '../../common/enum/role.enum';
+import { SubmitTransactionsRepository } from '../transactions/submit.repository';
 
 @Injectable()
 export class UserService {
@@ -32,6 +35,7 @@ export class UserService {
     private submitRepository: SubmitRepository,
     private recentSearchRepository: RecentSearchRepository,
     private deleteUserTransactionsRepository: DeleteUserTransactionsRepository,
+    private submitTransactionsRepository: SubmitTransactionsRepository,
   ) {}
 
   async findUserNickName(nickNameDTO: CheckNickNameDTO): Promise<boolean> {
@@ -124,5 +128,26 @@ export class UserService {
   async deleteRecentSearchById(uuid: string, deleteRecentSearchDTO: DeleteRecentSearchDTO) {
     const { recentSearchId } = deleteRecentSearchDTO;
     await this.recentSearchRepository.deleteRecentSearch(uuid, recentSearchId);
+  }
+
+  async deleteSubmitRecord(deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, uuid: string): Promise<void> {
+    const { submitId } = deleteSubmitRecordParamDto;
+    const submitRecord = await this.submitRepository.findSubmitRecordById(submitId, uuid);
+
+    if (!submitRecord) throw new NotFoundException();
+
+    switch (submitRecord.type) {
+      case SubmitType.NewShop: // 최초 제보
+        await this.submitTransactionsRepository.deleteShopSubmission(submitRecord.shop.id);
+        break;
+      case SubmitType.NewOperating: // 운영 정보 수정
+        await this.submitTransactionsRepository.deleteOperatingHoursSubmission(submitId, submitRecord.operatingId);
+        break;
+      case SubmitType.NewProduct: // 판매 정보 수정
+        await this.submitTransactionsRepository.deleteProductSubmission(submitRecord.shop.id, uuid);
+        break;
+      default:
+        throw new NotFoundException('Invalid submit type');
+    }
   }
 }

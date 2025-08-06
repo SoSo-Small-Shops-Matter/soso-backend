@@ -111,7 +111,7 @@ export class ShopSearchPageNationResultDTO extends ResponsePageNationDTO<ShopSea
   pageInfo: Paging;
 }
 
-export class GetShopByShopIdDTO {
+export class ParamShopIdDTO {
   @ApiProperty({ description: '소품샵 Id', example: 132 })
   @IsNumber()
   @IsNotEmpty()

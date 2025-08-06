@@ -9,9 +9,18 @@ import { SubmitModule } from '../submit/submit.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
 import { RegionModule } from '../region/region.module';
 import { RecentSearchModule } from '../recent-search/recent-search.module';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
-  imports: [forwardRef(() => SubmitModule), TypeOrmModule.forFeature([Shop]), ReviewModule, WishlistModule, RegionModule, RecentSearchModule],
+  imports: [
+    forwardRef(() => SubmitModule),
+    TypeOrmModule.forFeature([Shop]),
+    ReviewModule,
+    WishlistModule,
+    RegionModule,
+    RecentSearchModule,
+    TransactionsModule,
+  ],
   controllers: [ShopController],
   providers: [ShopService, ShopRepository],
   exports: [ShopRepository],

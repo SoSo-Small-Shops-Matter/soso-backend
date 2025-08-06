@@ -1,10 +1,11 @@
-import { InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Region } from 'src/database/entity/region.entity';
 
 import { Repository } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
 
+@Injectable()
 export class RegionRepository {
   constructor(
     @InjectRepository(Region)

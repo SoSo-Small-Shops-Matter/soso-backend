@@ -1,12 +1,12 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
-import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from '../submit/dto/submit.dto';
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { Shop } from '../../database/entity/shop.entity';
 import { OperatingHours } from '../../database/entity/operating-hours.entity';
 import { ProductMapping } from '../../database/entity/product_mapping.entity';
 import { SubmitStatus, SubmitType, UsingType } from '../../common/enum/role.enum';
+import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from '../shop/dto/submit.dto';
 
 @Injectable()
 export class SubmitTransactionsRepository {
@@ -155,7 +155,6 @@ export class SubmitTransactionsRepository {
       const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
       const operatingRepo = queryRunner.manager.getRepository(OperatingHours);
 
-
       await operatingRepo.delete({
         id: operatingId,
         type: UsingType.Verifying,
@@ -173,8 +172,8 @@ export class SubmitTransactionsRepository {
     }
   }
 
-  async createProducts(prodcutsData: SubmitNewProductsDto, uuid: string) {
-    const { shopId, products } = prodcutsData;
+  async createProducts(shopId: number, prodcutsData: SubmitNewProductsDto, uuid: string) {
+    const { products } = prodcutsData;
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

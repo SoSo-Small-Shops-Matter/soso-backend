@@ -1,14 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ShopRepository } from './shop.repository';
 import { ReviewService } from '../review/review.service';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
-import { GetSearchPageShopDTO, GetShopByShopIdDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
-import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
-import { Shop } from '../../database/entity/shop.entity';
+import { GetSearchPageShopDTO, ParamShopIdDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
+import { Paging } from '../shop/dto/paging.dto';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
 import { getLastSegment } from 'src/common/function/get-insta-id';
+import { SubmitTransactionsRepository } from '../transactions/submit.repository';
+import { SubmitRepository } from '../submit/submit.repository';
+import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 
 @Injectable()
 export class ShopService {
@@ -18,6 +20,8 @@ export class ShopService {
     private wishlistRepository: WishlistRepository,
     private regionRepository: RegionRepository,
     private recentSearchRepository: RecentSearchRepository,
+    private submitTransactionsRepository: SubmitTransactionsRepository,
+    private submitRepository: SubmitRepository,
   ) {}
 
   async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
@@ -57,6 +61,12 @@ export class ShopService {
     return shops;
   }
 
+  async createNewShop(newShopData: SubmitNewShopDto, uuid: string): Promise<void> {
+    const region = await this.regionRepository.findRegionByLocation(newShopData.shop.location);
+    if (!region) throw new NotFoundException('check region location');
+    await this.submitTransactionsRepository.createNewShop(newShopData, region.id, uuid);
+  }
+
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
     const { keyword, page, limit, lat, lng } = getSearchPageShopDTO;
     const radius = 6371; // 지구 반경 (km)
@@ -78,13 +88,6 @@ export class ShopService {
     return new ShopSearchPageNationResultDTO(mappedResults, pageInfoDTO);
   }
 
-  async findAllShopRegion() {
-    const regionList = await this.regionRepository.findAllRegions();
-    return regionList.map((region) => ({
-      name: region.name,
-    }));
-  }
-
   async findTemp() {
     const shop = await this.shopRepository.findTemp();
     return shop.map((shop) => ({
@@ -95,8 +98,8 @@ export class ShopService {
     }));
   }
 
-  async findShopByShopId(getShopByShopIdDTO: GetShopByShopIdDTO, uuid: string) {
-    const { shopId } = getShopByShopIdDTO;
+  async findShopByShopId(paramShopIdDTO: ParamShopIdDTO, uuid: string) {
+    const { shopId } = paramShopIdDTO;
 
     const imageList = [];
     const shop = await this.shopRepository.findShopByShopId(shopId);
@@ -169,5 +172,29 @@ export class ShopService {
       wishlist,
       imageList,
     };
+  }
+
+  async validateAndUpdateOperatingHours(paramShopIdDTO: ParamShopIdDTO, operatingData: SubmitShopOperatingHoursDto, uuid: string): Promise<void> {
+    const { shopId } = paramShopIdDTO;
+    // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
+    const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 1);
+    if (existData) throw new ConflictException('Exist Data');
+
+    await this.submitTransactionsRepository.createOperatingHours(operatingData, uuid);
+  }
+
+  async validateAndUpdateProducts(paramShopIdDTO: ParamShopIdDTO, prodcutsData: SubmitNewProductsDto, uuid: string): Promise<void> {
+    const { shopId } = paramShopIdDTO;
+
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
+    const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 2);
+    if (existData) throw new ConflictException('Exist Data');
+
+    await this.submitTransactionsRepository.createProducts(shopId, prodcutsData, uuid);
   }
 }

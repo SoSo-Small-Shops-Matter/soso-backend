@@ -112,9 +112,3 @@ export class SubmitNewProductsDto {
   @IsNotEmpty()
   products?: Products[];
 }
-
-export class DeleteSubmitRecordParamDto {
-  @ApiProperty({ description: '제보 ID', example: 123 })
-  @IsInt()
-  submitId: number;
-}
