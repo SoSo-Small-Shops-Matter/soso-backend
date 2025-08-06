@@ -17,14 +17,7 @@ export class ShopRepository extends Repository<Shop> {
     super(Shop, dataSource.createEntityManager());
   }
 
-  async findShopsByKeyword(
-    keyword: string,
-    page: number,
-    limit: number,
-    lat: number,
-    lng: number,
-    radius: number = 6371
-  ) {
+  async findShopsByKeyword(keyword: string, page: number, limit: number, lat: number, lng: number, radius: number = 6371) {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
@@ -34,7 +27,7 @@ export class ShopRepository extends Repository<Shop> {
             cos(radians(shop.lng) - radians(:lng)) +
             sin(radians(:lat)) * sin(radians(shop.lat))
           ))`,
-          'distance'
+          'distance',
         )
         .where('(shop.name LIKE :keyword OR shop.location LIKE :keyword)', { keyword: `%${keyword}%` })
         .andWhere('shop.type = :type', { type: 0 })
@@ -131,39 +124,6 @@ export class ShopRepository extends Repository<Shop> {
       .innerJoin('shop.productMappings', 'productMapping')
       .where('productMapping.product.id IN (:...productIds)', { productIds })
       .getMany();
-  }
-
-  async createNewShop(shop, regionId: number) {
-    try {
-      return await this.shopRepository.save({
-        ...shop,
-        type: 1,
-        region: {
-          id: regionId,
-        },
-      });
-    } catch (err) {
-      this.loggerService.warn(`Shop/ createNewShop Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async updateToUsingShop(shopId: number) {
-    try {
-      return await this.shopRepository.update({ id: shopId }, { type: 0 });
-    } catch (err) {
-      this.loggerService.warn(`Shop/ updateToUsingShop Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async deleteShop(shopId: number) {
-    try {
-      return await this.shopRepository.delete({ id: shopId });
-    } catch (err) {
-      this.loggerService.warn(`Shop/ deleteShop Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
   }
 
   async findTemp() {

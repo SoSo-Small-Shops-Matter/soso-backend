@@ -18,38 +18,10 @@ export class ReviewRepository {
       throw new InternalServerErrorException();
     }
   }
-  async createReview(uuid, shopId, content) {
-    try {
-      return await this.reviewRepository.create({
-        user: {
-          uuid,
-        },
-        shop: {
-          id: shopId,
-        },
-        content,
-      });
-    } catch (err) {
-      this.loggerService.warn(`Review/ createReview Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async saveReview(review) {
-    try {
-      return await this.reviewRepository.save(review);
-    } catch (err) {
-      this.loggerService.warn(`Review/ saveReview Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
 
   async findUserReviewByUUID(uuid: string) {
     try {
-      return await this.reviewRepository
-        .createQueryBuilder('review')
-        .where('review.user.uuid = :uuid', { uuid })
-        .getCount();
+      return await this.reviewRepository.createQueryBuilder('review').where('review.user.uuid = :uuid', { uuid }).getCount();
     } catch (err) {
       this.loggerService.warn(`Review/ findUserReviewByUUID Error: ${err}`);
       throw new InternalServerErrorException();
@@ -69,29 +41,6 @@ export class ReviewRepository {
         .getMany();
     } catch (err) {
       this.loggerService.warn(`Review/ findUserReviewByPageNation Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-  async findReviewByReviewId(uuid, reviewId) {
-    try {
-      return await this.reviewRepository.findOne({
-        where: {
-          id: reviewId,
-          user: { uuid },
-        },
-        relations: ['images'],
-      });
-    } catch (err) {
-      this.loggerService.warn(`Review/ findReviewByReviewId Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async removeReview(review: Review) {
-    try {
-      return await this.reviewRepository.remove(review);
-    } catch (err) {
-      this.loggerService.warn(`Review/ removeReview Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

@@ -27,60 +27,6 @@ export class SubmitRepository {
       throw new InternalServerErrorException();
     }
   }
-  async createSubmitUserRecordByNewShop(uuid, shopId) {
-    try {
-      return await this.submitUserRecordRepository.save({
-        status: 0,
-        type: 0,
-        user: {
-          uuid,
-        },
-        shop: {
-          id: shopId,
-        },
-      });
-    } catch (err) {
-      this.loggerService.warn(`Submit/ createSubmitUserRecordByNewShop Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async createSubmitUserRecordByUpdateOperatingInfo(uuid, shopId, newOperatingId: number) {
-    try {
-      return await this.submitUserRecordRepository.save({
-        status: 0,
-        type: 1,
-        user: {
-          uuid,
-        },
-        shop: {
-          id: shopId,
-        },
-        operatingId: newOperatingId,
-      });
-    } catch (err) {
-      this.loggerService.warn(`Submit/ createSubmitUserRecordByUpdateOperatingInfo Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async createSubmitUserRecordByUpdateProducts(uuid: string, shopId: number) {
-    try {
-      return await this.submitUserRecordRepository.save({
-        status: 0,
-        type: 2,
-        user: {
-          uuid,
-        },
-        shop: {
-          id: shopId,
-        },
-      });
-    } catch (err) {
-      this.loggerService.warn(`Submit/ createSubmitUserRecordByUpdateProducts Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
 
   async findUserSubmitRecordByType(uuid: string, shopId: number, type: number): Promise<SubmitUserRecord> {
     try {
@@ -169,33 +115,6 @@ export class SubmitRepository {
         .getMany();
     } catch (err) {
       this.loggerService.warn(`Submit/ findAllSubmitProducts Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async findSubmitBySubmitIdAndType(submitId: number, type: number, userUUID: string) {
-    try {
-      return await this.submitUserRecordRepository.findOne({
-        where: {
-          id: submitId,
-          status: 0,
-          type: type,
-          user: {
-            uuid: userUUID,
-          },
-        },
-      });
-    } catch (err) {
-      this.loggerService.warn(`Submit/ findSubmitProductsBySubmitId Error: ${err}`);
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async saveSubmit(submit) {
-    try {
-      return await this.submitUserRecordRepository.save(submit);
-    } catch (err) {
-      this.loggerService.warn(`Submit/ saveSubmit Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }

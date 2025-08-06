@@ -11,7 +11,6 @@ import { RegionModule } from '../region/region.module';
 import { RecentSearchModule } from '../recent-search/recent-search.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { AwsModule } from '../aws/aws.module';
-import { ImageModule } from '../image/image.module';
 import { ReportModule } from '../report/report.module';
 
 @Module({
@@ -24,7 +23,6 @@ import { ReportModule } from '../report/report.module';
     RecentSearchModule,
     TransactionsModule,
     AwsModule,
-    ImageModule,
     ReportModule,
   ],
   controllers: [ShopController],

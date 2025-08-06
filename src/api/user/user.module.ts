@@ -8,7 +8,6 @@ import { AwsModule } from '../aws/aws.module';
 import { ReviewModule } from '../review/review.module';
 import { WishlistModule } from '../wishlist/wishlist.module';
 import { SubmitModule } from '../submit/submit.module';
-import { ImageModule } from '../image/image.module';
 import { RecentSearchModule } from '../recent-search/recent-search.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 
@@ -19,7 +18,6 @@ import { TransactionsModule } from '../transactions/transactions.module';
     AwsModule,
     ReviewModule,
     WishlistModule,
-    ImageModule,
     RecentSearchModule,
     TransactionsModule,
   ],

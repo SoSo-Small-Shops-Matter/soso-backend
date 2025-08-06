@@ -8,15 +8,12 @@ import { WishlistModule } from './api/wishlist/wishlist.module';
 import { ReviewModule } from './api/review/review.module';
 import { AwsModule } from './api/aws/aws.module';
 import { AppController } from './app.controller';
-import { ProductModule } from './api/product/product.module';
-import { OperateModule } from './api/operate/operate.module';
 import { RegionModule } from './api/region/region.module';
 import { NoticeModule } from './api/notice/notice.module';
 import { FeedbackModule } from './api/feedback/feedback.module';
 import { RecentSearchModule } from './api/recent-search/recent-search.module';
 import { LoggerModule } from './api/logger/logger.module';
 import { ReportModule } from './api/report/report.module';
-import { ImageModule } from './api/image/image.module';
 import { AdminModule } from './api/admin/admin.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from './api/jwt/jwt.module';
@@ -61,15 +58,12 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
     WishlistModule,
     ReviewModule,
     AwsModule,
-    ProductModule,
-    OperateModule,
     RegionModule,
     NoticeModule,
     FeedbackModule,
     RecentSearchModule,
     LoggerModule,
     ReportModule,
-    ImageModule,
     AdminModule,
     JwtModule,
     TransactionsModule,

@@ -8,9 +8,6 @@ import {
   AllowSubmitNewShop,
   RejectSubmitNewShop,
 } from './dto/admin.dto';
-import { ProductRepository } from '../product/product.repository';
-import { OperateRepository } from '../operate/operate.repository';
-import { ShopRepository } from '../shop/shop.repository';
 import { SubmitNewShopResponseDTO, SubmitOperatingsResponseDTO, SubmitProductsResponseDTO } from './dto/admin-response';
 import { AdminTransactionsRepository } from '../transactions/admin.repository';
 
@@ -18,9 +15,6 @@ import { AdminTransactionsRepository } from '../transactions/admin.repository';
 export class AdminService {
   constructor(
     private submitRepository: SubmitRepository,
-    private productRepository: ProductRepository,
-    private operateRepository: OperateRepository,
-    private shopRepository: ShopRepository,
     private adminTransactionsRepository: AdminTransactionsRepository,
   ) {}
 
