@@ -7,7 +7,7 @@ import { GetUUID } from '../../common/deco/get-user.deco';
 import { SuccessNoResultResponseDTO } from '../../common/response/response.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Shop')
+@ApiTags('Review')
 @ApiBearerAuth('JWT-auth')
 @Controller('review')
 @UseGuards(JwtAuthGuard)
