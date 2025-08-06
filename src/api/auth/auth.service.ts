@@ -5,7 +5,7 @@ import * as appleSignin from 'apple-signin-auth';
 import { UserRepository } from '../user/user.repository';
 import axios from 'axios';
 import { LoggerService } from '../logger/logger.service';
-import { AppleAuthLoginDto, GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
+import { AppleAuthLoginDto, AuthTokenResponseDTO, GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { Role } from '../../common/enum/role.enum';
 import { AuthProvider } from '../../common/enum/auth.enum';
@@ -62,7 +62,7 @@ export class AuthService {
         expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
       });
 
-      return { accessToken, refreshToken };
+      return new AuthTokenResponseDTO(accessToken, refreshToken);
     } catch (err) {
       this.loggerService.warn(`Auth/ GoogleAuthLogin Error: ${err}`);
       throw new InternalServerErrorException();
@@ -90,7 +90,7 @@ export class AuthService {
       expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
     });
 
-    return { accessToken, refreshToken };
+    return new AuthTokenResponseDTO(accessToken, refreshToken);
   }
 
   async validateAppleToken(idToken: string) {
@@ -122,7 +122,7 @@ export class AuthService {
         expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
       });
 
-      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      return new AuthTokenResponseDTO(newAccessToken, newRefreshToken);
     } catch (err) {
       this.loggerService.warn(`Auth/ Refresh Error: ${err}`);
       throw new UnauthorizedException('Invalid refresh token');
@@ -142,6 +142,6 @@ export class AuthService {
       { expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN') },
     );
 
-    return { accessToken, refreshToken };
+    return new AuthTokenResponseDTO(accessToken, refreshToken);
   }
 }
