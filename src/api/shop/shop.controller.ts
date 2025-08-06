@@ -196,43 +196,6 @@ export class ShopController {
     return new SuccessNoResultResponseDTO();
   }
 
-  @Post('/:shopId/shop')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({
-    summary: '소품샵 신고',
-    description: 'status => 0: 더 이상 운영하지 않은 가게 / 1: 위치가 잘못됨 ',
-  })
-  @ApiOkResponse({
-    description: '소품샵 신고 성공',
-    type: SuccessNoResultResponseDTO,
-  })
-  async shopReport(@Param() paramShopIdDTO: ParamShopIdDTO, @GetUUID() uuid: string, @Body() shopReportDto: ShopReportDto) {
-    await this.shopService.reportShop(uuid, shopReportDto, paramShopIdDTO);
-    return new SuccessNoResultResponseDTO();
-  }
-
-  @Post('/:shopId/reviews/:reviewId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({
-    summary: '리뷰 신고',
-    description:
-      'status => 0: 관련 없는 후기 / 1: 음란, 욕설 등 부적절한 내용 / 2: 개인정보 노출 / 3: 홍보 및 광고 후기 / 4: 같은 내용 도배 / 5: 기타 ',
-  })
-  @ApiOkResponse({
-    description: '리뷰 신고 성공',
-    type: SuccessNoResultResponseDTO,
-  })
-  async reviewReport(
-    @Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO,
-    @GetUUID() uuid: string,
-    @Body() reviewReportDto: ReviewReportDto,
-  ) {
-    await this.shopService.reportReview(uuid, reviewReportDto, shopIdAndReviewIdParamDTO);
-    return new SuccessNoResultResponseDTO();
-  }
-
   @Patch('/:shopId/reviews/:reviewId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
@@ -275,6 +238,43 @@ export class ShopController {
   })
   async deleteReview(@Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO, @GetUUID() uuid: string) {
     await this.shopService.deleteReviewByUUID(uuid, shopIdAndReviewIdParamDTO);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Post('/:shopId/shop/report')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '소품샵 신고',
+    description: 'status => 0: 더 이상 운영하지 않은 가게 / 1: 위치가 잘못됨 ',
+  })
+  @ApiOkResponse({
+    description: '소품샵 신고 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async shopReport(@Param() paramShopIdDTO: ParamShopIdDTO, @GetUUID() uuid: string, @Body() shopReportDto: ShopReportDto) {
+    await this.shopService.reportShop(uuid, shopReportDto, paramShopIdDTO);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Post('/:shopId/reviews/:reviewId/report')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '리뷰 신고',
+    description:
+      'status => 0: 관련 없는 후기 / 1: 음란, 욕설 등 부적절한 내용 / 2: 개인정보 노출 / 3: 홍보 및 광고 후기 / 4: 같은 내용 도배 / 5: 기타 ',
+  })
+  @ApiOkResponse({
+    description: '리뷰 신고 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async reviewReport(
+    @Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO,
+    @GetUUID() uuid: string,
+    @Body() reviewReportDto: ReviewReportDto,
+  ) {
+    await this.shopService.reportReview(uuid, reviewReportDto, shopIdAndReviewIdParamDTO);
     return new SuccessNoResultResponseDTO();
   }
 }
