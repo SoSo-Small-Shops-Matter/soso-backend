@@ -1,10 +1,11 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReviewReport } from '../../database/entity/review-report.entity';
 import { Repository } from 'typeorm';
-import { InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ShopReport } from '../../database/entity/shop-report.entity';
 import { LoggerService } from '../logger/logger.service';
 
+@Injectable()
 export class ReportRepository {
   constructor(
     @InjectRepository(ReviewReport)

@@ -1,15 +1,7 @@
-import { IsNotEmpty, IsNumber, MaxLength, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ShopReportDto {
-  @ApiProperty({
-    description: '신고할 소품샵 ID',
-    example: 42,
-  })
-  @IsNotEmpty()
-  @IsNumber()
-  shopId: number;
-
   @ApiProperty({
     description: '신고 상태 코드 (예: 0: 잘못된 정보, 1: 부적절한 내용 등)',
     example: 0,

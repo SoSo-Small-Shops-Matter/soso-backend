@@ -15,6 +15,9 @@ import { ReviewRepository } from '../review/review.repository';
 import { AwsService } from '../aws/aws.service';
 import { ReviewTransactionsRepository } from '../transactions/review.repository';
 import { ReviewService } from '../review/review.service';
+import { ReportRepository } from '../report/report.repository';
+import { ShopReportDto } from './dto/shop-report.dto';
+import { ReviewReportDto } from './dto/review-report.dto';
 
 @Injectable()
 export class ShopService {
@@ -29,6 +32,7 @@ export class ShopService {
     private reviewRepository: ReviewRepository,
     private awsService: AwsService,
     private reviewTransactionsRepository: ReviewTransactionsRepository,
+    private reportRepository: ReportRepository,
   ) {}
 
   async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
@@ -236,13 +240,28 @@ export class ShopService {
     await this.reviewTransactionsRepository.deleteReview(uuid, reviewId);
   }
 
-  async findShopReviewsByShopId(shopId: number, uuid: string) {
-    const reviews = await this.reviewRepository.findShopReviewsByShopId(shopId);
-    const userReviews = reviews.filter((review) => review.user?.uuid === uuid);
-    const otherReviews = reviews.filter((review) => review.user == null || review.user?.uuid != uuid);
-    return {
-      userReviews,
-      otherReviews,
-    };
+  async reportReview(uuid: string, reviewReportDto: ReviewReportDto, shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO): Promise<void> {
+    const { status, message } = reviewReportDto;
+    const { reviewId } = shopIdAndReviewIdParamDTO;
+
+    const review = await this.reviewRepository.findOneReviewById(reviewId);
+    if (!review) throw new NotFoundException('Not exist review');
+
+    const existData = await this.reportRepository.findReviewReport(uuid, review.id);
+    if (existData) throw new ConflictException('Exist Report Review');
+
+    await this.reportRepository.saveReviewReport(uuid, review.id, status, message);
+  }
+
+  async reportShop(uuid: string, shopReportDto: ShopReportDto, paramShopIdDTO: ParamShopIdDTO): Promise<void> {
+    const { status, message } = shopReportDto;
+    const { shopId } = paramShopIdDTO;
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new NotFoundException('Not exist shop');
+
+    const existData = await this.reportRepository.findShopReport(uuid, shop.id);
+    if (existData) throw new ConflictException('Exist Report Shop');
+
+    await this.reportRepository.saveShopReport(uuid, shop.id, status, message);
   }
 }

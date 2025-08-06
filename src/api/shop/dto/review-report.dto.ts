@@ -3,14 +3,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ReviewReportDto {
   @ApiProperty({
-    description: '신고할 리뷰 ID',
-    example: 123,
-  })
-  @IsNotEmpty()
-  @IsNumber()
-  reviewId: number;
-
-  @ApiProperty({
     description: '신고 상태',
     example: 0,
   })
