@@ -46,7 +46,7 @@ export class ShopRepository extends Repository<Shop> {
       this.loggerService.warn(`Shop/ findShopsByKeyword Error: ${err}`);
       throw new InternalServerErrorException();
     }
-  }  
+  }
 
   async findAllShopsCountByKeyword(keyword: string) {
     try {

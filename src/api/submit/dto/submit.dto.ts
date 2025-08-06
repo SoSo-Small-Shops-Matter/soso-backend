@@ -1,4 +1,52 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export class OperatingHoursDto {
+  @IsOptional()
+  id?: number;
+
+  @IsOptional()
+  type?: number;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  startTime: string;
+
+  @IsOptional()
+  @IsString()
+  endTime: string;
+
+  @IsOptional()
+  @IsBoolean()
+  monday?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  tuesday?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  wednesday?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  thursday?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  friday?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  saturday?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  sunday?: boolean;
+}
 
 export class SubmitShopOperatingHoursDto {
   @IsInt()
@@ -6,14 +54,14 @@ export class SubmitShopOperatingHoursDto {
   shopId: number;
 
   @IsNotEmpty()
-  operatingHours: OperatingHours;
+  operatingHours: OperatingHoursDto;
 }
 
 export class SubmitNewShopDto {
   @IsNotEmpty()
   shop: SubmitShop;
 
-  operatingHours?: OperatingHours;
+  operatingHours?: OperatingHoursDto;
 
   products?: Products[];
 }
@@ -24,21 +72,6 @@ export class SubmitNewProductsDto {
 
   @IsNotEmpty()
   products?: Products[];
-}
-
-export interface OperatingHours {
-  phoneNumber?: string;
-
-  startTime: string;
-  endTime: string;
-
-  monday?: boolean;
-  tuesday?: boolean;
-  wednesday?: boolean;
-  thursday?: boolean;
-  friday?: boolean;
-  saturday?: boolean;
-  sunday?: boolean;
 }
 
 export interface SubmitShop {

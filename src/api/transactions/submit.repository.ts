@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
 import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from '../submit/dto/submit.dto';
@@ -74,6 +74,39 @@ export class SubmitTransactionsRepository {
     }
   }
 
+  async deleteShopSubmission(shopId: number): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const productRepo = queryRunner.manager.getRepository(ProductMapping);
+      const operatingRepo = queryRunner.manager.getRepository(OperatingHours);
+      const shopRepo = queryRunner.manager.getRepository(Shop);
+      const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
+
+      // Step 1: Delete product mappings
+      await productRepo.delete({ shopId });
+
+      // Step 2: Delete operating hours
+      await operatingRepo.delete({ shop: { id: shopId } });
+
+      // Step 3: Delete shop
+      await shopRepo.delete({ id: shopId });
+
+      // Step 4: Delete submission record
+      await submitRepo.delete({ shop: { id: shopId } });
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.loggerService.warn(`Submit/ DeleteShop Error: ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async createOperatingHours(operatingData: SubmitShopOperatingHoursDto, uuid: string) {
     const { shopId, operatingHours } = operatingData;
 
@@ -84,12 +117,14 @@ export class SubmitTransactionsRepository {
     try {
       const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
       const operatingRepo = queryRunner.manager.getRepository(OperatingHours);
+      const { id, type, ...filteredOperatingHours } = operatingHours;
 
       const newOperatingHours = await operatingRepo.save({
         shop: { id: shopId },
         type: UsingType.Verifying,
-        ...operatingHours,
+        ...filteredOperatingHours,
       });
+
       await submitRepo.save({
         status: SubmitStatus.Pending,
         type: SubmitType.NewOperating,
@@ -104,6 +139,33 @@ export class SubmitTransactionsRepository {
       await queryRunner.commitTransaction();
     } catch (err) {
       this.loggerService.warn(`Submit/ CreateOperating Error: ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async deleteOperatingHoursSubmission(submitId: number, operatingId: number): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
+      const operatingRepo = queryRunner.manager.getRepository(OperatingHours);
+
+
+      await operatingRepo.delete({
+        id: operatingId,
+        type: UsingType.Verifying,
+      });
+
+      await submitRepo.delete({ id: submitId });
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.loggerService.warn(`Submit/ DeleteOperating Error: ${err}`);
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException();
     } finally {
@@ -142,6 +204,39 @@ export class SubmitTransactionsRepository {
       await queryRunner.commitTransaction();
     } catch (err) {
       this.loggerService.warn(`Submit/ CreateProducts Error: ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async deleteProductSubmission(shopId: number, uuid: string): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const productRepo = queryRunner.manager.getRepository(ProductMapping);
+      const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
+
+      // Step 1: Delete product mappings of type Verifying by this user
+      await productRepo.delete({
+        shopId: shopId,
+        user: uuid,
+        type: UsingType.Verifying,
+      });
+
+      // Step 2: Delete submit record for NewProduct
+      await submitRepo.delete({
+        shop: { id: shopId },
+        user: { uuid },
+        type: SubmitType.NewProduct,
+      });
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.loggerService.warn(`Submit/ DeleteProduct Error: ${err}`);
       await queryRunner.rollbackTransaction();
       throw new InternalServerErrorException();
     } finally {

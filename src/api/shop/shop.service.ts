@@ -8,7 +8,6 @@ import { GetSearchPageShopDTO, GetShopByShopIdDTO, GetShopWithin1KmDTO, ShopSear
 import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
-import { ProductMapping } from '../../database/entity/product_mapping.entity';
 import { getLastSegment } from 'src/common/function/get-insta-id';
 
 @Injectable()

@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 import { Wishlist } from './wishlist.entity';
 import { Review } from './review.entity';
+import { AuthProvider } from '../../common/enum/auth.enum';
 
 @Entity()
 export class User extends BaseEntity {
@@ -21,6 +22,9 @@ export class User extends BaseEntity {
 
   @Column({ default: true })
   isNew: boolean;
+
+  @Column({ type: 'enum', enum: AuthProvider })
+  provider: AuthProvider;
 
   @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
   wishlists: Wishlist[]; // 사용자가 소유한 위시리스트 목록

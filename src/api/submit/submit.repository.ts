@@ -11,6 +11,22 @@ export class SubmitRepository {
     private readonly loggerService: LoggerService,
   ) {}
 
+  async findSubmitRecordById(submitId: number, uuid: string) {
+    try {
+      return await this.submitUserRecordRepository.findOne({
+        where: {
+          id: submitId,
+          user: {
+            uuid,
+          },
+        },
+        relations: ['shop'],
+      });
+    } catch (err) {
+      this.loggerService.warn(`Submit/ cfindSubmitRecordById Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
   async createSubmitUserRecordByNewShop(uuid, shopId) {
     try {
       return await this.submitUserRecordRepository.save({

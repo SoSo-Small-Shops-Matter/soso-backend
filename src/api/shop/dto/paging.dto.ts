@@ -10,7 +10,6 @@ export class GetShopWithin1KmDTO {
   @Type(() => Number)
   lat: number;
 
-  @ApiProperty({ description: '경도', example: 126.978 })
   @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
