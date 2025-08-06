@@ -10,7 +10,6 @@ import {
   DeleteUuidDTO,
   PageNationDTO,
   ReviewPageNationDTO,
-  SaveNickNameDTO,
   SaveWishListDTO,
   UpdateProfileDTO,
   UserProfileDTO,
@@ -34,14 +33,6 @@ export class UserService {
   async findUserNickName(nickNameDTO: CheckNickNameDTO): Promise<boolean> {
     const { nickName } = nickNameDTO;
     return !!(await this.userRepository.findUserByNickName(nickName));
-  }
-
-  async findAndUpdateUserNickname(nickNameDTO: SaveNickNameDTO, uuid: string): Promise<void> {
-    const { nickName } = nickNameDTO;
-    const existNickName = await this.userRepository.findUserByNickName(nickName);
-    if (existNickName) throw new ConflictException('Nickname already exists.');
-
-    await this.userRepository.updateNickName(uuid, nickName);
   }
 
   async getUserProfile(uuid: string): Promise<UserProfileDTO> {

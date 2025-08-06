@@ -21,7 +21,6 @@ import {
   DeleteUuidDTO,
   PageNationDTO,
   ReviewPageNationDTO,
-  SaveNickNameDTO,
   SaveWishListDTO,
   UpdateProfileDTO,
   UserProfileDTO,
@@ -44,69 +43,12 @@ import {
 } from './dto/paging.dto';
 import { Paging } from '../shop/dto/paging.dto';
 
-@ApiTags('User')
-@Controller('user')
+@ApiTags('Users')
+@Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Delete('/:uuid')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({
-    summary: '회원탈퇴',
-    description: '회원탈퇴',
-  })
-  @ApiOkResponse({
-    description: '회원탈퇴 성공',
-    type: SuccessNoResultResponseDTO,
-  })
-  async deleteUser(@Query() deleteTypeDTO: DeleteTypeDTO, @Param() deleteUuidDTO: DeleteUuidDTO, @GetUUID() currentUUID: string) {
-    if (deleteUuidDTO.uuid !== currentUUID) throw new ConflictException('Not equal User UUID');
-    await this.userService.deleteUser(deleteUuidDTO, deleteTypeDTO);
-    return new SuccessNoResultResponseDTO();
-  }
-
-  @Get('/nickname/:nickName')
-  @ApiOperation({
-    summary: '닉네임 중복 체크',
-    description: 'true: 중복됨 / false: 중복되지 않음',
-  })
-  @ApiOkResponse({
-    description: '닉네임 중복 체크 결과',
-    schema: {
-      allOf: [
-        { $ref: getSchemaPath(SuccessResponseDTO) },
-        {
-          properties: {
-            result: {
-              type: 'boolean',
-              enum: [true, false],
-            },
-          },
-        },
-      ],
-    },
-  })
-  async checkNickName(@Param() nickNameDTO: CheckNickNameDTO) {
-    return new SuccessResponseDTO(await this.userService.findUserNickName(nickNameDTO));
-  }
-
-  @Post('/nickname')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('JWT-auth')
-  @ApiOperation({
-    summary: '닉네임 설정',
-  })
-  @ApiOkResponse({
-    description: '닉네임 설정 성공',
-    type: SuccessNoResultResponseDTO,
-  })
-  async setNickName(@Body() nickNameDTO: SaveNickNameDTO, @GetUUID() uuid: string) {
-    await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid);
-    return new SuccessNoResultResponseDTO();
-  }
-
-  @Get('/profile')
+  @Get('/me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
@@ -129,11 +71,11 @@ export class UserController {
       ],
     },
   })
-  async getProfile(@GetUUID() uuid: string) {
+  async getUserProfile(@GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.userService.getUserProfile(uuid));
   }
 
-  @Patch('/profile')
+  @Patch('/me')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   @ApiBearerAuth('JWT-auth')
@@ -177,7 +119,49 @@ export class UserController {
     return new SuccessNoResultResponseDTO();
   }
 
-  @Get('/submit')
+  @Delete('/me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '회원탈퇴',
+    description: '회원탈퇴',
+  })
+  @ApiOkResponse({
+    description: '회원탈퇴 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async deleteUser(@Query() deleteTypeDTO: DeleteTypeDTO, @Param() deleteUuidDTO: DeleteUuidDTO, @GetUUID() currentUUID: string) {
+    if (deleteUuidDTO.uuid !== currentUUID) throw new ConflictException('Not equal User UUID');
+    await this.userService.deleteUser(deleteUuidDTO, deleteTypeDTO);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Get('/duplicate-check')
+  @ApiOperation({
+    summary: '닉네임 중복 체크',
+    description: 'true: 중복됨 / false: 중복되지 않음',
+  })
+  @ApiOkResponse({
+    description: '닉네임 중복 체크 결과',
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(SuccessResponseDTO) },
+        {
+          properties: {
+            result: {
+              type: 'boolean',
+              enum: [true, false],
+            },
+          },
+        },
+      ],
+    },
+  })
+  async checkNickName(@Query() nickNameDTO: CheckNickNameDTO) {
+    return new SuccessResponseDTO(await this.userService.findUserNickName(nickNameDTO));
+  }
+
+  @Get('/me/shop-submissions')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
@@ -201,7 +185,7 @@ export class UserController {
     return new SuccessResponseDTO(await this.userService.findSubmitRecord(pageNation, uuid));
   }
 
-  @Get('/review')
+  @Get('/me/reviews')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
@@ -225,7 +209,7 @@ export class UserController {
     return new SuccessResponseDTO(await this.userService.findUserReviews(pageNation, uuid));
   }
 
-  @Get('/wishlist')
+  @Get('/me/wishlist')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
@@ -249,7 +233,7 @@ export class UserController {
     return new SuccessResponseDTO(await this.userService.getWishlist(pageNation, uuid));
   }
 
-  @Post('/wishlist')
+  @Post('/me/wishlist')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({

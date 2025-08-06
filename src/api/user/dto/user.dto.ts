@@ -15,19 +15,6 @@ export class CheckNickNameDTO {
   nickName: string;
 }
 
-export class SaveNickNameDTO {
-  @ApiProperty({ description: '닉네임', example: '닉네임' })
-  @IsNotEmpty()
-  @IsString()
-  @Matches(/^[^\x00-\x1F\x7F]*$/, {
-    message: '제어 문자를 포함할 수 없습니다.',
-  })
-  @Matches(/^(?!.*(<script|<\/script>|<iframe|on\w+=|javascript:|eval\()).*$/i, {
-    message: '스크립트 또는 악성 코드를 포함할 수 없습니다.',
-  })
-  nickName: string;
-}
-
 export class DeleteTypeDTO {
   @ApiProperty({ description: '회원 탈퇴 이유 Type', example: 1 })
   @IsNotEmpty()
