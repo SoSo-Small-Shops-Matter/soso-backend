@@ -22,6 +22,7 @@ import {
   PageNationDTO,
   ReviewPageNationDTO,
   SaveNickNameDTO,
+  SaveWishListDTO,
   UpdateProfileDTO,
   UserProfileDTO,
   WishlistPageNationDTO,
@@ -246,5 +247,21 @@ export class UserController {
   })
   async getUserWishlist(@GetUUID() uuid: string, @Query() pageNation: WishlistPageNationDTO) {
     return new SuccessResponseDTO(await this.userService.getWishlist(pageNation, uuid));
+  }
+
+  @Post('/wishlist')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '소품샵 찜하기',
+    description: '찜하기 리스트에 해당 소품샵을 넣습니다.',
+  })
+  @ApiOkResponse({
+    description: '찜하기 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async addWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: SaveWishListDTO) {
+    await this.userService.addWishlistByShopIdAndUUID(saveWishListDto, uuid);
+    return new SuccessNoResultResponseDTO();
   }
 }

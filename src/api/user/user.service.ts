@@ -11,6 +11,7 @@ import {
   PageNationDTO,
   ReviewPageNationDTO,
   SaveNickNameDTO,
+  SaveWishListDTO,
   UpdateProfileDTO,
   UserProfileDTO,
   WishlistPageNationDTO,
@@ -106,5 +107,12 @@ export class UserService {
     if (!user) throw new NotFoundException();
     // 유저 이미지 제거
     await this.deleteUserTransactionsRepository.deleteUser(user, deleteTypeDTO.deleteType);
+  }
+
+  async addWishlistByShopIdAndUUID(saveWishListDTO: SaveWishListDTO, uuid: string) {
+    const { shopId } = saveWishListDTO;
+    const wishlist = await this.wishlistRepository.findWishlistByShopIdAndUUID(shopId, uuid);
+    if (wishlist) return await this.wishlistRepository.deleteWishlistByWishlistId(wishlist.id);
+    await this.wishlistRepository.addWishlistByShopIdAndUUID(shopId, uuid);
   }
 }

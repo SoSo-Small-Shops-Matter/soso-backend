@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -133,4 +133,11 @@ export class ReviewPageNationDTO {
     message: '스크립트 또는 악성 코드를 포함할 수 없습니다.',
   })
   sort: string;
+}
+
+export class SaveWishListDTO {
+  @ApiProperty({ type: 'integer', example: 3 })
+  @IsNumber()
+  @IsNotEmpty()
+  shopId: number;
 }
