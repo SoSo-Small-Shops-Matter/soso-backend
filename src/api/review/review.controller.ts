@@ -4,10 +4,12 @@ import { DeleteReviewDto, PostReviewDto, UpdateReviewDto } from './dto/review.dt
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
-import { SuccessResponseDTO } from '../../common/response/response.dto';
+import { SuccessNoResultResponseDTO } from '../../common/response/response.dto';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
 @Controller('review')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
 export class ReviewController {
   constructor(private reviewService: ReviewService) {}
 
@@ -21,9 +23,19 @@ export class ReviewController {
       },
     }),
   )
+  @ApiOperation({ summary: '리뷰 작성', description: '리뷰를 작성합니다.' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '리뷰 데이터 및 이미지 파일',
+    type: PostReviewDto,
+  })
+  @ApiOkResponse({
+    description: '리뷰 작성 성공',
+    type: SuccessNoResultResponseDTO,
+  })
   async postReview(@Body() postReviewDto: PostReviewDto, @GetUUID() uuid: string, @UploadedFiles() files?: Express.Multer.File[]) {
-    const result = await this.reviewService.createReview(uuid, postReviewDto, files);
-    return new SuccessResponseDTO(result);
+    await this.reviewService.createReview(uuid, postReviewDto, files);
+    return new SuccessNoResultResponseDTO();
   }
 
   @Patch('/')
@@ -36,14 +48,29 @@ export class ReviewController {
       },
     }),
   )
+  @ApiOperation({ summary: '리뷰 수정', description: '리뷰를 수정합니다.' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '리뷰 데이터 및 이미지 파일',
+    type: UpdateReviewDto,
+  })
+  @ApiOkResponse({
+    description: '리뷰 수정 성공',
+    type: SuccessNoResultResponseDTO,
+  })
   async updateReview(@Body() updateReviewDto: UpdateReviewDto, @GetUUID() uuid: string, @UploadedFiles() newFiles?: Express.Multer.File[]) {
-    const result = await this.reviewService.updateReview(uuid, updateReviewDto, newFiles);
-    return new SuccessResponseDTO(result);
+    await this.reviewService.updateReview(uuid, updateReviewDto, newFiles);
+    return new SuccessNoResultResponseDTO();
   }
 
   @Delete('/:reviewId')
+  @ApiOperation({ summary: '리뷰 삭제', description: '리뷰를 삭제합니다.' })
+  @ApiOkResponse({
+    description: '리뷰 삭제 성공',
+    type: SuccessNoResultResponseDTO,
+  })
   async deleteReview(@Param() deleteReviewDto: DeleteReviewDto, @GetUUID() uuid: string) {
-    const result = await this.reviewService.deleteReviewByUUID(uuid, deleteReviewDto);
-    return new SuccessResponseDTO(result);
+    await this.reviewService.deleteReviewByUUID(uuid, deleteReviewDto);
+    return new SuccessNoResultResponseDTO();
   }
 }
