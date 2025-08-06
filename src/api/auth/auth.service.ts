@@ -8,6 +8,7 @@ import { LoggerService } from '../logger/logger.service';
 import { AppleAuthLoginDto, GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { Role } from '../../common/enum/role.enum';
+import { AuthProvider } from '../../common/enum/auth.enum';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +49,7 @@ export class AuthService {
       const userData = userResponse.data;
       const existUser = await this.userRepository.findUserByUUID(userData.id);
       if (!existUser) {
-        await this.userRepository.createUser(userData.id, userData.picture, userData.email);
+        await this.userRepository.createUser(userData.id, userData.email, AuthProvider.GOOGLE, userData.picture);
       }
 
       const role = userData.id === this.configService.get<string>('ADMIN_UUID') ? Role.Admin : Role.User;
@@ -74,16 +75,28 @@ export class AuthService {
     const appleId = payload.sub;
     const email = payload.email;
 
-    return {
-      appleId,
-      email,
-    };
+    const existUser = await this.userRepository.findUserByUUID(appleId);
+    if (!existUser) {
+      await this.userRepository.createUser(appleId, email, AuthProvider.APPLE, null);
+    }
+
+    const role = appleId === this.configService.get<string>('ADMIN_UUID') ? Role.Admin : Role.User;
+
+    const accessToken = jwt.sign({ uuid: appleId, role }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
+      expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
+    });
+
+    const refreshToken = jwt.sign({ uuid: appleId, role }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
+      expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
+    });
+
+    return { accessToken, refreshToken };
   }
 
   async validateAppleToken(idToken: string) {
     try {
       const payload = await appleSignin.verifyIdToken(idToken, {
-        audience: 'com.soso.sosoapp',
+        audience: this.configService.get<string>('APPLE_AUDIENCE_ID'),
       });
       return payload;
     } catch (err) {

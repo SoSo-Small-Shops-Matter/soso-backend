@@ -3,6 +3,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { User } from 'src/database/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoggerService } from '../logger/logger.service';
+import { AuthProvider } from '../../common/enum/auth.enum';
 
 export class UserRepository {
   constructor(
@@ -32,12 +33,13 @@ export class UserRepository {
       throw new InternalServerErrorException();
     }
   }
-  async createUser(uuid: string, photoUrl: string, email: string) {
+  async createUser(uuid: string, email: string, provider: AuthProvider, photoUrl?: string) {
     try {
       return await this.userRepository.save({
         uuid,
-        photoUrl,
         email,
+        provider,
+        photoUrl,
       });
     } catch (err) {
       this.loggerService.warn(`User/ createUser Error: ${err}`);
