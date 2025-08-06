@@ -1,13 +1,14 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class DeleteRecentSearchDTO {
   @ApiProperty({
-    description: '최근 기록에서 삭제할 소품샵 이름',
+    description: '최근 기록에서 삭제할 id',
     example: 123,
   })
   @IsNotEmpty()
-  @IsString()
-  @MaxLength(100)
-  shopName: string;
+  @IsNumber()
+  @Type(() => Number)
+  recentSearchId: number;
 }

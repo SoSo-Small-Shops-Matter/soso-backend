@@ -52,9 +52,12 @@ export class RecentSearchRepository {
     }
   }
 
-  async deleteRecentSearch(uuid: string, shopName: string): Promise<void> {
+  async deleteRecentSearch(uuid: string, recentSearchId: number): Promise<void> {
     try {
-      await this.recentSearchRepository.delete({ uuid, shopName });
+      await this.recentSearchRepository.delete({
+        id: recentSearchId,
+        uuid,
+      });
     } catch (err) {
       this.loggerService.warn(`Recent-Search/ deleteRecentSearch Error: ${err}`);
       throw new InternalServerErrorException();

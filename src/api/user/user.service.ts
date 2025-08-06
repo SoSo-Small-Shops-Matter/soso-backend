@@ -18,6 +18,9 @@ import {
 import { PagingDto, UserReviewsRecordDTO, UserSubmitRecordDTO, UserSubmitRecordItemDTO, UserWishlistRecordDTO } from './dto/paging.dto';
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { DeleteUserTransactionsRepository } from '../transactions/delete-user.repository';
+import { RecentSearchDTO } from '../recent-search/dto/recent-search-response.dto';
+import { DeleteRecentSearchDTO } from '../recent-search/dto/recent-search.dto';
+import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 
 @Injectable()
 export class UserService {
@@ -27,6 +30,7 @@ export class UserService {
     private reviewRepository: ReviewRepository,
     private wishlistRepository: WishlistRepository,
     private submitRepository: SubmitRepository,
+    private recentSearchRepository: RecentSearchRepository,
     private deleteUserTransactionsRepository: DeleteUserTransactionsRepository,
   ) {}
 
@@ -105,5 +109,20 @@ export class UserService {
     const wishlist = await this.wishlistRepository.findWishlistByShopIdAndUUID(shopId, uuid);
     if (wishlist) return await this.wishlistRepository.deleteWishlistByWishlistId(wishlist.id);
     await this.wishlistRepository.addWishlistByShopIdAndUUID(shopId, uuid);
+  }
+
+  async getRecentSearch(uuid: string | null) {
+    if (!uuid) return [];
+    const result = await this.recentSearchRepository.findRecentSearchListByUUID(uuid);
+    return result.map(RecentSearchDTO.fromEntity);
+  }
+
+  async deleteAllRecentSearch(uuid: string) {
+    await this.recentSearchRepository.deleteAllRecentSearch(uuid);
+  }
+
+  async deleteRecentSearchById(uuid: string, deleteRecentSearchDTO: DeleteRecentSearchDTO) {
+    const { recentSearchId } = deleteRecentSearchDTO;
+    await this.recentSearchRepository.deleteRecentSearch(uuid, recentSearchId);
   }
 }

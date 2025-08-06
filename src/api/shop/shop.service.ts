@@ -143,7 +143,7 @@ export class ShopService {
         const newUserRecentSearch = await this.recentSearchRepository.createRecentSearch(uuid, shop.name, shopId);
         if (userRecenSearchtList.length == 10) {
           const deleteData = userRecenSearchtList.pop();
-          await this.recentSearchRepository.deleteRecentSearch(deleteData.uuid, deleteData.shopName);
+          await this.recentSearchRepository.deleteRecentSearch(deleteData.uuid, deleteData.id);
         }
         userRecenSearchtList.unshift(newUserRecentSearch);
         await this.recentSearchRepository.saveRecentSearch(userRecenSearchtList);

@@ -42,6 +42,9 @@ import {
   UserWishlistRecordItemDTO,
 } from './dto/paging.dto';
 import { Paging } from '../shop/dto/paging.dto';
+import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard';
+import { RecentSearchDTO } from '../recent-search/dto/recent-search-response.dto';
+import { DeleteRecentSearchDTO } from '../recent-search/dto/recent-search.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -246,6 +249,66 @@ export class UserController {
   })
   async addWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: SaveWishListDTO) {
     await this.userService.addWishlistByShopIdAndUUID(saveWishListDto, uuid);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Get('/me/recent-searches')
+  @UseGuards(OptionalAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '최근 검색 기록 조회',
+    description: '로그인된 경우 최근 검색한 소품샵 리스트를 반환합니다.',
+  })
+  @ApiExtraModels(SuccessResponseDTO, RecentSearchDTO)
+  @ApiOkResponse({
+    description: '최근 검색 기록 조회 성공',
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(SuccessResponseDTO) },
+        {
+          properties: {
+            result: {
+              type: 'array',
+              items: { $ref: getSchemaPath(RecentSearchDTO) },
+            },
+          },
+        },
+      ],
+    },
+  })
+  async getRecentSearch(@GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.userService.getRecentSearch(uuid));
+  }
+
+  @Delete('/me/recent-searches')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '최근 검색 기록 전체 삭제',
+    description: '최근 검색 기록 전체 삭제',
+  })
+  @ApiOkResponse({
+    description: '최근 검색 기록 전체 삭제 완료',
+    type: SuccessNoResultResponseDTO,
+  })
+  async deleteAllRecentSearch(@GetUUID() uuid: string) {
+    await this.userService.deleteAllRecentSearch(uuid);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Delete('/me/recent-searches/:recentSearchId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: '최근 검색 기록 삭제',
+    description: '최근 검색 기록 id로 삭제',
+  })
+  @ApiOkResponse({
+    description: '최근 검색 기록 삭제 성공',
+    type: SuccessNoResultResponseDTO,
+  })
+  async deleteRecentSearchById(@GetUUID() uuid: string, @Param() deleteRecentSearchDTO: DeleteRecentSearchDTO) {
+    await this.userService.deleteRecentSearchById(uuid, deleteRecentSearchDTO);
     return new SuccessNoResultResponseDTO();
   }
 }
