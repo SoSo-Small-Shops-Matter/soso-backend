@@ -8,7 +8,6 @@ import {
   CheckNickNameDTO,
   DeleteSubmitRecordParamDto,
   DeleteTypeDTO,
-  DeleteUuidDTO,
   PageNationDTO,
   ReviewPageNationDTO,
   SaveWishListDTO,
@@ -101,8 +100,8 @@ export class UserService {
     return new UserWishlistRecordDTO(pageNationResult, pageInfoDTO);
   }
 
-  async deleteUser(deleteUuidDTO: DeleteUuidDTO, deleteTypeDTO: DeleteTypeDTO) {
-    const user = await this.userRepository.findUserByUUID(deleteUuidDTO.uuid);
+  async deleteUser(uuid: string, deleteTypeDTO: DeleteTypeDTO) {
+    const user = await this.userRepository.findUserByUUID(uuid);
     if (!user) throw new NotFoundException();
     // 유저 이미지 제거
     await this.deleteUserTransactionsRepository.deleteUser(user, deleteTypeDTO.deleteType);

@@ -10,7 +10,6 @@ import {
   UseInterceptors,
   Delete,
   Query,
-  ConflictException,
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
@@ -19,7 +18,6 @@ import {
   CheckNickNameDTO,
   DeleteSubmitRecordParamDto,
   DeleteTypeDTO,
-  DeleteUuidDTO,
   PageNationDTO,
   ReviewPageNationDTO,
   SaveWishListDTO,
@@ -134,9 +132,8 @@ export class UserController {
     description: '회원탈퇴 성공',
     type: SuccessNoResultResponseDTO,
   })
-  async deleteUser(@Query() deleteTypeDTO: DeleteTypeDTO, @Param() deleteUuidDTO: DeleteUuidDTO, @GetUUID() currentUUID: string) {
-    if (deleteUuidDTO.uuid !== currentUUID) throw new ConflictException('Not equal User UUID');
-    await this.userService.deleteUser(deleteUuidDTO, deleteTypeDTO);
+  async deleteUser(@Query() deleteTypeDTO: DeleteTypeDTO, @GetUUID() uuid: string) {
+    await this.userService.deleteUser(uuid, deleteTypeDTO);
     return new SuccessNoResultResponseDTO();
   }
 
