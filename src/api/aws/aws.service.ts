@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
 
@@ -55,5 +55,17 @@ export class AwsService {
       this.loggerService.warn(`S3/ 업로드 에러: ${err}`);
       throw new InternalServerErrorException();
     }
+  }
+
+  async deleteImageFromS3(imageUrl: string) {
+    // 올바른 Key 추출 방법
+    const fileName = imageUrl.split(`.amazonaws.com/`)[1];
+    
+    const command = new DeleteObjectCommand({
+      Bucket: this.bucketName,
+      Key: fileName,
+    });
+
+    await this.s3Client.send(command);
   }
 }

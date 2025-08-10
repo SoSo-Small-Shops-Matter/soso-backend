@@ -3,13 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from 'src/database/entity/wishlist.entity';
 import { Repository } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
-export class WishlistRepository {
+@Injectable()
+export class WishlistRepository extends Repository<Wishlist> {
   constructor(
     @InjectRepository(Wishlist)
     private whishlistRepository: Repository<Wishlist>,
     private loggerService: LoggerService,
-  ) {}
+    private dataSource: DataSource,
+  ) {
+    super(Wishlist, dataSource.createEntityManager());
+  }
 
   async findWishlistByShopIdAndUUID(shopId: number, uuid: string) {
     try {
@@ -78,7 +84,7 @@ export class WishlistRepository {
         query.andWhere('region.name = :area', { area });
       }
 
-      return await query.getMany();
+      return await query.getCount();
     } catch (err) {
       this.loggerService.warn(`Wishlist/ findUserWishlistByUUID Error: ${err}`);
       throw new InternalServerErrorException();
@@ -119,5 +125,14 @@ export class WishlistRepository {
       this.loggerService.warn(`Wishlist/ isShopInUserWishlist Error: ${err}`);
       throw new InternalServerErrorException();
     }
+  }
+
+  async findWishlistShopsByUser(userUUID: string) {
+    return this.find({
+      where: {
+        user: { uuid: userUUID },
+      },
+      relations: ['shop'],
+    });
   }
 }

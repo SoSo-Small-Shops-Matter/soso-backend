@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsArray } from 'class-validator';
 
 export class GetShopWithin1KmDTO {
   @IsNumber()
@@ -16,9 +16,29 @@ export class GetShopWithin1KmDTO {
   @IsNotEmpty()
   @Type(() => Boolean) // 'true'/'false' → boolean 변환
   sorting: boolean;
+
+  @IsString()
+  @IsOptional()
+  isWishlist?: string;
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  @Type(() => Number)
+  productIds?: number[];
 }
 
 export class GetSearchPageShopDTO {
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
+  lat: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
+  lng: number;
+
   @IsNumber()
   @IsNotEmpty()
   @Type(() => Number)
@@ -58,4 +78,17 @@ export class ResponsePageNationDTO<T> {
     this.data = data;
     this.pageInfo = pageInfo;
   }
+}
+
+export class ShopSearchResultItemDTO {
+  id: number;
+  name: string;
+  image: string;
+  location: string;
+  distance: number;
+}
+
+export class ShopSearchPageNationResultDTO extends ResponsePageNationDTO<ShopSearchResultItemDTO> {
+  data: ShopSearchResultItemDTO[];
+  pageInfo: Paging;
 }

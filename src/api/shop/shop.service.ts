@@ -4,10 +4,11 @@ import { ReviewService } from '../review/review.service';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
-import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
-import { Paging, ResponsePageNationDTO } from '../shop/dto/paging.dto';
+import { GetSearchPageShopDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
+import { Paging, ResponsePageNationDTO } from './dto/paging.dto';
 import { Shop } from '../../database/entity/shop.entity';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
+import { getLastSegment } from 'src/common/function/get-insta-id';
 
 @Injectable()
 export class ShopService {
@@ -19,13 +20,16 @@ export class ShopService {
     private recentSearchRepository: RecentSearchRepository,
   ) {}
 
-  async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO) {
-    const { lat, lng, sorting } = getShopWithin1KmDTO;
+  async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
+    const { lat, lng, sorting, isWishlist, productIds } = getShopWithin1KmDTO;
+    const wishlistBoolean = isWishlist == 'true' ? true : false;
     const radius = 6371; // 지구 반경 (km)
     const distanceLimit = 1; // 거리 제한 (1km)
-    const result = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
+
+    let shops = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
+
     // shop_ 프리픽스 제거 + 필요한 필드만 추출
-    return result.map((shop) => ({
+    shops = shops.map((shop) => ({
       id: shop.shop_id,
       name: shop.shop_name,
       type: shop.shop_type,
@@ -38,15 +42,41 @@ export class ShopService {
       distance: shop.distance,
       ...(sorting ? { reviewCount: Number(shop.reviewCount) } : {}),
     }));
+
+    if (wishlistBoolean && uuid) {
+      const wishlistShops = await this.wishlistRepository.findWishlistShopsByUser(uuid);
+      const wishlistShopIds = wishlistShops.map((wishlist) => wishlist.shop.id);
+      shops = shops.filter((shop) => wishlistShopIds.includes(shop.id));
+    }
+
+    if (productIds && productIds.length > 0) {
+      const shopsWithProducts = await this.shopRepository.findShopsByProductIds(productIds);
+      const shopIdsWithProducts = shopsWithProducts.map((shop) => shop.id);
+      shops = shops.filter((shop) => shopIdsWithProducts.includes(shop.id));
+    }
+
+    return shops;
   }
 
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
-    const { keyword, page, limit } = getSearchPageShopDTO;
-    const pageNationResult = await this.shopRepository.findShopsByKeyword(keyword, page, limit);
-    const allShops = await this.shopRepository.findAllShopsByKeyword(keyword);
-    const totalPages = Math.ceil(allShops.length / limit);
-    const pageInfoDTO = new Paging(page, limit, allShops.length, totalPages, page < totalPages);
-    return new ResponsePageNationDTO<Shop>(pageNationResult, pageInfoDTO);
+    const { keyword, page, limit, lat, lng } = getSearchPageShopDTO;
+    const radius = 6371; // 지구 반경 (km)
+
+    const rawResults = await this.shopRepository.findShopsByKeyword(keyword, page, limit, lat, lng, radius);
+
+    const mappedResults = rawResults.map((shop) => ({
+      id: shop.shop_id,
+      name: shop.shop_name,
+      image: shop.shop_image,
+      location: shop.shop_location,
+      distance: shop.distance,
+    }));
+
+    const allShopsCount = await this.shopRepository.findAllShopsCountByKeyword(keyword);
+    const totalPages = Math.ceil(allShopsCount / limit);
+    const pageInfoDTO = new Paging(page, limit, allShopsCount, totalPages, page < totalPages);
+
+    return new ShopSearchPageNationResultDTO(mappedResults, pageInfoDTO);
   }
 
   async findShopByShopId(shopId: number, uuid: string) {
@@ -72,6 +102,7 @@ export class ShopService {
     // 기존 shop 객체에서 "productMappings" 제거 후 "products" 추가
     const transformedShop = {
       ...shop,
+      instagramId: getLastSegment(shop.instagram),
       operatingHours,
       products, // 새로운 products 배열 추가
     };
@@ -106,15 +137,15 @@ export class ShopService {
       userReviews: userReviews.map((review) => ({
         ...review,
         user: {
-          photoUrl: review.user.photoUrl,
-          nickName: review.user.nickName,
+          photoUrl: review.user?.photoUrl,
+          nickName: review.user?.nickName,
         },
       })),
       otherReviews: otherReviews.map((review) => ({
         ...review,
         user: {
-          photoUrl: review.user.photoUrl,
-          nickName: review.user.nickName,
+          photoUrl: review.user?.photoUrl,
+          nickName: review.user?.nickName,
         },
       })),
       wishlist,
@@ -128,5 +159,15 @@ export class ShopService {
       return region.name;
     });
     return result;
+  }
+
+  async findTemp() {
+    const shop = await this.shopRepository.findTemp();
+    return shop.map((shop) => ({
+      id: shop.id,
+      name: shop.name,
+      image: shop.image,
+      location: shop.location,
+    }));
   }
 }

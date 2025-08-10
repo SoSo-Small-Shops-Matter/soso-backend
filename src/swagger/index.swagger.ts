@@ -69,6 +69,7 @@ export const swaggerDocs = {
     '/shop': {
       get: {
         ...shopSwaggerDocs.getShopWithin1Km,
+        security: [{ 'JWT-auth': [] }],
         tags: ['Shop'],
       },
     },

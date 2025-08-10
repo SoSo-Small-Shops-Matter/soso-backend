@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import * as qs from 'querystring';
+import * as appleSignin from 'apple-signin-auth';
 import { UserRepository } from '../user/user.repository';
 import axios from 'axios';
 import { LoggerService } from '../logger/logger.service';
-import { GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
+import { AppleAuthLoginDto, GoogleAuthLoginDTO, RefreshTokenDTO } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { Role } from '../../common/enum/role.enum';
+import { AuthProvider } from '../../common/enum/auth.enum';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +49,7 @@ export class AuthService {
       const userData = userResponse.data;
       const existUser = await this.userRepository.findUserByUUID(userData.id);
       if (!existUser) {
-        await this.userRepository.createUser(userData.id, userData.picture, userData.name, userData.email);
+        await this.userRepository.createUser(userData.id, userData.email, AuthProvider.GOOGLE, userData.picture);
       }
 
       const role = userData.id === this.configService.get<string>('ADMIN_UUID') ? Role.Admin : Role.User;
@@ -64,6 +66,42 @@ export class AuthService {
     } catch (err) {
       this.loggerService.warn(`Auth/ GoogleAuthLogin Error: ${err}`);
       throw new InternalServerErrorException();
+    }
+  }
+
+  async appleAuthLogin(appleAuthLoginDTO: AppleAuthLoginDto) {
+    const payload = await this.validateAppleToken(appleAuthLoginDTO.idToken);
+
+    const appleId = payload.sub;
+    const email = payload.email;
+
+    const existUser = await this.userRepository.findUserByUUID(appleId);
+    if (!existUser) {
+      await this.userRepository.createUser(appleId, email, AuthProvider.APPLE, null);
+    }
+
+    const role = appleId === this.configService.get<string>('ADMIN_UUID') ? Role.Admin : Role.User;
+
+    const accessToken = jwt.sign({ uuid: appleId, role }, this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'), {
+      expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRESIN'),
+    });
+
+    const refreshToken = jwt.sign({ uuid: appleId, role }, this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'), {
+      expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
+    });
+
+    return { accessToken, refreshToken };
+  }
+
+  async validateAppleToken(idToken: string) {
+    try {
+      const payload = await appleSignin.verifyIdToken(idToken, {
+        audience: this.configService.get<string>('APPLE_AUDIENCE_ID'),
+      });
+      return payload;
+    } catch (err) {
+      this.loggerService.warn(`Auth/ GoogleAuthLogin Error: ${err}`);
+      throw new UnauthorizedException('Apple ID Token 검증 실패');
     }
   }
 

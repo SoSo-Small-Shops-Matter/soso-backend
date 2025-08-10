@@ -3,40 +3,55 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Shop } from 'src/database/entity/shop.entity';
 import { Repository } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { ProductMapping } from '../../database/entity/product_mapping.entity';
 
-export class ShopRepository {
+@Injectable()
+export class ShopRepository extends Repository<Shop> {
   constructor(
     @InjectRepository(Shop)
     private shopRepository: Repository<Shop>,
     private readonly loggerService: LoggerService,
-  ) {}
+    private dataSource: DataSource,
+  ) {
+    super(Shop, dataSource.createEntityManager());
+  }
 
-  async findShopsByKeyword(keyword: string, page: number, limit: number) {
+  async findShopsByKeyword(keyword: string, page: number, limit: number, lat: number, lng: number, radius: number = 6371) {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
-        .where('shop.name LIKE :keyword', { keyword: `%${keyword}%` }) // 부분 검색
-        .orWhere('shop.location LIKE :keyword', { keyword: `%${keyword}%` }) // 도로명 검색
-        .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
-        .skip(limit * (page - 1)) // offset 계산
-        .take(limit) // 한 페이지당 표시할 개수
-        .getMany();
+        .addSelect(
+          `(${radius} * acos(
+            cos(radians(:lat)) * cos(radians(shop.lat)) *
+            cos(radians(shop.lng) - radians(:lng)) +
+            sin(radians(:lat)) * sin(radians(shop.lat))
+          ))`,
+          'distance',
+        )
+        .where('(shop.name LIKE :keyword OR shop.location LIKE :keyword)', { keyword: `%${keyword}%` })
+        .andWhere('shop.type = :type', { type: 0 })
+        .setParameters({ lat, lng, type: 0 })
+        .skip(limit * (page - 1))
+        .take(limit)
+        .getRawMany();
     } catch (err) {
       this.loggerService.warn(`Shop/ findShopsByKeyword Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
 
-  async findAllShopsByKeyword(keyword: string) {
+  async findAllShopsCountByKeyword(keyword: string) {
     try {
       return await this.shopRepository
         .createQueryBuilder('shop')
         .where('shop.name LIKE :keyword', { keyword: `%${keyword}%` }) // 부분 검색
         .orWhere('shop.location LIKE :keyword', { keyword: `%${keyword}%` }) // 도로명 검색
         .andWhere('shop.type = :type', { type: 0 }) // 특정 타입 필터링
-        .getMany();
+        .getCount();
     } catch (err) {
-      this.loggerService.warn(`Shop/ findAllShopsByKeyword Error: ${err}`);
+      this.loggerService.warn(`Shop/ findAllShopsCountByKeyword Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
@@ -71,7 +86,13 @@ export class ShopRepository {
     }
   }
 
-  async findShopsWithin1Km(lat: number, lng: number, distanceLimit: number, radius: number, sortByReviewCount = false) {
+  async findShopsWithin1Km(
+    lat: number,
+    lng: number,
+    distanceLimit: number,
+    radius: number,
+    sortByDistance = false, // 파라미터 이름 변경
+  ) {
     try {
       let query = this.shopRepository
         .createQueryBuilder('shop')
@@ -84,23 +105,26 @@ export class ShopRepository {
         ))`,
           'distance',
         )
-        .where('shop.type = :type', { type: 0 }) // 특정 타입 필터링
-        .having('distance < :distanceLimit', { distanceLimit }) // 거리 필터링
+        .where('shop.type = :type', { type: 0 })
+        .having('distance < :distanceLimit', { distanceLimit })
         .setParameters({ lat, lng });
 
-      if (sortByReviewCount) {
-        query = query
-          .leftJoin('review', 'review', 'review.shopId = shop.id') // 리뷰 테이블 조인 (필요할 때만)
-          .addSelect('COUNT(review.id)', 'reviewCount') // 리뷰 개수 추가
-          .groupBy('shop.id') // 그룹화
-          .orderBy('reviewCount', 'DESC'); // 리뷰 개수 기준 정렬
+      if (sortByDistance) {
+        query = query.orderBy('distance', 'ASC');
       }
 
-      return await query.getRawMany(); // getRawMany() 사용하여 깔끔한 데이터 가져오기
+      return await query.getRawMany();
     } catch (err) {
       this.loggerService.warn(`Shop/ findShopsWithin1Km Error: ${err}`);
       throw new InternalServerErrorException();
     }
+  }
+
+  async findShopsByProductIds(productIds: number[]) {
+    return this.createQueryBuilder('shop')
+      .innerJoin('shop.productMappings', 'productMapping')
+      .where('productMapping.product.id IN (:...productIds)', { productIds })
+      .getMany();
   }
 
   async createNewShop(shop, regionId: number) {
@@ -134,5 +158,13 @@ export class ShopRepository {
       this.loggerService.warn(`Shop/ deleteShop Error: ${err}`);
       throw new InternalServerErrorException();
     }
+  }
+
+  async findTemp() {
+    return await this.shopRepository.find({
+      where: {
+        type: 0,
+      },
+    });
   }
 }

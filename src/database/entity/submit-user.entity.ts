@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Shop } from './shop.entity';
 
@@ -24,4 +24,7 @@ export class SubmitUserRecord {
 
   @ManyToOne(() => Shop, { onDelete: 'CASCADE' })
   shop: Shop;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }

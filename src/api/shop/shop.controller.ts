@@ -1,17 +1,18 @@
 import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { SuccessResponseDTO } from 'src/common/response/response.dto';
-import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/paging.dto';
 import { GetUUID } from '../../common/deco/get-user.deco';
+import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
 
 @Controller('shop')
 export class ShopController {
   constructor(private shopService: ShopService) {}
 
   @Get('/')
-  async getShopWithin1Km(@Query() getShopWithin1KmDTO: GetShopWithin1KmDTO) {
-    return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(getShopWithin1KmDTO));
+  @UseGuards(OptionalAuthGuard)
+  async getShopWithin1Km(@Query() getShopWithin1KmDTO: GetShopWithin1KmDTO, @GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.shopService.findShopsWithin1Km(getShopWithin1KmDTO, uuid));
   }
 
   @Get('/search')
@@ -22,6 +23,11 @@ export class ShopController {
   @Get('/region')
   async getAllShopRegion() {
     return new SuccessResponseDTO(await this.shopService.findAllShopRegion());
+  }
+
+  @Get('/temp')
+  async getTemp() {
+    return new SuccessResponseDTO(await this.shopService.findTemp());
   }
 
   @Get('/:shopId')

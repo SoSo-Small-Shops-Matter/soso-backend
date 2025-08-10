@@ -11,6 +11,22 @@ export class SubmitRepository {
     private readonly loggerService: LoggerService,
   ) {}
 
+  async findSubmitRecordById(submitId: number, uuid: string) {
+    try {
+      return await this.submitUserRecordRepository.findOne({
+        where: {
+          id: submitId,
+          user: {
+            uuid,
+          },
+        },
+        relations: ['shop'],
+      });
+    } catch (err) {
+      this.loggerService.warn(`Submit/ cfindSubmitRecordById Error: ${err}`);
+      throw new InternalServerErrorException();
+    }
+  }
   async createSubmitUserRecordByNewShop(uuid, shopId) {
     try {
       return await this.submitUserRecordRepository.save({
@@ -79,19 +95,17 @@ export class SubmitRepository {
         },
       });
     } catch (err) {
-      this.loggerService.warn(`Submit/ findUserSubmitUserRecord Error: ${err}`);
+      this.loggerService.warn(`Submit/ findUserSubmitRecordByType Error: ${err}`);
       throw new InternalServerErrorException();
     }
   }
 
   async findUserSubmitUserRecord(uuid: string) {
     try {
-      return await this.submitUserRecordRepository.find({
-        where: {
-          user: { uuid },
-        },
-        relations: ['shop'],
-      });
+      return await this.submitUserRecordRepository
+        .createQueryBuilder('submit') // ✅ 엔티티 별칭 수정
+        .where('submit.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
+        .getCount();
     } catch (err) {
       this.loggerService.warn(`Submit/ findUserSubmitUserRecord Error: ${err}`);
       throw new InternalServerErrorException();
@@ -104,6 +118,7 @@ export class SubmitRepository {
         .createQueryBuilder('submit') // ✅ 엔티티 별칭 수정
         .where('submit.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
         .leftJoinAndSelect('submit.shop', 'shop') // ✅ shop 관계 조인
+        .orderBy('submit.createdAt', 'DESC') // ✅ 최신순 정렬
         .skip(limit * (page - 1)) // ✅ offset 설정
         .take(limit) // ✅ limit 설정
         .getMany();

@@ -46,11 +46,10 @@ export class ReviewRepository {
 
   async findUserReviewByUUID(uuid: string) {
     try {
-      return await this.reviewRepository.find({
-        where: {
-          user: { uuid },
-        },
-      });
+      return await this.reviewRepository
+        .createQueryBuilder('review')
+        .where('review.user.uuid = :uuid', { uuid })
+        .getCount();
     } catch (err) {
       this.loggerService.warn(`Review/ findUserReviewByUUID Error: ${err}`);
       throw new InternalServerErrorException();

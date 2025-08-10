@@ -3,8 +3,6 @@ import { AppModule } from './app.module';
 import * as fs from 'fs';
 import { CustomValidationPipe } from './common/pipe/validationPipe.pipe';
 import { setupSwagger } from './swagger/swagger';
-import { LoggerService } from './api/logger/logger.service';
-import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import helmet from 'helmet';
 
 async function bootstrap() {
@@ -13,16 +11,13 @@ async function bootstrap() {
 
   const httpsOptions = isProd
     ? {
-        key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.key', 'utf8'),
-        cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.crt', 'utf8'),
-        ca: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/testhttpsserver.store.issuer.crt', 'utf8'),
+        key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/api.sosohan.shop.key', 'utf8'),
+        cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/api.sosohan.shop.crt', 'utf8'),
+        ca: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/api.sosohan.shop.issuer.crt', 'utf8'),
       }
     : undefined;
 
   const app = await NestFactory.create(AppModule, isProd ? { httpsOptions } : undefined);
-
-  const logger = app.get(LoggerService);
-
   app.use(
     helmet({
       // contentSecurityPolicy: {
@@ -42,7 +37,6 @@ async function bootstrap() {
   // iframe 접근 제한
   app.use(helmet.frameguard({ action: 'deny' }));
   app.useGlobalPipes(new CustomValidationPipe());
-  app.useGlobalFilters(new HttpExceptionFilter(logger));
   app.enableCors({
     origin: (origin, callback) => {
       // origin이 존재하지 않는 경우(null)도 허용 (서버 간 요청, Postman)

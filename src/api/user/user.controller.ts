@@ -11,8 +11,6 @@ import {
   Delete,
   Query,
   ConflictException,
-  HttpCode,
-  HttpStatus,
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
@@ -73,10 +71,8 @@ export class UserController {
     @Body() updateProfileDTO?: UpdateProfileDTO,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB 제한
-          new FileTypeValidator({ fileType: /image\/(jpg|jpeg|png)/ }), // ✅ jpg, jpeg, png 허용
-        ],
+        validators: [new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), new FileTypeValidator({ fileType: /image\/(jpg|jpeg|png)/ })],
+        fileIsRequired: false,
       }),
     )
     file?: Express.Multer.File,

@@ -19,6 +19,9 @@ export class Shop {
   @Column({ type: 'int', default: 0 }) // 0: 검증된 shop , 1: 사용자 제보하기로 생성된 shop
   type: number;
 
+  @Column({ type: 'varchar', length: 255, default: null })
+  instagram: string;
+
   @Column({ type: 'double' })
   lat: number;
 
