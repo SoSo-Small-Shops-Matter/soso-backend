@@ -111,7 +111,7 @@ export class ReviewPageNationDTO {
   @Type(() => Number)
   limit: number;
 
-  @ApiProperty({ description: 'DESC: 최신순 ACS:오래된 순 ', enum: ['ACS', 'DESC'] })
+  @ApiProperty({ description: 'DESC: 최신순 ASC:오래된 순 ', enum: ['ASC', 'DESC'] })
   @IsNotEmpty()
   @Matches(/^[^\x00-\x1F\x7F]*$/, {
     message: '제어 문자를 포함할 수 없습니다.',
