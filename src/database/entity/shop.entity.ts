@@ -21,7 +21,7 @@ export class Shop {
 
   @Column({ type: 'varchar', length: 255, default: null })
   instagram: string;
-  
+
   @Column({ type: 'double' })
   lat: number;
 

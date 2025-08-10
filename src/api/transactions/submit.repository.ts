@@ -29,7 +29,7 @@ export class SubmitTransactionsRepository {
 
       const createShop = await shopRepo.save({
         ...shop,
-        type: SubmitType.NewShop,
+        type: 1,
         region: {
           id: regionId,
         },
