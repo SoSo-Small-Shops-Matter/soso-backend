@@ -21,12 +21,17 @@ import { SuccessResponseDTO } from 'src/common/response/response.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
+import { ApiNoContentResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiDefaultResponses } from '../../common/deco/swagger-default.deco';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Delete('/:uuid')
+  @ApiOperation({ summary: '회원탈퇴 API' })
+  @ApiNoContentResponse()
+  @ApiDefaultResponses()
   @UseGuards(JwtAuthGuard)
   async deleteUser(@Query('deleteType') deleteType: number, @Param('uuid') uuid: string, @GetUUID() currentUUID: string) {
     if (uuid !== currentUUID) throw new ConflictException('Not equal User UUID');
@@ -34,11 +39,16 @@ export class UserController {
   }
 
   @Get('/nickname/:nickName')
+  @ApiOperation({ summary: '회원탈퇴 API' })
+  @ApiDefaultResponses()
   async checkNickName(@Param() nickNameDTO: NickNameDTO) {
     return new SuccessResponseDTO(await this.userService.findUserNickName(nickNameDTO));
   }
 
   @Post('/nickname')
+  @ApiOperation({ summary: '닉네임 저장 API' })
+  @ApiNoContentResponse()
+  @ApiDefaultResponses()
   @UseGuards(JwtAuthGuard)
   async setNickName(@Body() nickNameDTO: NickNameDTO, @GetUUID() uuid: string) {
     return new SuccessResponseDTO(await this.userService.findAndUpdateUserNickname(nickNameDTO, uuid));
@@ -51,6 +61,9 @@ export class UserController {
   }
 
   @Patch('/profile')
+  @ApiOperation({ summary: '유저 프로필 업데이트 API' })
+  @ApiNoContentResponse()
+  @ApiDefaultResponses()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async updateProfile(

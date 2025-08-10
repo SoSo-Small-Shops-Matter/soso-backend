@@ -16,7 +16,7 @@ export class RecentSearchService {
     const { shopName } = deleteRecentSearchDTO;
     await this.recentSearchRepository.deleteRecentSearch(uuid, shopName);
   }
-
+3
   async deleteAllRecentSearch(uuid: string) {
     await this.recentSearchRepository.deleteAllRecentSearch(uuid);
   }

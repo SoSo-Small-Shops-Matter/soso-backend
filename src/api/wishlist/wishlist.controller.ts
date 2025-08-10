@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 import { SaveWishListDTO } from './dto/wishlist.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
