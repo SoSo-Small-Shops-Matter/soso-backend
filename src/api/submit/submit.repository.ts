@@ -118,6 +118,7 @@ export class SubmitRepository {
         .createQueryBuilder('submit') // ✅ 엔티티 별칭 수정
         .where('submit.user.uuid = :uuid', { uuid }) // ✅ where 절 수정
         .leftJoinAndSelect('submit.shop', 'shop') // ✅ shop 관계 조인
+        .orderBy('submit.createdAt', 'DESC') // ✅ 최신순 정렬
         .skip(limit * (page - 1)) // ✅ offset 설정
         .take(limit) // ✅ limit 설정
         .getMany();
