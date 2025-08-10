@@ -58,7 +58,7 @@ export class WishlistRepository extends Repository<Wishlist> {
     }
   }
 
-  async findUserWishlistByUUID(uuid: string, area: string | null) {
+  async findUserWishlistByUUID(uuid: string, areaId?: number) {
     try {
       const query = this.whishlistRepository
         .createQueryBuilder('wishlist')
@@ -66,9 +66,8 @@ export class WishlistRepository extends Repository<Wishlist> {
         .leftJoinAndSelect('shop.region', 'region')
         .where('wishlist.userUuid = :uuid', { uuid });
 
-      // ✅ area가 null 또는 undefined가 아닐 때만 필터링 추가
-      if (area) {
-        query.andWhere('region.name = :area', { area });
+      if (areaId) {
+        query.andWhere('region.id = :areaId', { areaId });
       }
 
       return await query.getCount();
@@ -78,7 +77,7 @@ export class WishlistRepository extends Repository<Wishlist> {
     }
   }
 
-  async findUserWishlistByPageNation(uuid: string, page: number, limit: number, area: string | null) {
+  async findUserWishlistByPageNation(uuid: string, page: number, limit: number, areaId?: number) {
     try {
       const query = this.whishlistRepository
         .createQueryBuilder('wishlist')
@@ -86,8 +85,8 @@ export class WishlistRepository extends Repository<Wishlist> {
         .leftJoinAndSelect('shop.region', 'region')
         .where('wishlist.userUuid = :uuid', { uuid });
 
-      if (area) {
-        query.andWhere('region.name = :area', { area });
+      if (areaId) {
+        query.andWhere('region.id = :areaId', { areaId });
       }
 
       return await query

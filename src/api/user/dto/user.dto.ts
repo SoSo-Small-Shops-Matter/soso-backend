@@ -89,15 +89,10 @@ export class WishlistPageNationDTO {
   @Type(() => Number)
   limit: number;
 
-  @ApiPropertyOptional({ description: '지역 필터링', example: '서울' })
+  @ApiPropertyOptional({ description: '지역 필터링 지역 id', example: 1 })
   @IsOptional()
-  @Matches(/^[^\x00-\x1F\x7F]*$/, {
-    message: '제어 문자를 포함할 수 없습니다.',
-  })
-  @Matches(/^(?!.*(<script|<\/script>|<iframe|on\w+=|javascript:|eval\()).*$/i, {
-    message: '스크립트 또는 악성 코드를 포함할 수 없습니다.',
-  })
-  area?: string;
+  @Type(() => Number)
+  areaId?: number;
 }
 
 export class ReviewPageNationDTO {
