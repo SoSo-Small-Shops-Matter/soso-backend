@@ -15,7 +15,7 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import {
-  CheckNickNameDTO,
+  ValidateNickNameDTO,
   DeleteSubmitRecordParamDto,
   DeleteTypeDTO,
   PageNationDTO,
@@ -158,8 +158,8 @@ export class UserController {
       ],
     },
   })
-  async checkNickName(@Query() nickNameDTO: CheckNickNameDTO) {
-    return new SuccessResponseDTO(await this.userService.findUserNickName(nickNameDTO));
+  async validateNickName(@Query() validateNickNameDTP: ValidateNickNameDTO) {
+    return new SuccessResponseDTO(await this.userService.findUserNickName(validateNickNameDTP));
   }
 
   @Get('/me/shop-submissions')
@@ -182,8 +182,8 @@ export class UserController {
       ],
     },
   })
-  async getSubmitShop(@GetUUID() uuid: string, @Query() pageNation: PageNationDTO) {
-    return new SuccessResponseDTO(await this.userService.findSubmitRecord(pageNation, uuid));
+  async getUserShopSubmissions(@GetUUID() uuid: string, @Query() pageNation: PageNationDTO) {
+    return new SuccessResponseDTO(await this.userService.findUserShopSubmissions(pageNation, uuid));
   }
 
   @Delete('/me/shop-submissions/:submitId')
@@ -196,8 +196,8 @@ export class UserController {
     description: '제보한 데이터 제거 성공',
     type: SuccessNoResultResponseDTO,
   })
-  async deleteSubmitRecord(@Param() deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, @GetUUID() uuid: string) {
-    await this.userService.deleteSubmitRecord(deleteSubmitRecordParamDto, uuid);
+  async deleteUserShopSubmission(@Param() deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, @GetUUID() uuid: string) {
+    await this.userService.deleteUserShopSubmission(deleteSubmitRecordParamDto, uuid);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -221,7 +221,7 @@ export class UserController {
       ],
     },
   })
-  async getUserReview(@GetUUID() uuid: string, @Query() pageNation: ReviewPageNationDTO) {
+  async getUserReviews(@GetUUID() uuid: string, @Query() pageNation: ReviewPageNationDTO) {
     return new SuccessResponseDTO(await this.userService.findUserReviews(pageNation, uuid));
   }
 
@@ -245,8 +245,8 @@ export class UserController {
       ],
     },
   })
-  async getUserWishlist(@GetUUID() uuid: string, @Query() pageNation: WishlistPageNationDTO) {
-    return new SuccessResponseDTO(await this.userService.getWishlist(pageNation, uuid));
+  async getUserWishlists(@GetUUID() uuid: string, @Query() pageNation: WishlistPageNationDTO) {
+    return new SuccessResponseDTO(await this.userService.getUserWishlists(pageNation, uuid));
   }
 
   @Post('/me/wishlist')
@@ -260,8 +260,8 @@ export class UserController {
     description: '찜하기 성공',
     type: SuccessNoResultResponseDTO,
   })
-  async addWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: SaveWishListDTO) {
-    await this.userService.addWishlistByShopIdAndUUID(saveWishListDto, uuid);
+  async addUserWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: SaveWishListDTO) {
+    await this.userService.addUserWishlist(saveWishListDto, uuid);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -289,8 +289,8 @@ export class UserController {
       ],
     },
   })
-  async getRecentSearch(@GetUUID() uuid: string) {
-    return new SuccessResponseDTO(await this.userService.getRecentSearch(uuid));
+  async getUserRecentSearches(@GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.userService.getUserRecentSearches(uuid));
   }
 
   @Delete('/me/recent-searches')

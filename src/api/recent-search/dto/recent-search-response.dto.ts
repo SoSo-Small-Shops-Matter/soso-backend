@@ -11,13 +11,18 @@ export class RecentSearchDTO {
   @ApiProperty({ description: '소품샵 ID', example: 42 })
   shopId: number;
 
-  constructor(id: number, shopName: string, shopId: number) {
-    this.id = id;
-    this.shopName = shopName;
-    this.shopId = shopId;
+  constructor(data: Partial<RecentSearchDTO>) {
+    Object.assign(this, data);
   }
 
-  static fromEntity(entity: RecentSearch): RecentSearchDTO {
-    return new RecentSearchDTO(entity.id, entity.shopName, entity.shopId);
+  static fromEntities(entities: RecentSearch[]): RecentSearchDTO[] {
+    return entities.map(
+      (e) =>
+        new RecentSearchDTO({
+          id: e.id,
+          shopName: e.shopName,
+          shopId: e.shopId,
+        }),
+    );
   }
 }

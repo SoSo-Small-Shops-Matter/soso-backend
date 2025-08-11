@@ -10,11 +10,13 @@ import { WishlistModule } from '../wishlist/wishlist.module';
 import { SubmitModule } from '../submit/submit.module';
 import { RecentSearchModule } from '../recent-search/recent-search.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { ShopModule } from '../shop/shop.module';
 
 @Module({
   imports: [
     forwardRef(() => SubmitModule),
     TypeOrmModule.forFeature([User]),
+    ShopModule,
     AwsModule,
     ReviewModule,
     WishlistModule,

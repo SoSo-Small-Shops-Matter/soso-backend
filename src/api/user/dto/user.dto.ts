@@ -2,7 +2,7 @@ import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'clas
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class CheckNickNameDTO {
+export class ValidateNickNameDTO {
   @ApiProperty({ description: '닉네임', example: '닉네임' })
   @IsNotEmpty()
   @IsString()

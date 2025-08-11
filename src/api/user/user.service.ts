@@ -1,11 +1,11 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import {
-  CheckNickNameDTO,
+  ValidateNickNameDTO,
   DeleteSubmitRecordParamDto,
   DeleteTypeDTO,
   PageNationDTO,
@@ -23,6 +23,7 @@ import { DeleteRecentSearchDTO } from '../recent-search/dto/recent-search.dto';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 import { SubmitType } from '../../common/enum/role.enum';
 import { SubmitTransactionsRepository } from '../transactions/submit.repository';
+import { ShopRepository } from '../shop/shop.repository';
 
 @Injectable()
 export class UserService {
@@ -35,12 +36,8 @@ export class UserService {
     private recentSearchRepository: RecentSearchRepository,
     private deleteUserTransactionsRepository: DeleteUserTransactionsRepository,
     private submitTransactionsRepository: SubmitTransactionsRepository,
+    private shopRepository: ShopRepository,
   ) {}
-
-  async findUserNickName(nickNameDTO: CheckNickNameDTO): Promise<boolean> {
-    const { nickName } = nickNameDTO;
-    return !!(await this.userRepository.findUserByNickName(nickName));
-  }
 
   async getUserProfile(uuid: string): Promise<UserProfileDTO> {
     const userProfile = await this.userRepository.findUserByUUID(uuid);
@@ -53,25 +50,31 @@ export class UserService {
     const { nickName } = updateProfileDTO;
     if (nickName) {
       const existNickName = await this.userRepository.findUserByNickName(nickName);
-      if (existNickName) {
-        throw new ConflictException('Nickname already exists.');
-      }
+      if (existNickName) throw new ConflictException('Nickname already exists.');
 
       const newNickName = await this.userRepository.updateNickName(uuid, nickName);
-      if (newNickName.affected == 0) {
-        throw new InternalServerErrorException();
-      }
+      if (newNickName.affected == 0) throw new NotFoundException('Fail update nickname');
     }
     if (file) {
       const [photoUrl] = await this.awsService.uploadImagesToS3(file, 'jpg');
+      if (!photoUrl) throw new NotFoundException('Not Exists photo');
+
       const updateUrl = await this.userRepository.updateUserPhotoUrl(uuid, photoUrl);
-      if (updateUrl.affected == 0) {
-        throw new InternalServerErrorException();
-      }
+      if (updateUrl.affected == 0) throw new NotFoundException('Fail update profileImg');
     }
   }
 
-  async findSubmitRecord(pageNation: PageNationDTO, uuid: string) {
+  async deleteUser(uuid: string, deleteTypeDTO: DeleteTypeDTO) {
+    const user = await this.userRepository.findUserByUUID(uuid);
+    await this.deleteUserTransactionsRepository.deleteUser(user, deleteTypeDTO.deleteType);
+  }
+
+  async findUserNickName(nickNameDTO: ValidateNickNameDTO): Promise<boolean> {
+    const { nickName } = nickNameDTO;
+    return !!(await this.userRepository.findUserByNickName(nickName));
+  }
+
+  async findUserShopSubmissions(pageNation: PageNationDTO, uuid: string) {
     const { page, limit } = pageNation;
     const userSubmitsCount = await this.submitRepository.findUserSubmitUserRecord(uuid);
     const pageNationResult: SubmitUserRecord[] = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
@@ -91,7 +94,7 @@ export class UserService {
     return new UserReviewsRecordDTO(pageNationResult, pageInfoDTO);
   }
 
-  async getWishlist(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
+  async getUserWishlists(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
     const { page, limit, areaId } = wishlistPageNation;
     const userWishlistsCount = await this.wishlistRepository.findUserWishlistByUUID(uuid, areaId);
     const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, areaId);
@@ -100,24 +103,23 @@ export class UserService {
     return new UserWishlistRecordDTO(pageNationResult, pageInfoDTO);
   }
 
-  async deleteUser(uuid: string, deleteTypeDTO: DeleteTypeDTO) {
-    const user = await this.userRepository.findUserByUUID(uuid);
-    if (!user) throw new NotFoundException();
-    // 유저 이미지 제거
-    await this.deleteUserTransactionsRepository.deleteUser(user, deleteTypeDTO.deleteType);
-  }
-
-  async addWishlistByShopIdAndUUID(saveWishListDTO: SaveWishListDTO, uuid: string) {
+  async addUserWishlist(saveWishListDTO: SaveWishListDTO, uuid: string) {
     const { shopId } = saveWishListDTO;
+
+    const shop = await this.shopRepository.findShopByShopId(shopId);
+    if (!shop) throw new NotFoundException('Not Fount Shop');
+
     const wishlist = await this.wishlistRepository.findWishlistByShopIdAndUUID(shopId, uuid);
     if (wishlist) return await this.wishlistRepository.deleteWishlistByWishlistId(wishlist.id);
-    await this.wishlistRepository.addWishlistByShopIdAndUUID(shopId, uuid);
+
+    return await this.wishlistRepository.addWishlistByShopIdAndUUID(shopId, uuid);
   }
 
-  async getRecentSearch(uuid: string | null) {
+  async getUserRecentSearches(uuid: string) {
     if (!uuid) return [];
+
     const result = await this.recentSearchRepository.findRecentSearchListByUUID(uuid);
-    return result.map(RecentSearchDTO.fromEntity);
+    return RecentSearchDTO.fromEntities(result);
   }
 
   async deleteAllRecentSearch(uuid: string) {
@@ -129,11 +131,10 @@ export class UserService {
     await this.recentSearchRepository.deleteRecentSearch(uuid, recentSearchId);
   }
 
-  async deleteSubmitRecord(deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, uuid: string): Promise<void> {
+  async deleteUserShopSubmission(deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, uuid: string): Promise<void> {
     const { submitId } = deleteSubmitRecordParamDto;
     const submitRecord = await this.submitRepository.findSubmitRecordById(submitId, uuid);
-
-    if (!submitRecord) throw new NotFoundException();
+    if (!submitRecord) throw new NotFoundException('Not found Submission');
 
     switch (submitRecord.type) {
       case SubmitType.NewShop: // 최초 제보
