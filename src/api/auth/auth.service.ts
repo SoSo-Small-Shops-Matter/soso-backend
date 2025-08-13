@@ -21,6 +21,10 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  private getAppleAudiences(): string[] {
+    return [this.configService.get<string>('APPLE_IOS_BUNDLE_ID'), this.configService.get<string>('APPLE_SERVICE_ID')].filter(Boolean);
+  }
+
   async googleAuthLogin(googleAuthLoginDTO: GoogleAuthLoginDTO) {
     try {
       const { code, redirectUri } = googleAuthLoginDTO;
@@ -95,9 +99,18 @@ export class AuthService {
 
   async validateAppleToken(idToken: string) {
     try {
-      const payload = await appleSignin.verifyIdToken(idToken, {
-        audience: this.configService.get<string>('APPLE_AUDIENCE_ID'),
-      });
+      const payload = await appleSignin.verifyIdToken(idToken);
+
+      if (payload.iss !== 'https://appleid.apple.com') {
+        throw new UnauthorizedException('Invalid token issuer');
+      }
+
+      // 3) audience 화이트리스트 검사 (앱/웹 모두 허용)
+      const validAudiences = this.getAppleAudiences();
+      if (!validAudiences.includes(payload.aud as string)) {
+        throw new UnauthorizedException('Invalid audience');
+      }
+
       return payload;
     } catch (err) {
       this.loggerService.warn(`Auth/ GoogleAuthLogin Error: ${err}`);
