@@ -4,26 +4,26 @@ import { AwsService } from '../aws/aws.service';
 import { ReviewRepository } from '../review/review.repository';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
-import {
-  ValidateNickNameDTO,
-  DeleteSubmitRecordParamDto,
-  DeleteTypeDTO,
-  PageNationDTO,
-  ReviewPageNationDTO,
-  SaveWishListDTO,
-  UpdateProfileDTO,
-  UserProfileDTO,
-  WishlistPageNationDTO,
-} from './dto/user.dto';
-import { PagingDto, UserReviewsRecordDTO, UserSubmitRecordDTO, UserSubmitRecordItemDTO, UserWishlistRecordDTO } from './dto/paging.dto';
+
+import { ValidateNickNameDTO } from './dto/query/nickname.dto';
+import { DeleteTypeDTO } from './dto/query/delete-type.dto';
+import { PaginationQueryDTO, ReviewPaginationDTO, WishlistPageNationDTO } from './dto/query/pagination.dto';
+import { UpdateProfileDTO } from './dto/requests/profile.dto';
+
+import { UserProfileDTO } from './dto/responses/user-profile.dto';
+import { PageInfoDTO } from './dto/responses/pagination.dto';
+import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit-record.dto';
+import { UserWishlistRecordDTO } from './dto/responses/wishlist-record.dto';
+import { UserReviewsRecordDTO } from './dto/responses/review-record.dto';
+import { RecentSearchDTO } from './dto/responses/recent-search.dto';
+
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { DeleteUserTransactionsRepository } from '../transactions/delete-user.repository';
-import { RecentSearchDTO } from '../recent-search/dto/recent-search-response.dto';
-import { DeleteRecentSearchDTO } from '../recent-search/dto/recent-search.dto';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
 import { SubmitType } from '../../common/enum/role.enum';
 import { SubmitTransactionsRepository } from '../transactions/submit.repository';
 import { ShopRepository } from '../shop/shop.repository';
+import { SaveWishListDTO } from './dto/requests/save-wishlist.dto';
 
 @Injectable()
 export class UserService {
@@ -42,12 +42,12 @@ export class UserService {
   async getUserProfile(uuid: string): Promise<UserProfileDTO> {
     const userProfile = await this.userRepository.findUserByUUID(uuid);
     if (!userProfile) throw new NotFoundException('Not Found User');
-
     return new UserProfileDTO(userProfile);
   }
 
   async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, file?: Express.Multer.File) {
     const { nickName } = updateProfileDTO;
+
     if (nickName) {
       const existNickName = await this.userRepository.findUserByNickName(nickName);
       if (existNickName) throw new ConflictException('Nickname already exists.');
@@ -55,6 +55,7 @@ export class UserService {
       const newNickName = await this.userRepository.updateNickName(uuid, nickName);
       if (newNickName.affected == 0) throw new NotFoundException('Fail update nickname');
     }
+
     if (file) {
       const [photoUrl] = await this.awsService.uploadImagesToS3(file, 'jpg');
       if (!photoUrl) throw new NotFoundException('Not Exists photo');
@@ -74,40 +75,43 @@ export class UserService {
     return !!(await this.userRepository.findUserByNickName(nickName));
   }
 
-  async findUserShopSubmissions(pageNation: PageNationDTO, uuid: string) {
+  async findUserShopSubmissions(pageNation: PaginationQueryDTO, uuid: string) {
     const { page, limit } = pageNation;
-    const userSubmitsCount = await this.submitRepository.findUserSubmitUserRecord(uuid);
-    const pageNationResult: SubmitUserRecord[] = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
-    const mappedResult: UserSubmitRecordItemDTO[] = pageNationResult.map((record) => new UserSubmitRecordItemDTO(record));
-    const totalPages = Math.ceil(userSubmitsCount / limit);
-    const pageInfoDTO = new PagingDto(page, limit, userSubmitsCount, totalPages, page < totalPages);
-    return new UserSubmitRecordDTO(mappedResult, pageInfoDTO);
+    const totalCount = await this.submitRepository.findUserSubmitUserRecord(uuid);
+    const rows: SubmitUserRecord[] = await this.submitRepository.findUserSubmitUserRecordByPageNation(uuid, page, limit);
+
+    const mapped: UserSubmitRecordItemDTO[] = rows.map((record) => new UserSubmitRecordItemDTO(record));
+    const pageInfo = new PageInfoDTO(page, limit, totalCount);
+
+    return new UserSubmitRecordDTO(mapped, pageInfo);
   }
 
-  async findUserReviews(reviewPageNation: ReviewPageNationDTO, uuid: string) {
+  async findUserReviews(reviewPageNation: ReviewPaginationDTO, uuid: string) {
     const { sort, page, limit } = reviewPageNation;
-    const sortType = sort == 'ASC' ? 'ASC' : 'DESC';
-    const userReviewsCount = await this.reviewRepository.findUserReviewByUUID(uuid);
-    const pageNationResult = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sortType);
-    const totalPages = Math.ceil(userReviewsCount / limit);
-    const pageInfoDTO = new PagingDto(page, limit, userReviewsCount, totalPages, page < totalPages);
-    return new UserReviewsRecordDTO(pageNationResult, pageInfoDTO);
+    const sortType = sort === 'ASC' ? 'ASC' : 'DESC';
+
+    const totalCount = await this.reviewRepository.findUserReviewByUUID(uuid);
+    const rows = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sortType);
+
+    const pageInfo = new PageInfoDTO(page, limit, totalCount);
+    return new UserReviewsRecordDTO(rows, pageInfo);
   }
 
   async getUserWishlists(wishlistPageNation: WishlistPageNationDTO, uuid: string) {
     const { page, limit, areaId } = wishlistPageNation;
-    const userWishlistsCount = await this.wishlistRepository.findUserWishlistByUUID(uuid, areaId);
-    const pageNationResult = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, areaId);
-    const totalPages = Math.ceil(userWishlistsCount / limit);
-    const pageInfoDTO = new PagingDto(page, limit, userWishlistsCount, totalPages, page < totalPages);
-    return new UserWishlistRecordDTO(pageNationResult, pageInfoDTO);
+
+    const totalCount = await this.wishlistRepository.findUserWishlistByUUID(uuid, areaId);
+    const rows = await this.wishlistRepository.findUserWishlistByPageNation(uuid, page, limit, areaId);
+
+    const pageInfo = new PageInfoDTO(page, limit, totalCount);
+    return new UserWishlistRecordDTO(rows, pageInfo);
   }
 
   async addUserWishlist(saveWishListDTO: SaveWishListDTO, uuid: string) {
     const { shopId } = saveWishListDTO;
 
     const shop = await this.shopRepository.findShopByShopId(shopId);
-    if (!shop) throw new NotFoundException('Not Fount Shop');
+    if (!shop) throw new NotFoundException('Not Found Shop'); // 오타 수정
 
     const wishlist = await this.wishlistRepository.findWishlistByShopIdAndUUID(shopId, uuid);
     if (wishlist) return await this.wishlistRepository.deleteWishlistByWishlistId(wishlist.id);
@@ -117,7 +121,6 @@ export class UserService {
 
   async getUserRecentSearches(uuid: string) {
     if (!uuid) return [];
-
     const result = await this.recentSearchRepository.findRecentSearchListByUUID(uuid);
     return RecentSearchDTO.fromEntities(result);
   }
@@ -126,24 +129,22 @@ export class UserService {
     await this.recentSearchRepository.deleteAllRecentSearch(uuid);
   }
 
-  async deleteRecentSearchById(uuid: string, deleteRecentSearchDTO: DeleteRecentSearchDTO) {
-    const { recentSearchId } = deleteRecentSearchDTO;
+  async deleteRecentSearchById(uuid: string, recentSearchId: number) {
     await this.recentSearchRepository.deleteRecentSearch(uuid, recentSearchId);
   }
 
-  async deleteUserShopSubmission(deleteSubmitRecordParamDto: DeleteSubmitRecordParamDto, uuid: string): Promise<void> {
-    const { submitId } = deleteSubmitRecordParamDto;
+  async deleteUserShopSubmission(submitId: number, uuid: string): Promise<void> {
     const submitRecord = await this.submitRepository.findSubmitRecordById(submitId, uuid);
     if (!submitRecord) throw new NotFoundException('Not found Submission');
 
     switch (submitRecord.type) {
-      case SubmitType.NewShop: // 최초 제보
+      case SubmitType.NewShop:
         await this.submitTransactionsRepository.deleteShopSubmission(submitRecord.shop.id);
         break;
-      case SubmitType.NewOperating: // 운영 정보 수정
+      case SubmitType.NewOperating:
         await this.submitTransactionsRepository.deleteOperatingHoursSubmission(submitId, submitRecord.operatingId);
         break;
-      case SubmitType.NewProduct: // 판매 정보 수정
+      case SubmitType.NewProduct:
         await this.submitTransactionsRepository.deleteProductSubmission(submitRecord.shop.id, uuid);
         break;
       default:
