@@ -16,7 +16,7 @@ export class PageInfoDTO {
   }
 }
 
-export class PaginationDto<T> {
+export class Pagination_responsesDto<T> {
   @ApiProperty({ isArray: true }) data: T[];
   @ApiProperty({ type: PageInfoDTO }) pageInfo: PageInfoDTO;
 

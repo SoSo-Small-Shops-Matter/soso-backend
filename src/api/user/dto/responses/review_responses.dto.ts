@@ -1,7 +1,6 @@
-// lists/wishlist-record.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { PageInfoDTO, PaginationDto } from '../responses/pagination.dto';
-import { Wishlist } from '../../../../database/entity/wishlist.entity';
+import { PageInfoDTO, Pagination_responsesDto } from './pagination_responses.dto';
+import { Review } from '../../../../database/entity/review.entity';
 
 export class ShopItemDTO {
   @ApiProperty({ description: '소품샵 ID', example: 7 })
@@ -14,34 +13,33 @@ export class ShopItemDTO {
   image: string | null;
 }
 
-export class UserWishlistRecordItemDTO {
-  @ApiProperty({ description: '찜 기록 ID', example: 15 })
+export class UserReviewsRecordItemDTO {
+  @ApiProperty({ description: '리뷰 ID', example: 15 })
   id: number;
 
   @ApiProperty({ description: '생성일', example: '2025-08-02T06:11:18.498Z' })
   createdAt: Date;
 
-  @ApiProperty({ description: '수정일', example: '2025-08-02T06:11:18.498Z' })
-  updatedAt: Date;
+  @ApiProperty({ description: '리뷰 글', example: '리뷰내용~~' })
+  content: string;
 
   @ApiProperty({ type: ShopItemDTO, description: '소품샵 정보' })
   shop: ShopItemDTO;
 
-  constructor(record: Wishlist) {
+  constructor(record: Review) {
     this.id = record.id;
     this.createdAt = record.createdAt;
-    this.updatedAt = record.updatedAt;
-    // 엔티티에 shop 관계가 로드되어 있다는 전제
-    this.shop = record.shop as unknown as ShopItemDTO;
+    this.content = record.content;
+    this.shop = record.shop;
   }
 }
 
-export class UserWishlistRecordDTO extends PaginationDto<UserWishlistRecordItemDTO> {
+export class UserReviewsRecordDTO extends Pagination_responsesDto<UserReviewsRecordItemDTO> {
   @ApiProperty({
-    type: [UserWishlistRecordItemDTO],
-    description: '찜한 소품샵 리스트',
+    type: [UserReviewsRecordItemDTO],
+    description: '사용자가 작성한 리뷰 리스트',
   })
-  data: UserWishlistRecordItemDTO[];
+  data: UserReviewsRecordItemDTO[];
 
   @ApiProperty({
     type: PageInfoDTO,

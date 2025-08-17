@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+
+export class UserDto {
+  @ApiProperty({ description: '회원 탈퇴 이유 Type', example: 1 })
+  @IsNotEmpty()
+  @Type(() => Number)
+  deleteType: number;
+}
 
 export class ValidateNickNameDTO {
   @ApiProperty({ example: '소소한유저' })

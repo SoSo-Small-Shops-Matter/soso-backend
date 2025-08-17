@@ -24,19 +24,18 @@ import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
 
-import { ValidateNickNameDTO } from './dto/query/nickname.dto';
-import { UpdateProfileDTO } from './dto/requests/profile.dto';
-import { DeleteTypeDTO } from './dto/query/delete-type.dto';
+import { UpdateProfileDTO } from './dto/requests/user_requests.dto';
+import { UserDto, ValidateNickNameDTO } from './dto/query/user.dto';
 
 import { PaginationQueryDTO, ReviewPaginationDTO, WishlistPageNationDTO } from './dto/query/pagination.dto';
-import { PageInfoDTO, PaginationDto } from './dto/responses/pagination.dto';
+import { PageInfoDTO, Pagination_responsesDto } from './dto/responses/pagination_responses.dto';
 
-import { UserProfileDTO } from './dto/responses/user-profile.dto';
-import { RecentSearchDTO } from './dto/responses/recent-search.dto';
-import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit-record.dto';
-import { UserWishlistRecordDTO, UserWishlistRecordItemDTO } from './dto/responses/wishlist-record.dto';
-import { UserReviewsRecordDTO, UserReviewsRecordItemDTO } from './dto/responses/review-record.dto';
-import { SaveWishListDTO } from './dto/requests/save-wishlist.dto';
+import { User_responsesDto } from './dto/responses/user_responses.dto';
+import { Recent_search_responsesDto } from './dto/responses/recent_search_responses.dto';
+import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit_responses.dto';
+import { UserWishlistRecordDTO, UserWishlistRecordItemDTO } from './dto/responses/wishlist_responses.dto';
+import { UserReviewsRecordDTO, UserReviewsRecordItemDTO } from './dto/responses/review_responses.dto';
+import { Wishlist_requestsDto } from './dto/requests/wishlist_requests.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -50,11 +49,11 @@ export class UserController {
     summary: '프로필 정보 불러오기',
     description: 'isNew: 닉네임 작성 완료 여부 (false면 닉네임 설정 페이지로 이동 필요)',
   })
-  @ApiExtraModels(SuccessResponseDTO, UserProfileDTO)
+  @ApiExtraModels(SuccessResponseDTO, User_responsesDto)
   @ApiOkResponse({
     description: '프로필 정보 불러오기 성공',
     schema: {
-      allOf: [{ $ref: getSchemaPath(SuccessResponseDTO) }, { properties: { result: { $ref: getSchemaPath(UserProfileDTO) } } }],
+      allOf: [{ $ref: getSchemaPath(SuccessResponseDTO) }, { properties: { result: { $ref: getSchemaPath(User_responsesDto) } } }],
     },
   })
   async getUserProfile(@GetUUID() uuid: string) {
@@ -98,7 +97,7 @@ export class UserController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '회원탈퇴' })
   @ApiOkResponse({ description: '회원탈퇴 성공', type: SuccessNoResultResponseDTO })
-  async deleteUser(@Query() deleteTypeDTO: DeleteTypeDTO, @GetUUID() uuid: string) {
+  async deleteUser(@Query() deleteTypeDTO: UserDto, @GetUUID() uuid: string) {
     await this.userService.deleteUser(uuid, deleteTypeDTO);
     return new SuccessNoResultResponseDTO();
   }
@@ -119,7 +118,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '사용자가 등록/제안한 소품샵 정보' })
-  @ApiExtraModels(UserSubmitRecordDTO, UserSubmitRecordItemDTO, PageInfoDTO, PaginationDto)
+  @ApiExtraModels(UserSubmitRecordDTO, UserSubmitRecordItemDTO, PageInfoDTO, Pagination_responsesDto)
   @ApiOkResponse({
     description: '사용자가 등록/제안한 소품샵 정보 조회 성공',
     schema: {
@@ -150,7 +149,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '사용자가 등록한 리뷰 정보' })
-  @ApiExtraModels(UserReviewsRecordDTO, UserReviewsRecordItemDTO, PageInfoDTO, PaginationDto)
+  @ApiExtraModels(UserReviewsRecordDTO, UserReviewsRecordItemDTO, PageInfoDTO, Pagination_responsesDto)
   @ApiOkResponse({
     description: '사용자가 등록한 리뷰 조회 성공',
     schema: {
@@ -165,7 +164,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '사용자가 찜한 소품샵 리스트' })
-  @ApiExtraModels(UserWishlistRecordDTO, UserWishlistRecordItemDTO, PageInfoDTO, PaginationDto)
+  @ApiExtraModels(UserWishlistRecordDTO, UserWishlistRecordItemDTO, PageInfoDTO, Pagination_responsesDto)
   @ApiOkResponse({
     description: '찜한 소품샵 리스트 조회 성공',
     schema: {
@@ -181,7 +180,7 @@ export class UserController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '소품샵 찜하기', description: '찜하기 리스트에 해당 소품샵을 넣습니다.' })
   @ApiOkResponse({ description: '찜하기 성공', type: SuccessNoResultResponseDTO })
-  async addUserWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: SaveWishListDTO) {
+  async addUserWishlist(@GetUUID() uuid: string, @Body() saveWishListDto: Wishlist_requestsDto) {
     await this.userService.addUserWishlist(saveWishListDto as any, uuid);
     return new SuccessNoResultResponseDTO();
   }
@@ -189,13 +188,13 @@ export class UserController {
   @Get('/me/recent-searches')
   @UseGuards(OptionalAuthGuard)
   @ApiOperation({ summary: '최근 검색 기록 조회', description: '로그인된 경우 최근 검색한 소품샵 리스트를 반환합니다.' })
-  @ApiExtraModels(SuccessResponseDTO, RecentSearchDTO)
+  @ApiExtraModels(SuccessResponseDTO, Recent_search_responsesDto)
   @ApiOkResponse({
     description: '최근 검색 기록 조회 성공',
     schema: {
       allOf: [
         { $ref: getSchemaPath(SuccessResponseDTO) },
-        { properties: { result: { type: 'array', items: { $ref: getSchemaPath(RecentSearchDTO) } } } },
+        { properties: { result: { type: 'array', items: { $ref: getSchemaPath(Recent_search_responsesDto) } } } },
       ],
     },
   })

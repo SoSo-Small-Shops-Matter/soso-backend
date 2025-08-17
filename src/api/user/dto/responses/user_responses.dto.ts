@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserProfileDTO {
+export class User_responsesDto {
   @ApiProperty({ description: '유저 UUID', example: 'a1b2c3d4-e5f6-7890-abcd-1234567890ef' })
   uuid: string;
 

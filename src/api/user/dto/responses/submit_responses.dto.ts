@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationDto } from '../responses/pagination.dto';
+import { Pagination_responsesDto } from './pagination_responses.dto';
 import { SubmitUserRecord } from '../../../../database/entity/submit-user.entity';
 import { getSubmitStatusEnum } from '../../../../common/function/get-submit-status-enum';
 
@@ -32,4 +32,4 @@ export class UserSubmitRecordItemDTO {
   }
 }
 
-export class UserSubmitRecordDTO extends PaginationDto<UserSubmitRecordItemDTO> {}
+export class UserSubmitRecordDTO extends Pagination_responsesDto<UserSubmitRecordItemDTO> {}

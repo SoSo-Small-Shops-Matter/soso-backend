@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecentSearch } from '../../../../database/entity/recent-search.entity';
 
-export class RecentSearchDTO {
+export class Recent_search_responsesDto {
   @ApiProperty({ example: 1 }) id: number;
   @ApiProperty({ example: '소소한 상점' }) shopName: string;
   @ApiProperty({ example: 42 }) shopId: number;
 
-  constructor(init: Partial<RecentSearchDTO>) {
+  constructor(init: Partial<Recent_search_responsesDto>) {
     Object.assign(this, init);
   }
 
-  static fromEntities(entities: RecentSearch[]): RecentSearchDTO[] {
-    return entities.map((e) => new RecentSearchDTO({ id: e.id, shopName: e.shopName, shopId: e.shopId }));
+  static fromEntities(entities: RecentSearch[]): Recent_search_responsesDto[] {
+    return entities.map((e) => new Recent_search_responsesDto({ id: e.id, shopName: e.shopName, shopId: e.shopId }));
   }
 }

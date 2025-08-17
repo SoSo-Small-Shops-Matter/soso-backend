@@ -5,17 +5,16 @@ import { ReviewRepository } from '../review/review.repository';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 
-import { ValidateNickNameDTO } from './dto/query/nickname.dto';
-import { DeleteTypeDTO } from './dto/query/delete-type.dto';
+import { UserDto, ValidateNickNameDTO } from './dto/query/user.dto';
 import { PaginationQueryDTO, ReviewPaginationDTO, WishlistPageNationDTO } from './dto/query/pagination.dto';
-import { UpdateProfileDTO } from './dto/requests/profile.dto';
+import { UpdateProfileDTO } from './dto/requests/user_requests.dto';
 
-import { UserProfileDTO } from './dto/responses/user-profile.dto';
-import { PageInfoDTO } from './dto/responses/pagination.dto';
-import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit-record.dto';
-import { UserWishlistRecordDTO } from './dto/responses/wishlist-record.dto';
-import { UserReviewsRecordDTO } from './dto/responses/review-record.dto';
-import { RecentSearchDTO } from './dto/responses/recent-search.dto';
+import { User_responsesDto } from './dto/responses/user_responses.dto';
+import { PageInfoDTO } from './dto/responses/pagination_responses.dto';
+import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit_responses.dto';
+import { UserWishlistRecordDTO } from './dto/responses/wishlist_responses.dto';
+import { UserReviewsRecordDTO } from './dto/responses/review_responses.dto';
+import { Recent_search_responsesDto } from './dto/responses/recent_search_responses.dto';
 
 import { SubmitUserRecord } from '../../database/entity/submit-user.entity';
 import { DeleteUserTransactionsRepository } from '../transactions/delete-user.repository';
@@ -23,7 +22,7 @@ import { RecentSearchRepository } from '../recent-search/recent-search.repositor
 import { SubmitType } from '../../common/enum/role.enum';
 import { SubmitTransactionsRepository } from '../transactions/submit.repository';
 import { ShopRepository } from '../shop/shop.repository';
-import { SaveWishListDTO } from './dto/requests/save-wishlist.dto';
+import { Wishlist_requestsDto } from './dto/requests/wishlist_requests.dto';
 
 @Injectable()
 export class UserService {
@@ -39,10 +38,10 @@ export class UserService {
     private shopRepository: ShopRepository,
   ) {}
 
-  async getUserProfile(uuid: string): Promise<UserProfileDTO> {
+  async getUserProfile(uuid: string): Promise<User_responsesDto> {
     const userProfile = await this.userRepository.findUserByUUID(uuid);
     if (!userProfile) throw new NotFoundException('Not Found User');
-    return new UserProfileDTO(userProfile);
+    return new User_responsesDto(userProfile);
   }
 
   async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, file?: Express.Multer.File) {
@@ -65,7 +64,7 @@ export class UserService {
     }
   }
 
-  async deleteUser(uuid: string, deleteTypeDTO: DeleteTypeDTO) {
+  async deleteUser(uuid: string, deleteTypeDTO: UserDto) {
     const user = await this.userRepository.findUserByUUID(uuid);
     await this.deleteUserTransactionsRepository.deleteUser(user, deleteTypeDTO.deleteType);
   }
@@ -107,7 +106,7 @@ export class UserService {
     return new UserWishlistRecordDTO(rows, pageInfo);
   }
 
-  async addUserWishlist(saveWishListDTO: SaveWishListDTO, uuid: string) {
+  async addUserWishlist(saveWishListDTO: Wishlist_requestsDto, uuid: string) {
     const { shopId } = saveWishListDTO;
 
     const shop = await this.shopRepository.findShopByShopId(shopId);
@@ -122,7 +121,7 @@ export class UserService {
   async getUserRecentSearches(uuid: string) {
     if (!uuid) return [];
     const result = await this.recentSearchRepository.findRecentSearchListByUUID(uuid);
-    return RecentSearchDTO.fromEntities(result);
+    return Recent_search_responsesDto.fromEntities(result);
   }
 
   async deleteAllRecentSearch(uuid: string) {
