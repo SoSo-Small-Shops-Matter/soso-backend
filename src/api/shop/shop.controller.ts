@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -12,16 +12,15 @@ import {
 } from '@nestjs/swagger';
 import { ShopService } from './shop.service';
 import { SuccessNoResultResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
-import { GetSearchPageShopDTO, ParamShopIdDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
 import { GetUUID } from '../../common/deco/get-user.deco';
 import { OptionalAuthGuard } from 'src/common/gurad/optional-auth-guard.guard';
-import { ShopDetailResponseDTO, ShopWithin1KmResponseItemDTO } from './dto/response.dto';
-import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { PostReviewDto, ShopIdAndReviewIdParamDTO, UpdateReviewDto } from './dto/review.dto';
-import { ShopReportDto } from './dto/shop-report.dto';
-import { ReviewReportDto } from './dto/review-report.dto';
+import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/query/pagination.dto';
+import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/requests/submit_shop_requests.dto';
+import { PostReviewDto, UpdateReviewDto } from './dto/requests/review_request.dto';
+import { ShopDetailResponseDTO, ShopSearchPageNationResultDTO, ShopWithin1KmResponseItemDTO } from './dto/responses/shop_response.dto';
+import { ReviewReportDto, ShopReportDto } from './dto/requests/report_request';
 
 @ApiTags('Shops')
 @Controller('shops')
@@ -126,8 +125,8 @@ export class ShopController {
       ],
     },
   })
-  async getShopByShopId(@Param() paramShopIdDTO: ParamShopIdDTO, @GetUUID() uuid: string) {
-    return new SuccessResponseDTO(await this.shopService.findShopByShopId(paramShopIdDTO, uuid));
+  async getShopByShopId(@Param('shopId', ParseIntPipe) shopId: number, @GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.shopService.findShopByShopId(shopId, uuid));
   }
 
   @Post('/:shopId/operating')
@@ -141,11 +140,11 @@ export class ShopController {
     type: SuccessNoResultResponseDTO,
   })
   async submitShopOperatingHours(
-    @Param() paramShopIdDTO: ParamShopIdDTO,
+    @Param('shopId', ParseIntPipe) shopId: number,
     @Body() operatingData: SubmitShopOperatingHoursDto,
     @GetUUID() uuid: string,
   ) {
-    await this.shopService.validateAndUpdateOperatingHours(paramShopIdDTO, operatingData, uuid);
+    await this.shopService.validateAndUpdateOperatingHours(shopId, operatingData, uuid);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -159,8 +158,8 @@ export class ShopController {
     description: '판매 목록 성공',
     type: SuccessNoResultResponseDTO,
   })
-  async submitProducts(@Param() paramShopIdDTO: ParamShopIdDTO, @Body() products: SubmitNewProductsDto, @GetUUID() uuid: string) {
-    await this.shopService.validateAndUpdateProducts(paramShopIdDTO, products, uuid);
+  async submitProducts(@Param('shopId', ParseIntPipe) shopId: number, @Body() products: SubmitNewProductsDto, @GetUUID() uuid: string) {
+    await this.shopService.validateAndUpdateProducts(shopId, products, uuid);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -187,12 +186,12 @@ export class ShopController {
     type: SuccessNoResultResponseDTO,
   })
   async postReview(
-    @Param() paramShopIdDTO: ParamShopIdDTO,
+    @Param('shopId', ParseIntPipe) shopId: number,
     @Body() postReviewDto: PostReviewDto,
     @GetUUID() uuid: string,
     @UploadedFiles() files?: Express.Multer.File[],
   ) {
-    await this.shopService.createReview(uuid, postReviewDto, paramShopIdDTO, files);
+    await this.shopService.createReview(uuid, postReviewDto, shopId, files);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -219,12 +218,13 @@ export class ShopController {
     type: SuccessNoResultResponseDTO,
   })
   async updateReview(
-    @Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO,
+    @Param('shopId', ParseIntPipe) shopId: number,
+    @Param('reviewId', ParseIntPipe) reviewId: number,
     @Body() updateReviewDto: UpdateReviewDto,
     @GetUUID() uuid: string,
     @UploadedFiles() newFiles?: Express.Multer.File[],
   ) {
-    await this.shopService.updateReview(uuid, updateReviewDto, shopIdAndReviewIdParamDTO, newFiles);
+    await this.shopService.updateReview(uuid, updateReviewDto, shopId, reviewId, newFiles);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -236,8 +236,8 @@ export class ShopController {
     description: '리뷰 삭제 성공',
     type: SuccessNoResultResponseDTO,
   })
-  async deleteReview(@Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO, @GetUUID() uuid: string) {
-    await this.shopService.deleteReviewByUUID(uuid, shopIdAndReviewIdParamDTO);
+  async deleteReview(@Param('shopId', ParseIntPipe) shopId: number, @Param('reviewId', ParseIntPipe) reviewId: number, @GetUUID() uuid: string) {
+    await this.shopService.deleteReviewByUUID(uuid, shopId, reviewId);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -252,8 +252,8 @@ export class ShopController {
     description: '소품샵 신고 성공',
     type: SuccessNoResultResponseDTO,
   })
-  async shopReport(@Param() paramShopIdDTO: ParamShopIdDTO, @GetUUID() uuid: string, @Body() shopReportDto: ShopReportDto) {
-    await this.shopService.reportShop(uuid, shopReportDto, paramShopIdDTO);
+  async shopReport(@Param('shopId', ParseIntPipe) shopId: number, @GetUUID() uuid: string, @Body() shopReportDto: ShopReportDto) {
+    await this.shopService.reportShop(uuid, shopReportDto, shopId);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -270,11 +270,12 @@ export class ShopController {
     type: SuccessNoResultResponseDTO,
   })
   async reviewReport(
-    @Param() shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO,
+    @Param('shopId', ParseIntPipe) shopId: number,
+    @Param('reviewId', ParseIntPipe) reviewId: number,
     @GetUUID() uuid: string,
     @Body() reviewReportDto: ReviewReportDto,
   ) {
-    await this.shopService.reportReview(uuid, reviewReportDto, shopIdAndReviewIdParamDTO);
+    await this.shopService.reportReview(uuid, reviewReportDto, shopId, reviewId);
     return new SuccessNoResultResponseDTO();
   }
 }

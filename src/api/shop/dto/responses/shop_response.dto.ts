@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Paging, ResponsePageNationDTO } from './pagination_response.dto';
 
 export class ShopWithin1KmResponseItemDTO {
   @ApiProperty({ example: 1 })
@@ -49,12 +50,12 @@ export class ShopSearchResultItemDTO {
   distance: number;
 }
 
-export class ShopRegionDTO {
-  @ApiProperty({ example: 1 })
-  id: number;
+export class ShopSearchPageNationResultDTO extends ResponsePageNationDTO<ShopSearchResultItemDTO> {
+  @ApiProperty({ type: [ShopSearchResultItemDTO] })
+  data: ShopSearchResultItemDTO[];
 
-  @ApiProperty({ example: '서울' })
-  name: string;
+  @ApiProperty({ type: Paging })
+  pageInfo: Paging;
 }
 
 export class ProductSimpleDTO {

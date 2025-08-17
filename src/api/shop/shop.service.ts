@@ -3,21 +3,21 @@ import { ShopRepository } from './shop.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 import { RegionRepository } from '../region/region.repository';
 import { RecentSearchRepository } from '../recent-search/recent-search.repository';
-import { GetSearchPageShopDTO, ParamShopIdDTO, GetShopWithin1KmDTO, ShopSearchPageNationResultDTO } from './dto/paging.dto';
-import { Paging } from '../shop/dto/paging.dto';
 import { convertTimeToAmPm } from '../../common/function/time-to-am-pm.function';
 import { getLastSegment } from 'src/common/function/get-insta-id';
 import { SubmitTransactionsRepository } from '../transactions/submit.repository';
 import { SubmitRepository } from '../submit/submit.repository';
-import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/submit.dto';
-import { PostReviewDto, ShopIdAndReviewIdParamDTO, UpdateReviewDto } from './dto/review.dto';
 import { ReviewRepository } from '../review/review.repository';
 import { AwsService } from '../aws/aws.service';
 import { ReviewTransactionsRepository } from '../transactions/review.repository';
 import { ReviewService } from '../review/review.service';
 import { ReportRepository } from '../report/report.repository';
-import { ShopReportDto } from './dto/shop-report.dto';
-import { ReviewReportDto } from './dto/review-report.dto';
+import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/query/pagination.dto';
+import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/requests/submit_shop_requests.dto';
+import { PostReviewDto, UpdateReviewDto } from './dto/requests/review_request.dto';
+import { Paging } from './dto/responses/pagination_response.dto';
+import { ShopSearchPageNationResultDTO } from './dto/responses/shop_response.dto';
+import { ReviewReportDto, ShopReportDto } from './dto/requests/report_request';
 
 @Injectable()
 export class ShopService {
@@ -72,12 +72,6 @@ export class ShopService {
     return shops;
   }
 
-  async createNewShop(newShopData: SubmitNewShopDto, uuid: string): Promise<void> {
-    const region = await this.regionRepository.findRegionByLocation(newShopData.shop.location);
-    if (!region) throw new NotFoundException('check region location');
-    await this.submitTransactionsRepository.createNewShop(newShopData, region.id, uuid);
-  }
-
   async findShopsByKeyword(getSearchPageShopDTO: GetSearchPageShopDTO) {
     const { keyword, page, limit, lat, lng } = getSearchPageShopDTO;
     const radius = 6371; // 지구 반경 (km)
@@ -99,6 +93,12 @@ export class ShopService {
     return new ShopSearchPageNationResultDTO(mappedResults, pageInfoDTO);
   }
 
+  async createNewShop(newShopData: SubmitNewShopDto, uuid: string): Promise<void> {
+    const region = await this.regionRepository.findRegionByLocation(newShopData.shop.location);
+    if (!region) throw new NotFoundException('check region location');
+    await this.submitTransactionsRepository.createNewShop(newShopData, region.id, uuid);
+  }
+
   async findTemp() {
     const shop = await this.shopRepository.findTemp();
     return shop.map((shop) => ({
@@ -109,9 +109,7 @@ export class ShopService {
     }));
   }
 
-  async findShopByShopId(paramShopIdDTO: ParamShopIdDTO, uuid: string) {
-    const { shopId } = paramShopIdDTO;
-
+  async findShopByShopId(shopId: number, uuid: string) {
     const imageList = [];
     const shop = await this.shopRepository.findShopByShopId(shopId);
     if (!shop) {
@@ -185,8 +183,7 @@ export class ShopService {
     };
   }
 
-  async validateAndUpdateOperatingHours(paramShopIdDTO: ParamShopIdDTO, operatingData: SubmitShopOperatingHoursDto, uuid: string): Promise<void> {
-    const { shopId } = paramShopIdDTO;
+  async validateAndUpdateOperatingHours(shopId: number, operatingData: SubmitShopOperatingHoursDto, uuid: string): Promise<void> {
     // 운영정보 업데이트시 해당 소품샵이 존재하는지 체크
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
     if (!shop) throw new ConflictException('Not Exist Shop');
@@ -197,21 +194,18 @@ export class ShopService {
     await this.submitTransactionsRepository.createOperatingHours(operatingData, uuid);
   }
 
-  async validateAndUpdateProducts(paramShopIdDTO: ParamShopIdDTO, prodcutsData: SubmitNewProductsDto, uuid: string): Promise<void> {
-    const { shopId } = paramShopIdDTO;
-
+  async validateAndUpdateProducts(shopId: number, productsData: SubmitNewProductsDto, uuid: string): Promise<void> {
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
     if (!shop) throw new ConflictException('Not Exist Shop');
 
     const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 2);
     if (existData) throw new ConflictException('Exist Data');
 
-    await this.submitTransactionsRepository.createProducts(shopId, prodcutsData, uuid);
+    await this.submitTransactionsRepository.createProducts(shopId, productsData, uuid);
   }
 
-  async createReview(uuid: string, postReviewDto: PostReviewDto, paramShopIdDTO: ParamShopIdDTO, files?: Express.Multer.File[]): Promise<void> {
+  async createReview(uuid: string, postReviewDto: PostReviewDto, shopId: number, files?: Express.Multer.File[]): Promise<void> {
     const { content } = postReviewDto;
-    const { shopId } = paramShopIdDTO;
 
     // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
     const imageUrls = files ? await this.awsService.uploadImagesToS3(files, 'jpg') : [];
@@ -223,11 +217,11 @@ export class ShopService {
   async updateReview(
     uuid: string,
     updateReviewDto: UpdateReviewDto,
-    shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO,
+    shopId: number,
+    reviewId: number,
     newFiles?: Express.Multer.File[],
   ): Promise<void> {
     const { content, deleteImages } = updateReviewDto;
-    const { reviewId } = shopIdAndReviewIdParamDTO;
     // 새 파일이 존재하면 업로드
     const newImageUrls = newFiles?.length > 0 ? await this.awsService.uploadImagesToS3(newFiles, 'jpg') : [];
 
@@ -235,14 +229,12 @@ export class ShopService {
     await this.reviewTransactionsRepository.updateReview(uuid, reviewId, content, deleteImages || [], newImageUrls);
   }
 
-  async deleteReviewByUUID(uuid: string, shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO): Promise<void> {
-    const { reviewId } = shopIdAndReviewIdParamDTO;
+  async deleteReviewByUUID(uuid: string, shopId: number, reviewId: number): Promise<void> {
     await this.reviewTransactionsRepository.deleteReview(uuid, reviewId);
   }
 
-  async reportReview(uuid: string, reviewReportDto: ReviewReportDto, shopIdAndReviewIdParamDTO: ShopIdAndReviewIdParamDTO): Promise<void> {
+  async reportReview(uuid: string, reviewReportDto: ReviewReportDto, shopId: number, reviewId: number): Promise<void> {
     const { status, message } = reviewReportDto;
-    const { reviewId } = shopIdAndReviewIdParamDTO;
 
     const review = await this.reviewRepository.findOneReviewById(reviewId);
     if (!review) throw new NotFoundException('Not exist review');
@@ -253,9 +245,9 @@ export class ShopService {
     await this.reportRepository.saveReviewReport(uuid, review.id, status, message);
   }
 
-  async reportShop(uuid: string, shopReportDto: ShopReportDto, paramShopIdDTO: ParamShopIdDTO): Promise<void> {
+  async reportShop(uuid: string, shopReportDto: ShopReportDto, shopId: number): Promise<void> {
     const { status, message } = shopReportDto;
-    const { shopId } = paramShopIdDTO;
+
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
     if (!shop) throw new NotFoundException('Not exist shop');
 

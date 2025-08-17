@@ -2,7 +2,7 @@ import { RegionService } from './region.service';
 import { Controller, Get } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { SuccessResponseDTO } from '../../common/response/response.dto';
-import { ShopRegionDTO } from '../shop/dto/response.dto';
+import { ShopRegionDTO } from './dto/responses/region_response';
 
 @ApiTags('Regions')
 @Controller('regions')

@@ -1,5 +1,5 @@
-import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class OperatingHoursDto {
   @ApiPropertyOptional({ description: '운영 시간 ID', example: 1 })

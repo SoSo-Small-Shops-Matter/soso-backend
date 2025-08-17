@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, MaxLength, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class PostReviewDto {
   @ApiProperty({ description: '리뷰 내용', example: '정말 예쁜 소품들이 많아요!' })
@@ -37,20 +37,4 @@ export class UpdateReviewDto {
     isArray: true,
   })
   files?: any;
-}
-
-export class DeleteReviewDto {
-  @ApiProperty({ description: '삭제할 리뷰 ID', example: 789 })
-  @IsNotEmpty()
-  reviewId: number;
-}
-
-export class ShopIdAndReviewIdParamDTO {
-  @ApiProperty({ description: '리뷰 ID', example: 78 })
-  @IsNotEmpty()
-  reviewId: number;
-
-  @ApiProperty({ description: '소품샵 ID', example: 78 })
-  @IsNotEmpty()
-  shopId: number;
 }

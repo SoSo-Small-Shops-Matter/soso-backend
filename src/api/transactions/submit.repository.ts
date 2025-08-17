@@ -6,7 +6,7 @@ import { Shop } from '../../database/entity/shop.entity';
 import { OperatingHours } from '../../database/entity/operating-hours.entity';
 import { ProductMapping } from '../../database/entity/product_mapping.entity';
 import { SubmitStatus, SubmitType, UsingType } from '../../common/enum/role.enum';
-import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from '../shop/dto/submit.dto';
+import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from '../shop/dto/requests/submit_shop_requests.dto';
 
 @Injectable()
 export class SubmitTransactionsRepository {
