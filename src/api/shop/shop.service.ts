@@ -207,6 +207,9 @@ export class ShopService {
   async createReview(uuid: string, postReviewDto: PostReviewDto, shopId: number, files?: Express.Multer.File[]): Promise<void> {
     const { content } = postReviewDto;
 
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
     // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
     const imageUrls = files ? await this.awsService.uploadImagesToS3(files, 'jpg') : [];
 
@@ -222,6 +225,10 @@ export class ShopService {
     newFiles?: Express.Multer.File[],
   ): Promise<void> {
     const { content, deleteImages } = updateReviewDto;
+
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
     // 새 파일이 존재하면 업로드
     const newImageUrls = newFiles?.length > 0 ? await this.awsService.uploadImagesToS3(newFiles, 'jpg') : [];
 
@@ -230,19 +237,28 @@ export class ShopService {
   }
 
   async deleteReviewByUUID(uuid: string, shopId: number, reviewId: number): Promise<void> {
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
+    const existData = await this.reportRepository.findReviewReport(uuid, reviewId);
+    if (!existData) throw new ConflictException('Not Exist Review');
+
     await this.reviewTransactionsRepository.deleteReview(uuid, reviewId);
   }
 
   async reportReview(uuid: string, reviewReportDto: ReviewReportDto, shopId: number, reviewId: number): Promise<void> {
     const { status, message } = reviewReportDto;
 
+    const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
+    if (!shop) throw new ConflictException('Not Exist Shop');
+
     const review = await this.reviewRepository.findOneReviewById(reviewId);
     if (!review) throw new NotFoundException('Not exist review');
 
-    const existData = await this.reportRepository.findReviewReport(uuid, review.id);
+    const existData = await this.reportRepository.findReviewReport(uuid, reviewId);
     if (existData) throw new ConflictException('Exist Report Review');
 
-    await this.reportRepository.saveReviewReport(uuid, review.id, status, message);
+    await this.reportRepository.saveReviewReport(uuid, reviewId, status, message);
   }
 
   async reportShop(uuid: string, shopReportDto: ShopReportDto, shopId: number): Promise<void> {
@@ -251,7 +267,7 @@ export class ShopService {
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
     if (!shop) throw new NotFoundException('Not exist shop');
 
-    const existData = await this.reportRepository.findShopReport(uuid, shop.id);
+    const existData = await this.reportRepository.findShopReport(uuid, shopId);
     if (existData) throw new ConflictException('Exist Report Shop');
 
     await this.reportRepository.saveShopReport(uuid, shop.id, status, message);
