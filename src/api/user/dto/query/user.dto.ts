@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
+import { WithdrawalReason } from '../../../../common/enum/users.enum';
 
-export class UserDto {
-  @ApiProperty({ description: '회원 탈퇴 이유 Type', example: 1 })
+export class DeleteUserDto {
+  @ApiProperty({ description: '회원 탈퇴 이유 Type (0~3)', enum: WithdrawalReason, example: 1 })
   @IsNotEmpty()
+  @IsEnum(WithdrawalReason)
   @Type(() => Number)
-  deleteType: number;
+  type: WithdrawalReason;
 }
 
 export class ValidateNickNameDTO {

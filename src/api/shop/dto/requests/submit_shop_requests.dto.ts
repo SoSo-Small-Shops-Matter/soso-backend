@@ -2,14 +2,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class OperatingHoursDto {
-  @ApiPropertyOptional({ description: '운영 시간 ID', example: 1 })
-  @IsOptional()
-  id?: number;
-
-  @ApiPropertyOptional({ description: '운영 타입 (예: 0: 기본, 1: 수정)', example: 0 })
-  @IsOptional()
-  type?: number;
-
   @ApiPropertyOptional({ description: '연락처', example: '010-1234-5678' })
   @IsOptional()
   @IsString()
@@ -62,11 +54,6 @@ export class OperatingHoursDto {
 }
 
 export class SubmitShopOperatingHoursDto {
-  @ApiProperty({ description: '소품샵 ID', example: 1 })
-  @IsInt()
-  @IsNotEmpty()
-  shopId: number;
-
   @ApiProperty({ description: '운영 시간 정보' })
   @IsNotEmpty()
   operatingHours: OperatingHoursDto;

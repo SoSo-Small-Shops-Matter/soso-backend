@@ -25,17 +25,19 @@ import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard'
 import { GetUUID } from '../../common/deco/get-user.deco';
 
 import { UpdateProfileDTO } from './dto/requests/user_requests.dto';
-import { UserDto, ValidateNickNameDTO } from './dto/query/user.dto';
+import { DeleteUserDto, ValidateNickNameDTO } from './dto/query/user.dto';
 
-import { PaginationQueryDTO, ReviewPaginationDTO, WishlistPageNationDTO } from './dto/query/pagination.dto';
+import { PaginationQueryDTO } from './dto/query/pagination.dto';
 import { PageInfoDTO, Pagination_responsesDto } from './dto/responses/pagination_responses.dto';
 
-import { User_responsesDto } from './dto/responses/user_responses.dto';
+import { UserProfileResponsesDTO } from './dto/responses/user_responses.dto';
 import { Recent_search_responsesDto } from './dto/responses/recent_search_responses.dto';
 import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit_responses.dto';
 import { UserWishlistRecordDTO, UserWishlistRecordItemDTO } from './dto/responses/wishlist_responses.dto';
 import { UserReviewsRecordDTO, UserReviewsRecordItemDTO } from './dto/responses/review_responses.dto';
 import { Wishlist_requestsDto } from './dto/requests/wishlist_requests.dto';
+import { ReviewPaginationDTO } from './dto/query/review.dto';
+import { WishlistPageNationDTO } from './dto/query/wishlist.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -49,11 +51,11 @@ export class UserController {
     summary: '프로필 정보 불러오기',
     description: 'isNew: 닉네임 작성 완료 여부 (false면 닉네임 설정 페이지로 이동 필요)',
   })
-  @ApiExtraModels(SuccessResponseDTO, User_responsesDto)
+  @ApiExtraModels(SuccessResponseDTO, UserProfileResponsesDTO)
   @ApiOkResponse({
     description: '프로필 정보 불러오기 성공',
     schema: {
-      allOf: [{ $ref: getSchemaPath(SuccessResponseDTO) }, { properties: { result: { $ref: getSchemaPath(User_responsesDto) } } }],
+      allOf: [{ $ref: getSchemaPath(SuccessResponseDTO) }, { properties: { result: { $ref: getSchemaPath(UserProfileResponsesDTO) } } }],
     },
   })
   async getUserProfile(@GetUUID() uuid: string) {
@@ -62,7 +64,7 @@ export class UserController {
 
   @Patch('/me')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('profileImg'))
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '프로필 정보 수정하기', description: '프로필 사진(옵션), 닉네임(옵션)' })
   @ApiConsumes('multipart/form-data')
@@ -71,7 +73,7 @@ export class UserController {
     schema: {
       type: 'object',
       properties: {
-        file: { type: 'string', format: 'binary' },
+        profileImg: { type: 'string', format: 'binary' },
         nickName: { type: 'string', example: '소소한유저' },
       },
     },
@@ -86,9 +88,9 @@ export class UserController {
         fileIsRequired: false,
       }),
     )
-    file?: Express.Multer.File,
+    profileImg?: Express.Multer.File,
   ) {
-    await this.userService.updateUserProfile(updateProfileDTO, uuid, file);
+    await this.userService.updateUserProfile(updateProfileDTO, uuid, profileImg);
     return new SuccessNoResultResponseDTO();
   }
 
@@ -97,7 +99,7 @@ export class UserController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '회원탈퇴' })
   @ApiOkResponse({ description: '회원탈퇴 성공', type: SuccessNoResultResponseDTO })
-  async deleteUser(@Query() deleteTypeDTO: UserDto, @GetUUID() uuid: string) {
+  async deleteUser(@Query() deleteTypeDTO: DeleteUserDto, @GetUUID() uuid: string) {
     await this.userService.deleteUser(uuid, deleteTypeDTO);
     return new SuccessNoResultResponseDTO();
   }
@@ -133,12 +135,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '제보한 데이터 제거' })
-  @ApiParam({
-    name: 'submitId',
-    description: '사용자 제보 ID',
-    schema: { type: 'integer', format: 'int32', minimum: 1 },
-    example: 123,
-  })
   @ApiOkResponse({ description: '제보한 데이터 제거 성공', type: SuccessNoResultResponseDTO })
   async deleteUserShopSubmission(@Param('submitId', ParseIntPipe) submitId: number, @GetUUID() uuid: string) {
     await this.userService.deleteUserShopSubmission(submitId, uuid);
@@ -216,12 +212,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '최근 검색 기록 삭제', description: '최근 검색 기록 id로 삭제' })
-  @ApiParam({
-    name: 'recentSearchId',
-    description: '최근 검색 기록 ID',
-    schema: { type: 'integer', format: 'int32', minimum: 1 },
-    example: 42,
-  })
   @ApiOkResponse({ description: '최근 검색 기록 삭제 성공', type: SuccessNoResultResponseDTO })
   async deleteRecentSearchById(@GetUUID() uuid: string, @Param('recentSearchId', ParseIntPipe) recentSearchId: number) {
     await this.userService.deleteRecentSearchById(uuid, recentSearchId);

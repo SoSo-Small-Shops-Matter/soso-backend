@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from 'src/database/entity/review.entity';
 import { Repository } from 'typeorm';
 import { LoggerService } from '../logger/logger.service';
+import { SortOrder } from '../../common/enum/sorting.enum';
 
 export class ReviewRepository {
   constructor(
@@ -28,7 +29,7 @@ export class ReviewRepository {
     }
   }
 
-  async findUserReviewByPageNation(uuid: string, page: number, limit: number, sort: 'ASC' | 'DESC' = 'DESC') {
+  async findUserReviewByPageNation(uuid: string, page: number, limit: number, sort: SortOrder) {
     try {
       return await this.reviewRepository
         .createQueryBuilder('review') // ✅ 엔티티 별칭 수정

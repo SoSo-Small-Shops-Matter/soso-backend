@@ -5,11 +5,11 @@ import { ReviewRepository } from '../review/review.repository';
 import { SubmitRepository } from '../submit/submit.repository';
 import { WishlistRepository } from '../wishlist/wishlist.repository';
 
-import { UserDto, ValidateNickNameDTO } from './dto/query/user.dto';
-import { PaginationQueryDTO, ReviewPaginationDTO, WishlistPageNationDTO } from './dto/query/pagination.dto';
+import { DeleteUserDto, ValidateNickNameDTO } from './dto/query/user.dto';
+import { PaginationQueryDTO } from './dto/query/pagination.dto';
 import { UpdateProfileDTO } from './dto/requests/user_requests.dto';
 
-import { User_responsesDto } from './dto/responses/user_responses.dto';
+import { UserProfileResponsesDTO } from './dto/responses/user_responses.dto';
 import { PageInfoDTO } from './dto/responses/pagination_responses.dto';
 import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit_responses.dto';
 import { UserWishlistRecordDTO } from './dto/responses/wishlist_responses.dto';
@@ -23,6 +23,8 @@ import { SubmitType } from '../../common/enum/role.enum';
 import { SubmitTransactionsRepository } from '../transactions/submit.repository';
 import { ShopRepository } from '../shop/shop.repository';
 import { Wishlist_requestsDto } from './dto/requests/wishlist_requests.dto';
+import { ReviewPaginationDTO } from './dto/query/review.dto';
+import { WishlistPageNationDTO } from './dto/query/wishlist.dto';
 
 @Injectable()
 export class UserService {
@@ -38,13 +40,14 @@ export class UserService {
     private shopRepository: ShopRepository,
   ) {}
 
-  async getUserProfile(uuid: string): Promise<User_responsesDto> {
-    const userProfile = await this.userRepository.findUserByUUID(uuid);
-    if (!userProfile) throw new NotFoundException('Not Found User');
-    return new User_responsesDto(userProfile);
+  async getUserProfile(uuid: string): Promise<UserProfileResponsesDTO> {
+    const user = await this.userRepository.findUserByUUID(uuid);
+    if (!user) throw new NotFoundException('Not Found User');
+
+    return new UserProfileResponsesDTO(user);
   }
 
-  async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, file?: Express.Multer.File) {
+  async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, profileImg?: Express.Multer.File) {
     const { nickName } = updateProfileDTO;
 
     if (nickName) {
@@ -55,8 +58,8 @@ export class UserService {
       if (newNickName.affected == 0) throw new NotFoundException('Fail update nickname');
     }
 
-    if (file) {
-      const [photoUrl] = await this.awsService.uploadImagesToS3(file, 'jpg');
+    if (profileImg) {
+      const [photoUrl] = await this.awsService.uploadImagesToS3(profileImg, 'jpg');
       if (!photoUrl) throw new NotFoundException('Not Exists photo');
 
       const updateUrl = await this.userRepository.updateUserPhotoUrl(uuid, photoUrl);
@@ -64,9 +67,12 @@ export class UserService {
     }
   }
 
-  async deleteUser(uuid: string, deleteTypeDTO: UserDto) {
+  async deleteUser(uuid: string, deleteTypeDTO: DeleteUserDto) {
     const user = await this.userRepository.findUserByUUID(uuid);
-    await this.deleteUserTransactionsRepository.deleteUser(user, deleteTypeDTO.deleteType);
+    if (!user) throw new NotFoundException('Not Found User');
+
+    // deleteTypeDTO.type에 있는 number 데이터 WithdrawalReason[deleteTypeDTO.type] 이런식으로 접근해서 String 값으로 DB에 저장하기
+    await this.deleteUserTransactionsRepository.deleteUser(user, deleteTypeDTO.type);
   }
 
   async findUserNickName(nickNameDTO: ValidateNickNameDTO): Promise<boolean> {
@@ -87,10 +93,8 @@ export class UserService {
 
   async findUserReviews(reviewPageNation: ReviewPaginationDTO, uuid: string) {
     const { sort, page, limit } = reviewPageNation;
-    const sortType = sort === 'ASC' ? 'ASC' : 'DESC';
-
     const totalCount = await this.reviewRepository.findUserReviewByUUID(uuid);
-    const rows = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sortType);
+    const rows = await this.reviewRepository.findUserReviewByPageNation(uuid, page, limit, sort);
 
     const pageInfo = new PageInfoDTO(page, limit, totalCount);
     return new UserReviewsRecordDTO(rows, pageInfo);

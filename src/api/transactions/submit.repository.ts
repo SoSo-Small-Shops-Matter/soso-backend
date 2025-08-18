@@ -107,8 +107,8 @@ export class SubmitTransactionsRepository {
     }
   }
 
-  async createOperatingHours(operatingData: SubmitShopOperatingHoursDto, uuid: string) {
-    const { shopId, operatingHours } = operatingData;
+  async createOperatingHours(shopId: number, operatingData: SubmitShopOperatingHoursDto, uuid: string) {
+    const { operatingHours } = operatingData;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -117,12 +117,11 @@ export class SubmitTransactionsRepository {
     try {
       const submitRepo = queryRunner.manager.getRepository(SubmitUserRecord);
       const operatingRepo = queryRunner.manager.getRepository(OperatingHours);
-      const { id, type, ...filteredOperatingHours } = operatingHours;
 
       const newOperatingHours = await operatingRepo.save({
         shop: { id: shopId },
         type: UsingType.Verifying,
-        ...filteredOperatingHours,
+        operatingHours,
       });
 
       await submitRepo.save({

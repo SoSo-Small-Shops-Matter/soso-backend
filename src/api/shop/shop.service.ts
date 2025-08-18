@@ -191,7 +191,7 @@ export class ShopService {
     const existData = await this.submitRepository.findUserSubmitRecordByType(uuid, shopId, 1);
     if (existData) throw new ConflictException('Exist Data');
 
-    await this.submitTransactionsRepository.createOperatingHours(operatingData, uuid);
+    await this.submitTransactionsRepository.createOperatingHours(shopId, operatingData, uuid);
   }
 
   async validateAndUpdateProducts(shopId: number, productsData: SubmitNewProductsDto, uuid: string): Promise<void> {
