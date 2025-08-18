@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -89,6 +89,15 @@ export class AwsService {
       ResponseContentDisposition: contentDisposition,
     });
     return getSignedUrl(this.s3Client, cmd, { expiresIn: expiresInSec });
+  }
+
+  /** 존재 확인(선택) */
+  async assertObjectExists(key: string) {
+    try {
+      await this.s3Client.send(new HeadObjectCommand({ Bucket: this.bucketName, Key: key }));
+    } catch {
+      throw new NotFoundException('S3 object not found');
+    }
   }
 
   async getPresignedPutList(items: { originalName: string; contentType: string }[], ttlSec = 300) {
