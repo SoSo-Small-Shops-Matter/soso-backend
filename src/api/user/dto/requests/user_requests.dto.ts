@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, Matches } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateProfileDTO {
@@ -10,4 +10,27 @@ export class UpdateProfileDTO {
   @Matches(/^(?!.*(<script|<\/script>|<iframe|on\w+=|javascript:|eval\()).*$/i, { message: '스크립트 또는 악성 코드를 포함할 수 없습니다.' })
   @Matches(/^[A-Za-z0-9가-힣 _-]{2,20}$/, { message: '닉네임은 2~20자' })
   nickName?: string | null;
+
+  @ApiProperty({ example: '이미지 키' })
+  @IsOptional()
+  profileImgKey?: string | null;
+}
+
+export class ProfileImagePresignedDTO {
+  @ApiProperty({
+    description: '사용자가 업로드하려는 원본 파일명',
+    example: 'profile.png',
+  })
+  @IsString()
+  @IsNotEmpty()
+  originalName: string;
+
+  @ApiProperty({
+    description: '콘텐츠 타입(MIME). 허용되는 이미지 타입만 전달',
+    enum: ['image/jpeg', 'image/png', 'image/webp'],
+    example: 'image/png',
+  })
+  @IsString()
+  @IsIn(['image/jpeg', 'image/png', 'image/webp'])
+  contentType!: string;
 }

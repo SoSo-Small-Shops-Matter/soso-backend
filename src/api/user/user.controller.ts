@@ -1,36 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Patch,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-  Delete,
-  Query,
-  ParseFilePipe,
-  MaxFileSizeValidator,
-  FileTypeValidator,
-  ParseIntPipe,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiExtraModels, ApiOkResponse, ApiOperation, ApiParam, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-
+import { Body, Controller, Get, Param, Post, Patch, UseGuards, Delete, Query, ParseIntPipe } from '@nestjs/common';
+import { ApiBearerAuth, ApiExtraModels, ApiOkResponse, ApiOperation, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { SuccessNoResultResponseDTO, SuccessResponseDTO } from 'src/common/response/response.dto';
 import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { OptionalAuthGuard } from '../../common/gurad/optional-auth-guard.guard';
 import { GetUUID } from '../../common/deco/get-user.deco';
-
-import { UpdateProfileDTO } from './dto/requests/user_requests.dto';
+import { ProfileImagePresignedDTO, UpdateProfileDTO } from './dto/requests/user_requests.dto';
 import { DeleteUserDto, ValidateNickNameDTO } from './dto/query/user.dto';
-
 import { PaginationQueryDTO } from './dto/query/pagination.dto';
 import { PageInfoDTO, Pagination_responsesDto } from './dto/responses/pagination_responses.dto';
-
-import { UserProfileResponsesDTO } from './dto/responses/user_responses.dto';
+import { PreSignedURLResponsesDTO, PresignedUserProfileImgResponsesDTO, UserProfileResponsesDTO } from './dto/responses/user_responses.dto';
 import { Recent_search_responsesDto } from './dto/responses/recent_search_responses.dto';
 import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit_responses.dto';
 import { UserWishlistRecordDTO, UserWishlistRecordItemDTO } from './dto/responses/wishlist_responses.dto';
@@ -64,34 +43,48 @@ export class UserController {
 
   @Patch('/me')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('profileImg'))
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '프로필 정보 수정하기', description: '프로필 사진(옵션), 닉네임(옵션)' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: '프로필 사진(옵션)과 닉네임(옵션)',
+  @ApiOkResponse({ description: '프로필 정보 수정 성공', type: SuccessNoResultResponseDTO })
+  async updateProfile(@GetUUID() uuid: string, @Body() updateProfileDTO?: UpdateProfileDTO) {
+    await this.userService.updateUserProfile(updateProfileDTO, uuid);
+    return new SuccessNoResultResponseDTO();
+  }
+
+  @Post('/me/presigned')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiExtraModels(SuccessResponseDTO, PreSignedURLResponsesDTO)
+  @ApiOperation({
+    summary: '유저 프로필 이미지 등록 - presigend',
+    description: 'return 받은 URL을 PUT 메서드로 클라이언트에서 이미지를 등록시키면 됨',
+  })
+  @ApiOkResponse({
+    description: 'Presigned URL 발급 성공',
     schema: {
-      type: 'object',
-      properties: {
-        profileImg: { type: 'string', format: 'binary' },
-        nickName: { type: 'string', example: '소소한유저' },
-      },
+      allOf: [{ $ref: getSchemaPath(SuccessResponseDTO) }, { properties: { result: { $ref: getSchemaPath(PreSignedURLResponsesDTO) } } }],
     },
   })
-  @ApiOkResponse({ description: '프로필 정보 수정 성공', type: SuccessNoResultResponseDTO })
-  async updateProfile(
-    @GetUUID() uuid: string,
-    @Body() updateProfileDTO?: UpdateProfileDTO,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), new FileTypeValidator({ fileType: /image\/(jpg|jpeg|png)/ })],
-        fileIsRequired: false,
-      }),
-    )
-    profileImg?: Express.Multer.File,
-  ) {
-    await this.userService.updateUserProfile(updateProfileDTO, uuid, profileImg);
-    return new SuccessNoResultResponseDTO();
+  async createUserProfileImgPresignedURL(@Body() profileImagePresignedDTO: ProfileImagePresignedDTO) {
+    return new SuccessResponseDTO(await this.userService.createUserProfileImgPresignedURL(profileImagePresignedDTO));
+  }
+
+  @Get('/me/presigend')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiExtraModels(SuccessResponseDTO, PresignedUserProfileImgResponsesDTO)
+  @ApiOperation({
+    summary: '유저 프로필 이미지 불러오기 - presigend',
+    description: 'ExpriseIn을 참고해서 지날 때마다 호출해야 됨',
+  })
+  @ApiOkResponse({
+    description: 'Presigned URL 발급 성공',
+    schema: {
+      allOf: [{ $ref: getSchemaPath(SuccessResponseDTO) }, { properties: { result: { $ref: getSchemaPath(PresignedUserProfileImgResponsesDTO) } } }],
+    },
+  })
+  async getPresignedURLUserProfileImg(@GetUUID() uuid: string) {
+    return new SuccessResponseDTO(await this.userService.getPresignedURLUserProfileImg(uuid));
   }
 
   @Delete('/me')

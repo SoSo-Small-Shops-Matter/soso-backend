@@ -54,9 +54,9 @@ export class UserRepository {
       throw new InternalServerErrorException();
     }
   }
-  async updateUserPhotoUrl(uuid: string, photoUrl: string) {
+  async updateUserPhotoUrl(uuid: string, profileImgKey: string) {
     try {
-      return await this.userRepository.update({ uuid }, { photoUrl });
+      return await this.userRepository.update({ uuid }, { photoUrl: profileImgKey });
     } catch (err) {
       this.loggerService.warn(`User/  updateUserPhotoUrl Error: ${err}`);
       throw new InternalServerErrorException();

@@ -1,7 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../logger/logger.service';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class AwsService {
@@ -42,7 +43,7 @@ export class AwsService {
           Bucket: this.bucketName,
           Key: fileName,
           Body: file.buffer,
-          ContentType: `image/${ext}`,
+          ContentType: file.mimetype || `image/${ext}`,
         });
 
         await this.s3Client.send(command);
@@ -57,10 +58,54 @@ export class AwsService {
     }
   }
 
+  private generateReviewKey(originalName: string) {
+    const safe = originalName.replace(/[^\w.\-]/g, '_');
+    const yyyy = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    return `review/${yyyy}/${Date.now()}-${safe}`;
+  }
+
+  async getPresignedPutUrl(originalName: string, contentType: string, ttlSec = 300) {
+    const allowed = ['image/jpeg', 'image/png'];
+    if (!allowed.includes(contentType)) {
+      throw new BadRequestException(`Unsupported contentType: ${contentType}`);
+    }
+
+    const key = this.generateReviewKey(originalName);
+
+    const cmd = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      ContentType: contentType,
+      // 기본 private (ACL 생략)
+    });
+    const url = await getSignedUrl(this.s3Client, cmd, { expiresIn: ttlSec });
+    return { url, key, expiresIn: ttlSec };
+  }
+
+  async getPresignedGetUrlByKey(key: string, expiresInSec = 180, contentDisposition: string = 'inline'): Promise<string> {
+    const cmd = new GetObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      ResponseContentDisposition: contentDisposition,
+    });
+    return getSignedUrl(this.s3Client, cmd, { expiresIn: expiresInSec });
+  }
+
+  async getPresignedPutList(items: { originalName: string; contentType: string }[], ttlSec = 300) {
+    const results = await Promise.all(
+      items.map(async ({ originalName, contentType }) => {
+        const key = this.generateReviewKey(originalName);
+        const one = await this.getPresignedPutUrl(key, contentType, ttlSec);
+        return one;
+      }),
+    );
+    return { items: results, ttlSec };
+  }
+
   async deleteImageFromS3(imageUrl: string) {
     // 올바른 Key 추출 방법
     const fileName = imageUrl.split(`.amazonaws.com/`)[1];
-    
+
     const command = new DeleteObjectCommand({
       Bucket: this.bucketName,
       Key: fileName,

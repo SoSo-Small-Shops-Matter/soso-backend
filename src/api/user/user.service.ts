@@ -7,9 +7,9 @@ import { WishlistRepository } from '../wishlist/wishlist.repository';
 
 import { DeleteUserDto, ValidateNickNameDTO } from './dto/query/user.dto';
 import { PaginationQueryDTO } from './dto/query/pagination.dto';
-import { UpdateProfileDTO } from './dto/requests/user_requests.dto';
+import { ProfileImagePresignedDTO, UpdateProfileDTO } from './dto/requests/user_requests.dto';
 
-import { UserProfileResponsesDTO } from './dto/responses/user_responses.dto';
+import { PreSignedURLResponsesDTO, PresignedUserProfileImgResponsesDTO, UserProfileResponsesDTO } from './dto/responses/user_responses.dto';
 import { PageInfoDTO } from './dto/responses/pagination_responses.dto';
 import { UserSubmitRecordDTO, UserSubmitRecordItemDTO } from './dto/responses/submit_responses.dto';
 import { UserWishlistRecordDTO } from './dto/responses/wishlist_responses.dto';
@@ -47,8 +47,8 @@ export class UserService {
     return new UserProfileResponsesDTO(user);
   }
 
-  async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string, profileImg?: Express.Multer.File) {
-    const { nickName } = updateProfileDTO;
+  async updateUserProfile(updateProfileDTO: UpdateProfileDTO, uuid: string) {
+    const { nickName, profileImgKey } = updateProfileDTO;
 
     if (nickName) {
       const existNickName = await this.userRepository.findUserByNickName(nickName);
@@ -58,13 +58,27 @@ export class UserService {
       if (newNickName.affected == 0) throw new NotFoundException('Fail update nickname');
     }
 
-    if (profileImg) {
-      const [photoUrl] = await this.awsService.uploadImagesToS3(profileImg, 'jpg');
-      if (!photoUrl) throw new NotFoundException('Not Exists photo');
-
-      const updateUrl = await this.userRepository.updateUserPhotoUrl(uuid, photoUrl);
+    if (profileImgKey) {
+      const updateUrl = await this.userRepository.updateUserPhotoUrl(uuid, profileImgKey);
       if (updateUrl.affected == 0) throw new NotFoundException('Fail update profileImg');
     }
+  }
+
+  async createUserProfileImgPresignedURL(profileImagePresignedDTO: ProfileImagePresignedDTO) {
+    const { originalName, contentType } = profileImagePresignedDTO;
+    const result = await this.awsService.getPresignedPutUrl(originalName, contentType);
+
+    return new PreSignedURLResponsesDTO(result);
+  }
+
+  async getPresignedURLUserProfileImg(uuid: string) {
+    const expirseIn = 300;
+    const user = await this.userRepository.findUserByUUID(uuid);
+    if (!user) throw new NotFoundException('Not Found User');
+
+    const userProfilePresignedURL = await this.awsService.getPresignedGetUrlByKey(user.photoUrl, expirseIn);
+
+    return new PresignedUserProfileImgResponsesDTO(userProfilePresignedURL, expirseIn);
   }
 
   async deleteUser(uuid: string, deleteTypeDTO: DeleteUserDto) {
