@@ -13,7 +13,7 @@ export class ReviewTransactionsRepository {
     private awsService: AwsService,
   ) {}
 
-  async createReview(uuid: string, shopId: number, content: string, imageUrls: string[]): Promise<void> {
+  async createReview(uuid: string, shopId: number, content: string, reviewImgKeys: string[]): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -30,17 +30,14 @@ export class ReviewTransactionsRepository {
       });
 
       // 이미지가 존재할 경우에만 처리
-      if (imageUrls.length > 0) {
-        // Image 엔티티 생성 및 저장
-        const images = await Promise.all(
-          imageUrls.map(async (url) => {
-            const image = await imageRepo.save({ url });
+      if (reviewImgKeys?.length > 0) {
+        // Review와 Image 연결
+        review.images = await Promise.all(
+          reviewImgKeys.map(async (key) => {
+            const [image] = await Promise.all([imageRepo.save({ url: key })]);
             return image;
           }),
         );
-
-        // Review와 Image 연결
-        review.images = images;
         await reviewRepo.save(review);
       }
 
@@ -76,7 +73,7 @@ export class ReviewTransactionsRepository {
       // 제거할 이미지가 존재하면 삭제
       if (deleteImages?.length > 0) {
         // S3에서 이미지 삭제
-        const imagesToDelete = review.images.filter(image => deleteImages.includes(image.id));
+        const imagesToDelete = review.images.filter((image) => deleteImages.includes(image.id));
         for (const image of imagesToDelete) {
           await this.awsService.deleteImageFromS3(image.url);
         }
@@ -141,7 +138,7 @@ export class ReviewTransactionsRepository {
           await this.awsService.deleteImageFromS3(image.url);
         }
         // DB에서 이미지 삭제
-        await imageRepo.delete(review.images.map(image => image.id));
+        await imageRepo.delete(review.images.map((image) => image.id));
       }
 
       // 리뷰 삭제
@@ -159,4 +156,4 @@ export class ReviewTransactionsRepository {
       await queryRunner.release();
     }
   }
-} 
+}

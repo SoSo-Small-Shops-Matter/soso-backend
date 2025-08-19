@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsArray, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PostReviewDto {
   @ApiProperty({ description: '리뷰 내용', example: '정말 예쁜 소품들이 많아요!' })
@@ -8,12 +9,15 @@ export class PostReviewDto {
   content: string;
 
   @ApiPropertyOptional({
-    description: '업로드할 이미지 파일들 (최대 10개)',
-    type: 'string',
-    format: 'binary',
+    description: 'PreSigned로 업로드한 이미지 Key들 (최대 10개)',
+    type: String,
     isArray: true,
+    example: ['rev/img/1.png', 'rev/img/2.png'],
   })
-  files?: any;
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  reviewImgKeys?: string[];
 }
 
 export class UpdateReviewDto {
@@ -37,4 +41,28 @@ export class UpdateReviewDto {
     isArray: true,
   })
   files?: any;
+}
+
+export class PresignPutRequestDto {
+  @ApiProperty({ description: '원본 파일명', example: 'profile.png' })
+  @IsString()
+  @IsNotEmpty()
+  originalName: string;
+
+  @ApiProperty({
+    description: 'MIME 타입',
+    enum: ['image/jpeg', 'image/png', 'image/webp'],
+    example: 'image/png',
+  })
+  @IsString()
+  @IsIn(['image/jpeg', 'image/png', 'image/webp'])
+  contentType: string;
+}
+
+export class PresignPutListRequestDto {
+  @ApiProperty({ type: [PresignPutRequestDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PresignPutRequestDto)
+  files: PresignPutRequestDto[];
 }

@@ -21,6 +21,7 @@ export class UserProfileResponsesDTO {
   }
 }
 
+// Get용 DTO
 export class PresignedUserProfileImgResponsesDTO {
   @ApiProperty({ description: '유저 프로필 Presigend URL', example: '...' })
   profileImg: string;
@@ -37,6 +38,7 @@ export class PresignedUserProfileImgResponsesDTO {
   }
 }
 
+// Put용 DTO
 export class PreSignedURLResponsesDTO {
   @ApiProperty({
     description: 'S3 객체 키 (DB에 저장할 값). 예: 사용자별 아바타/리뷰 이미지 등의 경로',
@@ -62,15 +64,4 @@ export class PreSignedURLResponsesDTO {
     this.url = url;
     this.expiresIn = expiresIn;
   }
-}
-
-export class PreSignedURLListResponseDTO {
-  @ApiProperty({ type: [PreSignedURLResponsesDTO] })
-  items: PreSignedURLResponsesDTO[];
-
-  @ApiProperty({
-    description: '모든 Presigned URL에 공통 적용된 TTL(초)',
-    example: 300,
-  })
-  ttlSec: number;
 }

@@ -9,6 +9,7 @@ export class AwsService {
   s3Client: S3Client;
   private readonly bucketName: string;
   private readonly region: string;
+  private readonly allowed = ['image/jpeg', 'image/png'];
 
   constructor(
     private readonly loggerService: LoggerService,
@@ -65,8 +66,7 @@ export class AwsService {
   }
 
   async getPresignedPutUrl(originalName: string, contentType: string, ttlSec = 300) {
-    const allowed = ['image/jpeg', 'image/png'];
-    if (!allowed.includes(contentType)) {
+    if (!this.allowed.includes(contentType)) {
       throw new BadRequestException(`Unsupported contentType: ${contentType}`);
     }
 
@@ -103,9 +103,12 @@ export class AwsService {
   async getPresignedPutList(items: { originalName: string; contentType: string }[], ttlSec = 300) {
     const results = await Promise.all(
       items.map(async ({ originalName, contentType }) => {
+        if (!this.allowed.includes(contentType)) {
+          throw new BadRequestException(`Unsupported contentType: ${contentType}`);
+        }
+
         const key = this.generateReviewKey(originalName);
-        const one = await this.getPresignedPutUrl(key, contentType, ttlSec);
-        return one;
+        return await this.getPresignedPutUrl(key, contentType, ttlSec);
       }),
     );
     return { items: results, ttlSec };

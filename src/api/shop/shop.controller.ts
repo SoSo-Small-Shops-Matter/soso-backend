@@ -18,9 +18,10 @@ import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/query/pagination.dto';
 import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/requests/submit_shop_requests.dto';
-import { PostReviewDto, UpdateReviewDto } from './dto/requests/review_request.dto';
+import { PostReviewDto, PresignPutListRequestDto, UpdateReviewDto } from './dto/requests/review_request.dto';
 import { ShopDetailResponseDTO, ShopSearchPageNationResultDTO, ShopWithin1KmResponseItemDTO } from './dto/responses/shop_response.dto';
 import { ReviewReportDto, ShopReportDto } from './dto/requests/report_request';
+import { PreSignedURLListResponseDTO } from './dto/responses/review_response.dto';
 
 @ApiTags('Shops')
 @Controller('shops')
@@ -165,18 +166,8 @@ export class ShopController {
 
   @Post('/:shopId/reviews')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FilesInterceptor('files', 10, {
-      limits: { fileSize: 5 * 1024 * 1024 }, // 최대 5MB
-      fileFilter: (req, file, cb) => {
-        if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) cb(null, true);
-        else cb(new Error('Only images allowed!'), false);
-      },
-    }),
-  )
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: '리뷰 작성', description: '리뷰를 작성합니다.' })
-  @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: '리뷰 데이터 및 이미지 파일',
     type: PostReviewDto,
@@ -185,14 +176,26 @@ export class ShopController {
     description: '리뷰 작성 성공',
     type: SuccessNoResultResponseDTO,
   })
-  async postReview(
-    @Param('shopId', ParseIntPipe) shopId: number,
-    @Body() postReviewDto: PostReviewDto,
-    @GetUUID() uuid: string,
-    @UploadedFiles() files?: Express.Multer.File[],
-  ) {
-    await this.shopService.createReview(uuid, postReviewDto, shopId, files);
+  async postReview(@Param('shopId', ParseIntPipe) shopId: number, @Body() postReviewDto: PostReviewDto, @GetUUID() uuid: string) {
+    await this.shopService.createReview(uuid, postReviewDto, shopId);
     return new SuccessNoResultResponseDTO();
+  }
+
+  @Post('/:shopId/reviews/presigned')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiExtraModels(SuccessResponseDTO, PreSignedURLListResponseDTO)
+  @ApiOperation({
+    summary: '리뷰 이미지 PreSigned',
+    description:
+      '리뷰 이미지 등록을 위한 Presigned PUT URL들을 배치로 발급합니다. 클라이언트는 응답에 포함된 URL로 S3에 직접 업로드한 뒤, 발급받은 `key` 배열을 리뷰 생성 API에 전달하세요.',
+  })
+  @ApiBody({
+    description: '발급받을 파일들의 원본명/콘텐츠 타입 목록과 (선택) TTL(초).',
+    type: PresignPutListRequestDto,
+  })
+  async createReviewPresignImages(@Body() presignPutListRequestDto: PresignPutListRequestDto) {
+    return new SuccessResponseDTO(await this.shopService.createReviewPresignImages(presignPutListRequestDto));
   }
 
   @Patch('/:shopId/reviews/:reviewId')

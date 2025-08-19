@@ -14,7 +14,7 @@ import { ReviewService } from '../review/review.service';
 import { ReportRepository } from '../report/report.repository';
 import { GetSearchPageShopDTO, GetShopWithin1KmDTO } from './dto/query/pagination.dto';
 import { SubmitNewProductsDto, SubmitNewShopDto, SubmitShopOperatingHoursDto } from './dto/requests/submit_shop_requests.dto';
-import { PostReviewDto, UpdateReviewDto } from './dto/requests/review_request.dto';
+import { PostReviewDto, PresignPutListRequestDto, UpdateReviewDto } from './dto/requests/review_request.dto';
 import { Paging } from './dto/responses/pagination_response.dto';
 import { ShopSearchPageNationResultDTO } from './dto/responses/shop_response.dto';
 import { ReviewReportDto, ShopReportDto } from './dto/requests/report_request';
@@ -107,6 +107,11 @@ export class ShopService {
       image: shop.image,
       location: shop.location,
     }));
+  }
+
+  async createReviewPresignImages(presignPutListRequestDto: PresignPutListRequestDto) {
+    const { files } = presignPutListRequestDto;
+    return await this.awsService.getPresignedPutList(files);
   }
 
   async findShopByShopId(shopId: number, uuid: string) {
@@ -204,17 +209,14 @@ export class ShopService {
     await this.submitTransactionsRepository.createProducts(shopId, productsData, uuid);
   }
 
-  async createReview(uuid: string, postReviewDto: PostReviewDto, shopId: number, files?: Express.Multer.File[]): Promise<void> {
-    const { content } = postReviewDto;
+  async createReview(uuid: string, postReviewDto: PostReviewDto, shopId: number): Promise<void> {
+    const { content, reviewImgKeys } = postReviewDto;
 
     const shop = await this.shopRepository.findOnlyShopByShopId(shopId);
     if (!shop) throw new ConflictException('Not Exist Shop');
 
-    // 이미지 업로드 및 URL 생성 (파일이 없을 경우 빈 배열 반환)
-    const imageUrls = files ? await this.awsService.uploadImagesToS3(files, 'jpg') : [];
-
     // 트랜잭션을 사용하여 Review 생성
-    await this.reviewTransactionsRepository.createReview(uuid, Number(shopId), content, imageUrls);
+    await this.reviewTransactionsRepository.createReview(uuid, shopId, content, reviewImgKeys);
   }
 
   async updateReview(
