@@ -83,7 +83,8 @@ export class AwsService {
   }
 
   async getPresignedGetUrlByKey(key: string, expiresInSec = 180, contentDisposition: string = 'inline'): Promise<string> {
-    await this.assertObjectExists(key);
+    const isExist = await this.assertObjectExists(key);
+    if (!isExist) return null;
 
     const cmd = new GetObjectCommand({
       Bucket: this.bucketName,
@@ -98,7 +99,8 @@ export class AwsService {
     try {
       await this.s3Client.send(new HeadObjectCommand({ Bucket: this.bucketName, Key: key }));
     } catch {
-      throw new NotFoundException('S3 object not found');
+      this.loggerService.warn(`S3/ Object Not Found: ${key}`);
+      return null;
     }
   }
 

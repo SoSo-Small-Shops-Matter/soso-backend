@@ -60,7 +60,8 @@ export class UserService {
 
     if (profileImgKey) {
       // ✅ S3 존재 검증: 삭제되었거나 만료된 키 방지
-      await this.awsService.assertObjectExists(profileImgKey);
+      const isExistImg = await this.awsService.assertObjectExists(profileImgKey);
+      if (!isExistImg) throw new NotFoundException('Not Found Image');
 
       const updateUrl = await this.userRepository.updateUserPhotoUrl(uuid, profileImgKey);
       if (updateUrl.affected == 0) throw new NotFoundException('Fail update profileImg');

@@ -24,7 +24,7 @@ export class UserProfileResponsesDTO {
 // Get용 DTO
 export class PresignedUserProfileImgResponsesDTO {
   @ApiProperty({ description: '유저 프로필 Presigend URL', example: '...' })
-  profileImg: string;
+  profileImg?: string;
 
   @ApiProperty({
     description: 'Presigned URL 유효기간(초). 만료 후에는 다시 발급 필요',
