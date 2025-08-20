@@ -24,9 +24,10 @@ export class GetShopWithin1KmDTO {
   sorting: boolean;
 
   @ApiPropertyOptional({ description: '위시리스트 필터링', example: 'true' })
-  @IsString()
+  @IsBoolean()
   @IsOptional()
-  isWishlist?: string;
+  @Type(() => Boolean)
+  isWishlist?: boolean;
 
   @ApiPropertyOptional({ description: '상품 ID 배열로 필터링', example: [1, 2, 3], type: [Number] })
   @IsArray()

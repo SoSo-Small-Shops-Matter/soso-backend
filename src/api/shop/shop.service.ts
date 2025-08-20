@@ -37,11 +37,10 @@ export class ShopService {
 
   async findShopsWithin1Km(getShopWithin1KmDTO: GetShopWithin1KmDTO, uuid: string) {
     const { lat, lng, sorting, isWishlist, productIds } = getShopWithin1KmDTO;
-    const wishlistBoolean = isWishlist == 'true' ? true : false;
     const radius = 6371; // 지구 반경 (km)
     const distanceLimit = 1; // 거리 제한 (1km)
 
-    let shops = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting != false);
+    let shops = await this.shopRepository.findShopsWithin1Km(lat, lng, distanceLimit, radius, sorting);
 
     // shop_ 프리픽스 제거 + 필요한 필드만 추출
     shops = shops.map((shop) => ({
@@ -57,7 +56,7 @@ export class ShopService {
       distance: shop.distance,
     }));
 
-    if (wishlistBoolean && uuid) {
+    if (isWishlist && uuid) {
       const wishlistShops = await this.wishlistRepository.findWishlistShopsByUser(uuid);
       const wishlistShopIds = wishlistShops.map((wishlist) => wishlist.shop.id);
       shops = shops.filter((shop) => wishlistShopIds.includes(shop.id));
@@ -116,15 +115,18 @@ export class ShopService {
 
   async findShopByShopId(shopId: number, uuid: string) {
     const imageList = [];
+
     const shop = await this.shopRepository.findShopByShopId(shopId);
     if (!shop) {
       throw new NotFoundException('NOT_FOUND_SHOP');
     }
+
     // "productMappings" 배열을 "products" 배열로 변환
     const products = shop.productMappings.map((mapping) => ({
       id: mapping.product.id,
       name: mapping.product.name,
     }));
+
     const operatingHours = shop.operatingHours.map((operating) => ({
       ...operating,
       startTime: convertTimeToAmPm(operating.startTime),
